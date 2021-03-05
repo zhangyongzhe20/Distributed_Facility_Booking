@@ -27,7 +27,7 @@ public class UDPClient {
         try {
                 BufferedReader inputFromUser = new BufferedReader(new InputStreamReader(System.in));
                 String input = inputFromUser.readLine();
-                byte[] send_msg = input.getBytes();
+                byte[] send_msg = input.getBytes(); //TODO: Change to Marshal
 
                 InetAddress aHost = InetAddress.getByName("localhost");
                 DatagramPacket request = new DatagramPacket(send_msg, send_msg.length, aHost, PORT);
@@ -45,7 +45,6 @@ public class UDPClient {
                 System.err.println("Failed to receive/send packet.");
                 e.printStackTrace();
         }// catch (IOException e)
-
 
     }// end psvm
 }// end UDPClient
