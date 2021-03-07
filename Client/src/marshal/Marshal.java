@@ -22,15 +22,7 @@ public class Marshal {
         };
     }
 
-    /**
-     * Unmarshal bytes into int, using Big-Endian format
-     * @param b {@code byte[]}
-     * @param start {@code int} starting index
-     * @return {@code int}
-     */
-    public static int unmarshalInteger(byte[] b, int start){
-        return b[start] << 24|(b[start+1] & 0xFF) << 16|(b[start+2] & 0xFF) << 8|(b[start+3] & 0xFF);
-    }
+
 
     /**
      * marshal.Marshal String into bytes
@@ -48,26 +40,33 @@ public class Marshal {
     }
 
     /**
-     * Unmarshal bytes into String
-     * @param b {@code byte[]}
-     * @param start {@code int} starting index
-     * @param end {@code int} ending index
-     * @return {@code String}
-            */
-    public static String unmarshalString(byte[] b, int start, int end){
-        char[] c = new char[end - start];
-        for(int i = start; i < end; i++) {
-            c[i-start] = (char)(b[i]);
+     *
+     * @param collectedMsg
+     * @return the bytes contains length information, first send of UDP
+     */
+    public static byte[] marshalMsgHeader(ArrayList<Object> collectedMsg){
+        // create a list<Byte>
+        List<Byte> constructedMsg = new ArrayList<>();
+        // loop the collectedMsg and marshall
+        for(Object obj : collectedMsg){
+            if(obj.getClass() == Integer.class){
+                // all int value occupy 4 bytes
+                constructedMsg.addAll(Arrays.asList(ArrayUtils.toObject(marshalInt(4))));
+            }else if(obj.getClass() == String.class){
+                constructedMsg.addAll(Arrays.asList(ArrayUtils.toObject(marshalInt(((String) obj).length()))));
+            }
         }
-        return new String(c);
+        System.out.println(constructedMsg);
+        // convert Byte[] to byte[] for UDP
+        return ArrayUtils.toPrimitive(constructedMsg.toArray(new Byte[0]));
     }
 
     /**
      *
      * @param collectedMsg {@code ArrayList<Object>} collect data in each service
-     * @return {@code byte[]} ready for UDP
+     * @return {@code byte[]} the bytes contains data information, send followed by marshalMsgHeader
      */
-    public static byte[] marshalMsg(ArrayList<Object> collectedMsg){
+    public static byte[] marshalMsgData(ArrayList<Object> collectedMsg){
         // create a list<Byte>
         List<Byte> constructedMsg = new ArrayList<>();
         // loop the collectedMsg and marshall
@@ -78,6 +77,7 @@ public class Marshal {
                 constructedMsg.addAll(Arrays.asList(ArrayUtils.toObject(marshalString((String) obj))));
             }
         }
+//        System.out.println(constructedMsg);
         // convert Byte[] to byte[] for UDP
         return ArrayUtils.toPrimitive(constructedMsg.toArray(new Byte[0]));
     }
