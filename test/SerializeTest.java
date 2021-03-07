@@ -1,4 +1,5 @@
 import marshal.Marshal;
+import marshal.UnMarshal;
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 
@@ -9,19 +10,21 @@ class SerializeTest {
     void marshallMsg() {
         // used array list to collect data
         ArrayList<Object> collectedMsg = new ArrayList<>();
-        // add an int
+         //add an int
         collectedMsg.add(1);
-        // add a string
-        collectedMsg.add("id");
+         //add a string
+        collectedMsg.add("Meeting Room 01");
+
         // marshall all data and ready for UDP
-        byte[] udpData = Marshal.marshalMsg(collectedMsg);
-        // unmarshal to get first data(int)
-        int intValue = Marshal.unmarshalInteger(Marshal.marshalMsg(collectedMsg), 0);
-        // unmarshal to get the second data(String)
-        String stringValue = Marshal.unmarshalString(Marshal.marshalMsg(collectedMsg), 4, 6);
+        byte[] udpMsgHeader = Marshal.marshalMsgHeader(collectedMsg);
+        byte[] udpMsgData = Marshal.marshalMsgData(collectedMsg);
+
+        // simulate the bytes are received at server
+        ArrayList<Object> ReceivedMsg = UnMarshal.unMarshalMsg(udpMsgHeader, udpMsgData);
+
         // check
-        assertEquals(1, intValue);
-        assertEquals("id", stringValue);
+        assertEquals(1, ReceivedMsg.get(0));
+        assertEquals("Meeting Room 01", ReceivedMsg.get(1));
 
     }
 }
