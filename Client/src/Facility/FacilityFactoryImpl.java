@@ -1,16 +1,20 @@
-import javax.security.auth.callback.Callback;
+package Facility;
+
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import callback.CallBack;
 
 public class FacilityFactoryImpl extends UnicastRemoteObject implements FacilityFactory {
 
 
-    protected FacilityFactoryImpl() throws RemoteException {
+    public FacilityFactoryImpl() throws RemoteException {
         super();
     }
 
     @Override
     public FacilityIF query(String facility_name, int no_of_days) throws RemoteException {
+        FacilityIF queryFacility;
+        System.out.println("Query:...");
         return null;
     }
 
@@ -20,7 +24,7 @@ public class FacilityFactoryImpl extends UnicastRemoteObject implements Facility
     }
 
     @Override
-    public Boolean ChangeBookedFacility(int Booking_ID, int time_offset) {
+    public Boolean ChangeBookedFacility(int Booking_ID, int time_offset) throws RemoteException {
         return null;
     }
 
@@ -31,12 +35,12 @@ public class FacilityFactoryImpl extends UnicastRemoteObject implements Facility
     }
 
     @Override
-    public void register(Callback cb) throws RemoteException {
+    public void register(CallBack cb) throws RemoteException {
 
     }
 
     @Override
-    public void deregister(Callback cb) throws RemoteException {
+    public void deregister(CallBack cb) throws RemoteException {
 
     }
 }

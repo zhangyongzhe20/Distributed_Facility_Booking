@@ -1,11 +1,13 @@
+package Facility;
+
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
-public class FacilityImplment extends UnicastRemoteObject implements FacilityIF {
+public class FacilityIFImplment extends UnicastRemoteObject implements FacilityIF {
     private String facilityName;
     private String availableSlots;
 
-    protected FacilityImplment(String name, String slots) throws RemoteException {
+    protected FacilityIFImplment(String name, String slots) throws RemoteException {
         super();
         facilityName = name;
         availableSlots = slots;
