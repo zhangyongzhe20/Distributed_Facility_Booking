@@ -42,7 +42,12 @@ public class UnMarshal {
         return new String(c);
     }
 
-
+    /**
+     *
+     * @param udpMsgHeader {@code byte[]} the received header contains length information
+     * @param udpMsgData {@code byte[]} the received msg contains the actual data
+     * @return the unmarshal data stores in array list
+     */
     public static ArrayList<Object> unMarshalMsg(byte[] udpMsgHeader, byte[] udpMsgData){
          ArrayList<Object> collectedMsg = new ArrayList<>();
          // TODO: assume the first data is int, and sec is a string;
