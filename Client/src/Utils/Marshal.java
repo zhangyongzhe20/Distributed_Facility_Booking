@@ -1,8 +1,7 @@
-package marshal;
+package Utils;
 
 import org.apache.commons.lang.ArrayUtils;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
