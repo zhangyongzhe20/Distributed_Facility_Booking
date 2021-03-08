@@ -10,7 +10,6 @@ import java.util.ArrayList;
 public abstract class Control {
     ArrayList<Object> collectedData;
     byte[] marShalData;
-    byte[] marShalHeader;
     byte[] unMarShalData;
 
     //UDP client
@@ -28,7 +27,7 @@ public abstract class Control {
      * @param sendData
      * @return
      */
-    public byte[] sendAndReceive(byte[] sendData){
+    public byte[] sendAndReceive(byte[] sendData, Boolean isAck){
         // ---------------------- 1. Open UDP Socket ----------------------
         try {
             aSocket = new DatagramSocket();
@@ -44,12 +43,16 @@ public abstract class Control {
             InetAddress aHost = InetAddress.getByName("localhost");
             DatagramPacket request = new DatagramPacket(sendData, sendData.length, aHost, PORT);
             aSocket.send(request);
-            // ---------------------- 3. Receive UDP reply from server
-            byte[] receive_msg = new byte[1024];
-            DatagramPacket reply = new DatagramPacket(receive_msg, receive_msg.length);
-            aSocket.receive(reply);
-            System.out.println("Reply: "+new String(reply.getData()));
-            return reply.getData();
+
+            if(!isAck) {
+                // ---------------------- 3. Receive UDP reply from server
+                byte[] receive_msg = new byte[1024];
+                DatagramPacket reply = new DatagramPacket(receive_msg, receive_msg.length);
+                aSocket.receive(reply);
+                System.out.println("Reply: " + new String(reply.getData()));
+                //todo: need to implement timeout
+                return reply.getData();
+            }
         } // end try send request and receive
         catch (IOException e) {
             System.err.println("Failed to receive/send packet.");
@@ -65,10 +68,6 @@ public abstract class Control {
      */
     public static byte[] marshalMsg(ArrayList<Object> collectedMsg){
         return Utils.Marshal.marshalMsgData(collectedMsg);
-    }
-
-    public static byte[] marshalMsgHeader(ArrayList<Object> collectedMsg){
-        return Utils.Marshal.marshalMsgHeader(collectedMsg);
     }
 
     /**

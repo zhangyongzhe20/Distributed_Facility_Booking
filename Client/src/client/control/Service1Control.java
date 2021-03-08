@@ -8,7 +8,6 @@ public class Service1Control extends Control{
     public Service1Control() {
         this.collectedData = new ArrayList<>();
         this.marShalData = new byte[0];
-        this.marShalHeader = new byte[0];
         this.unMarShalData = new byte[0];
     }
 
@@ -20,21 +19,26 @@ public class Service1Control extends Control{
         this.numOfDays = days;
     }
 
-    @Override
-    public void sendAndReceive() {
-        //todo integrate UDP transmission here
-        this.unMarShalData = sendAndReceive(marShalHeader);
-        this.unMarShalData = sendAndReceive(marShalData);
-        //todo how to send ack??????????
-
-    }
 
     @Override
     public void marshal() {
         collectedData.add(this.facilityName);
         collectedData.add(this.numOfDays);
-        marShalHeader = marshalMsgHeader(collectedData);
         marShalData = marshalMsg(collectedData);
+    }
+
+    @Override
+    public void sendAndReceive() {
+        //todo integrate UDP transmission here
+        this.unMarShalData = sendAndReceive(marShalData, false);
+        //todo send ack
+        collectedData = new ArrayList<>();
+        //header
+        collectedData.add(0);
+        //value, 1 or 0
+        collectedData.add(1);
+        sendAndReceive(marshalMsg(collectedData), true);
+
     }
 
     @Override
