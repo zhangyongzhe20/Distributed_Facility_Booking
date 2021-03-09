@@ -19,12 +19,18 @@ public class Service1Control extends Control{
         this.numOfDays = days;
     }
 
-
+    /**
+     *  Marshal service data
+     */
     @Override
     public void marshal() {
-        collectedData.add(this.facilityName);
-        collectedData.add(this.numOfDays);
-        marShalData = marshalMsg(collectedData);
+            // header represents this is a request/response msg
+            collectedData.add(1);
+            // message id
+            collectedData.add(this.getMsgID());
+            collectedData.add(this.facilityName);
+            collectedData.add(this.numOfDays);
+            marShalData = marshalMsg(collectedData);
     }
 
     @Override
