@@ -65,14 +65,16 @@ public class Marshal {
      * @param collectedMsg {@code ArrayList<Object>} collect data in each service
      * @return {@code byte[]} the bytes contains data information, send followed by marshalMsgHeader
      */
-    public static byte[] marshalMsgData(ArrayList<Object> collectedMsg){
+    public static byte[] marshalMsgData(ArrayList<Object> collectedMsg, Boolean isAck){
         // create a list<Byte>
         List<Byte> constructedMsg = new ArrayList<>();
         // loop the collectedMsg and marshall
         for(Object obj : collectedMsg){
             if(obj.getClass() == Integer.class){
-                // the length of int data
-                constructedMsg.addAll(Arrays.asList(ArrayUtils.toObject(marshalInt(4))));
+                if(!isAck) {
+                    // the length of int data
+                    constructedMsg.addAll(Arrays.asList(ArrayUtils.toObject(marshalInt(4))));
+                }
                 // the actual int data
                 constructedMsg.addAll(Arrays.asList(ArrayUtils.toObject(marshalInt((Integer) obj))));
             }else if(obj.getClass() == String.class){

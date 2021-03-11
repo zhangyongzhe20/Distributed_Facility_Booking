@@ -1,11 +1,18 @@
 package client.control;
-import java.util.ArrayList;
+import Utils.UnMarshal;
 
-public class Service1Control extends Control{
+import java.io.IOException;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.concurrent.TimeoutException;
+
+public class Service1Control extends Control implements marshal, unmarshal{
     private String facilityName;
     private int numOfDays;
 
-    public Service1Control() {
+    public Service1Control() throws SocketException, UnknownHostException {
+        super();
         this.collectedData = new ArrayList<>();
         this.marShalData = new byte[0];
         this.unMarShalData = new byte[0];
@@ -22,34 +29,33 @@ public class Service1Control extends Control{
     /**
      *  Marshal service data
      */
-    @Override
-    public void marshal() {
+    public void marshal() throws TimeoutException, IOException {
             // header represents this is a request/response msg
             collectedData.add(1);
             // message id
             collectedData.add(this.getMsgID());
             collectedData.add(this.facilityName);
             collectedData.add(this.numOfDays);
-            marShalData = marshalMsg(collectedData);
+            marShalData = marshalMsg(collectedData, false);
+            //todo remove when integrate
+//            this.unMarShalData = marShalData;
+//            System.out.println("unmarshalled data: " + unMarshal());
+            //send after collecting data
+            sendAndReceive(marShalData);
     }
 
-    @Override
-    public void sendAndReceive() {
-        //todo integrate UDP transmission here
-        this.unMarShalData = sendAndReceive(marShalData, false);
-        //todo send ack
-        collectedData = new ArrayList<>();
-        //header
-        collectedData.add(0);
-        //value, 1 or 0
-        collectedData.add(1);
-        sendAndReceive(marshalMsg(collectedData), true);
-
-    }
-
-    @Override
-    public void unMarshal() {
+    public String unMarshal() {
         //todo
-
+        // first 4 is ack type
+        if(this.unMarShalData.length != 0) {
+            int isAck = UnMarshal.unmarshalInteger(this.unMarShalData, 0);
+            if (isAck == 0) {
+                System.err.println("Unsupported operation!!!");
+                return null;
+            }
+            // actual data
+            return UnMarshal.unmarshalString(this.unMarShalData, 4, this.unMarShalData.length);
+        }
+        return null;
     }
 }

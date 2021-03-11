@@ -17,7 +17,7 @@ class SerializeTest {
 
         // marshall all data and ready for UDP
         byte[] udpMsgHeader = Marshal.marshalMsgHeader(collectedMsg);
-        byte[] udpMsgData = Marshal.marshalMsgData(collectedMsg);
+        byte[] udpMsgData = Marshal.marshalMsgData(collectedMsg, false);
 
         //todo, update test
          //simulate the bytes are received at server

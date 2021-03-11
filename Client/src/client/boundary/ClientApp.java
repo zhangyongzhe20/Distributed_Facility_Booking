@@ -1,12 +1,19 @@
 package client.boundary;
 
+import client.control.UDPClient;
+
+import java.io.IOException;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.Scanner;
+import java.util.concurrent.TimeoutException;
 
 public class ClientApp {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, TimeoutException {
     Scanner sc = new Scanner(System.in);
     String selection;
     Boundary_Factory bf = new Boundary_Factory();
+    //init UDP Client
     do {
         displayMain();
         selection = sc.nextLine();

@@ -1,10 +1,12 @@
 package client.boundary;
 
+import java.io.IOException;
 import java.util.Scanner;
+import java.util.concurrent.TimeoutException;
 
 public abstract class Boundary {
     Scanner sc = new Scanner(System.in);
-    public abstract void displayMain();
+    public abstract void displayMain() throws TimeoutException, IOException;
     public abstract void displayReply();
     //todo parsers defined in the blow
     public String readInputString(String message) {
