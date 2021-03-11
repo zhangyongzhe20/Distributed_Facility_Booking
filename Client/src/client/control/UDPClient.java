@@ -11,7 +11,7 @@ public class UDPClient {
     private DatagramSocket clientSocket;
     private InetAddress IPAddress;
     private int port = 9876;
-    private int udptimeout = 2000;
+    private int udptimeout = 2000; // 2s timeout
 
     private static UDPClient SINGLE_INSTANCE;
 

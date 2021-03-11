@@ -14,15 +14,11 @@ public class Service1_Boundary extends Boundary {
     }
 
     @Override
-    public void displayMain(){
+    public void displayMain() throws TimeoutException, IOException {
         enterFacilityName();
         enterNumOfDays();
-        try {
-            // marshal
-            s1C.marshal();
-        }catch (TimeoutException | IOException te){
-            System.err.println(te.getMessage());
-        }
+        // marshal
+        s1C.marshal();
         //handle response and display reply
         displayReply();
     }
