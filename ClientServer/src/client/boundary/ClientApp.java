@@ -23,6 +23,7 @@ public class ClientApp{
             } catch (TimeoutException | IOException te){
             System.err.println(te.getMessage());
         }
+            nextpage.displayReply();
             isContiune();
         }
     } while (!selection.equalsIgnoreCase("6"));
@@ -40,6 +41,7 @@ public class ClientApp{
         System.out.println("============================================");
         System.out.println("Enter choice : ");
     }
+
 
     private static void isContiune() {
         String isContinue = Boundary.readInputString("Do you want to continue?");

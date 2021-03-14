@@ -1,14 +1,13 @@
 package server.control;
 
-import Utils.Marshal;
-import Utils.UnMarshal;
+import utils.Marshal;
+import utils.UnMarshal;
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
-public class Server1Control extends Control implements marshal, unmarshal{
+public class Server1Control extends Control{
     private String bookingInfo = "success booking";
 
     public Server1Control() throws SocketException, UnknownHostException {
@@ -20,16 +19,14 @@ public class Server1Control extends Control implements marshal, unmarshal{
     public String unMarshal() {
         if (this.dataToBeUnMarshal.length != 0)
         {
-            System.out.println("This is a request message");
-            String unmarshaledString =  UnMarshal.unmarshalString(this.dataToBeUnMarshal, 4, this.dataToBeUnMarshal.length);
-            System.out.println("The unmarshaled String is: " + unmarshaledString);
+            String real_data =  UnMarshal.unmarshalString(this.dataToBeUnMarshal, 4, this.dataToBeUnMarshal.length);
+            return real_data;
         }
         return null;
     }
 
     public void Marshal() throws TimeoutException, IOException
     {
-        System.out.println(bookingInfo);
         this.marshaledData = Marshal.marshalString(bookingInfo);
         sendAndReceive(this.marshaledData);
     }

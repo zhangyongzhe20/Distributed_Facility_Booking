@@ -71,7 +71,7 @@ public class Control {
      */
     public static byte[] marshalMsg(ArrayList<Object> collectedMsg, Boolean isAck){
         System.out.println("collected Msg in marshalMsg function" + collectedMsg);
-        return Utils.Marshal.marshalMsgData(collectedMsg, isAck);
+        return utils.Marshal.marshalMsgData(collectedMsg, isAck);
     }
 
     /**

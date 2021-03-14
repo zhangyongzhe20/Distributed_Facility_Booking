@@ -1,6 +1,6 @@
 package client.control;
 
-import Utils.UnMarshal;
+import utils.UnMarshal;
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -50,7 +50,8 @@ public class Service1Control extends Control implements marshal, unmarshal{
                 return null;
             }
             // actual data
-            return UnMarshal.unmarshalString(this.unMarShalData, 4, this.unMarShalData.length);
+            String actual_data = UnMarshal.unmarshalString(this.unMarShalData, 4, this.unMarShalData.length);
+            System.out.println(actual_data);
         }
         return null;
     }
