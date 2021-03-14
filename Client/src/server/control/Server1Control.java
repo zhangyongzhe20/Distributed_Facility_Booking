@@ -23,7 +23,7 @@ public class Server1Control extends Control implements marshal, unmarshal{
         {
             System.out.println("This is a request message");
             String unmarshaledString =  UnMarshal.unmarshalString(this.dataToBeUnMarshal, 4, this.dataToBeUnMarshal.length);
-            System.out.println(unmarshaledString);
+            System.out.println("The unmarshaled String is: " + unmarshaledString);
         }
         return null;
     }

@@ -36,6 +36,7 @@ public class Service1Control extends Control implements marshal, unmarshal{
             collectedData.add(this.getMsgID());
             collectedData.add(this.facilityName);
             collectedData.add(this.numOfDays);
+            System.out.println("Collected data" + collectedData);
             marShalData = marshalMsg(collectedData, false);
             //todo remove when integrate
 //            this.unMarShalData = marShalData;

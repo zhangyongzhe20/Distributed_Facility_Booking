@@ -70,6 +70,7 @@ public class Control {
      * @return {@code byte[]} the bytes contains data information, send followed by marshalMsgHeader
      */
     public static byte[] marshalMsg(ArrayList<Object> collectedMsg, Boolean isAck){
+        System.out.println("collected Msg in marshalMsg function" + collectedMsg);
         return Utils.Marshal.marshalMsgData(collectedMsg, isAck);
     }
 

@@ -14,7 +14,8 @@ public class testServer {
         while (true)
         {
             server1.Marshal();
-            server1.unMarshal();
+            String data = server1.unMarshal();
+            System.out.println(data);
         }
     }
 }

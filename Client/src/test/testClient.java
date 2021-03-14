@@ -13,7 +13,8 @@ public class testClient {
         while (true)
         {
             service1.marshal();
-            service1.unMarshal();
+            String data = service1.unMarshal();
+            System.out.println(data);
         }
     }
 }
