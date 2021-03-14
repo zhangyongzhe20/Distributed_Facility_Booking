@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
 public class Service1Control extends Control implements marshal, unmarshal{
+    private static final int SERVICEID = 1;
     private String facilityName;
     private int numOfDays;
 
@@ -34,6 +35,7 @@ public class Service1Control extends Control implements marshal, unmarshal{
             collectedData.add(1);
             // message id
             collectedData.add(this.getMsgID());
+            collectedData.add(SERVICEID);
             collectedData.add(this.facilityName);
             collectedData.add(this.numOfDays);
             marShalData = marshalMsg(collectedData, false);
