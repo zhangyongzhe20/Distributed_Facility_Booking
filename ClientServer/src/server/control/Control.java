@@ -52,9 +52,14 @@ public class Control {
             if (this.serviceID >= 1 && this.serviceID <=5) {
 
                 // Use msgID to check whether this message is processed or not
+                //todo checking the msgID is only required at at-most-once semantics
                 if (this.msgIDMap.containsKey(this.msgID))
-                {}
-                else {} // TODO: What is the logic here?
+                {
+                    //todo: send the value of the msgID back to client
+                }
+                else {
+                    //todo: process the request and update the map
+                } // TODO: What is the logic here?
 
                 // send reply to client with ACK =  1
                 this.ackType = new byte[] {1};

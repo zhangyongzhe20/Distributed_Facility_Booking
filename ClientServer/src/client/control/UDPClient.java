@@ -1,7 +1,5 @@
 package client.control;
 
-import Utils.UnMarshal;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -33,8 +31,6 @@ public class UDPClient {
         // ---------------------- Send UDP request to server ----------------------
         try {
             DatagramPacket request = new DatagramPacket(message, message.length, this.IPAddress, port);
-            //todo remove
-            //System.out.println("Send msg to server: " + UnMarshal.unmarshalInteger(message,0));
             this.clientSocket.send(request);
         } catch (IOException e) {
             System.err.println("Failed to receive/send packet.");

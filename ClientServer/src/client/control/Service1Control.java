@@ -1,6 +1,6 @@
 package client.control;
-import Utils.UnMarshal;
 
+import Utils.UnMarshal;
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -36,12 +36,7 @@ public class Service1Control extends Control implements marshal, unmarshal{
             collectedData.add(this.getMsgID());
             collectedData.add(this.facilityName);
             collectedData.add(this.numOfDays);
-            System.out.println("Collected data" + collectedData);
             marShalData = marshalMsg(collectedData, false);
-            //todo remove when integrate
-//            this.unMarShalData = marShalData;
-//            System.out.println("unmarshalled data: " + unMarshal());
-            //send after collecting data
             sendAndReceive(marShalData);
     }
 
