@@ -70,18 +70,23 @@ public class Marshal {
         List<Byte> constructedMsg = new ArrayList<>();
         // loop the collectedMsg and marshall
         for(Object obj : collectedMsg){
-            if(obj.getClass() == Integer.class){
-                if(!isAck) {
-                    // the length of int data
-                    constructedMsg.addAll(Arrays.asList(ArrayUtils.toObject(marshalInt(4))));
+            if (obj == null)
+            {
+                System.out.println("the collectedMsg is null!");
+            } else {
+                if(obj.getClass() == Integer.class){
+                    if(!isAck) {
+                        // the length of int data
+                        constructedMsg.addAll(Arrays.asList(ArrayUtils.toObject(marshalInt(4))));
+                    }
+                    // the actual int data
+                    constructedMsg.addAll(Arrays.asList(ArrayUtils.toObject(marshalInt((Integer) obj))));
+                }else if(obj.getClass() == String.class){
+                    // the length of String data
+                    constructedMsg.addAll(Arrays.asList(ArrayUtils.toObject(marshalInt(((String) obj).length()))));
+                    // the actual string data
+                    constructedMsg.addAll(Arrays.asList(ArrayUtils.toObject(marshalString((String) obj))));
                 }
-                // the actual int data
-                constructedMsg.addAll(Arrays.asList(ArrayUtils.toObject(marshalInt((Integer) obj))));
-            }else if(obj.getClass() == String.class){
-                // the length of String data
-                constructedMsg.addAll(Arrays.asList(ArrayUtils.toObject(marshalInt(((String) obj).length()))));
-                // the actual string data
-                constructedMsg.addAll(Arrays.asList(ArrayUtils.toObject(marshalString((String) obj))));
             }
         }
 //        System.out.println(constructedMsg);

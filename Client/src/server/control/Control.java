@@ -10,8 +10,8 @@ import java.util.HashMap;
 import java.util.concurrent.TimeoutException;
 
 public class Control {
-    byte[] marShalData;
-    byte[] unMarShalData;
+    byte[] dataToBeUnMarshal;
+    byte[] marshaledData;
     UDPserver udpSever;
 
     int msgID;
@@ -37,16 +37,16 @@ public class Control {
      */
     public void sendAndReceive(byte[] sendData) throws IOException {
         // get the marshal data
-        this.marShalData = udpSever.UDPrecieve();
-        if (marShalData[0] == 0){
+        this.dataToBeUnMarshal = udpSever.UDPrecieve();
+        if (dataToBeUnMarshal[0] == 0){
             // Msg Type is ACK
             System.out.println("Received ACK msg");
         }
         else
         {
             // Msg Type is request
-            this.msgID = this.marShalData[1];
-            this.serviceID = this.marShalData[2];
+            this.msgID = this.dataToBeUnMarshal[1];
+            this.serviceID = this.dataToBeUnMarshal[2];
 
             // Use serviceID check whether client request is valid or not
             if (this.serviceID >= 1 && this.serviceID <=5) {

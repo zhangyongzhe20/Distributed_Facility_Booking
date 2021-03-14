@@ -14,22 +14,24 @@ public class Server1Control extends Control implements marshal, unmarshal{
 
     public Server1Control() throws SocketException, UnknownHostException {
         super();
-        this.marShalData = new byte[0];
-        this.unMarShalData = new byte[0];
+        this.dataToBeUnMarshal = new byte[0];
+        this.marshaledData = new byte[0];
     }
 
     public String unMarshal() {
-        if (this.marShalData.length != 0)
+        if (this.dataToBeUnMarshal.length != 0)
         {
-            // This is a request message
-            return UnMarshal.unmarshalString(this.marShalData, 4, this.marShalData.length);
+            System.out.println("This is a request message");
+            String unmarshaledString =  UnMarshal.unmarshalString(this.dataToBeUnMarshal, 4, this.dataToBeUnMarshal.length);
+            System.out.println(unmarshaledString);
         }
         return null;
     }
 
     public void Marshal() throws TimeoutException, IOException
     {
-        marShalData = Marshal.marshalString(bookingInfo);
-        sendAndReceive(marShalData);
+        System.out.println(bookingInfo);
+        this.marshaledData = Marshal.marshalString(bookingInfo);
+        sendAndReceive(this.marshaledData);
     }
 }
