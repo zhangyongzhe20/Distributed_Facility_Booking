@@ -19,8 +19,9 @@ public class Server1Control extends Control{
     public String unMarshal() {
         if (this.dataToBeUnMarshal.length != 0)
         {
-            String real_data =  UnMarshal.unmarshalString(this.dataToBeUnMarshal, 4, this.dataToBeUnMarshal.length);
-            return real_data;
+            int realmsg_length = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 24);
+            String realmsg = UnMarshal.unmarshalString(this.dataToBeUnMarshal,28, 28+realmsg_length);
+            return realmsg;
         }
         return null;
     }

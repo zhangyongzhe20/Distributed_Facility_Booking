@@ -20,10 +20,11 @@ public class ClientApp{
             Boundary nextpage = bf.createBoundary(selection);
             try {
                 nextpage.displayMain();
+                nextpage.displayReply();
             } catch (TimeoutException | IOException te){
             System.err.println(te.getMessage());
         }
-            nextpage.displayReply();
+//            nextpage.displayReply();
             isContiune();
         }
     } while (!selection.equalsIgnoreCase("6"));

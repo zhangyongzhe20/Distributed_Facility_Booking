@@ -25,7 +25,6 @@ public class Service1_Boundary extends Boundary {
 
     @Override
     public void displayReply() {
-
         //todo
         String response = s1C.unMarshal();
         System.out.println("response" + response);

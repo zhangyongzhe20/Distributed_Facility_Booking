@@ -41,9 +41,6 @@ public class Control {
     public void sendAndReceive(byte[] sendData) throws IOException {
         // get the marshal data
         this.dataToBeUnMarshal = udpSever.UDPrecieve();
-        System.out.println("Length"+this.dataToBeUnMarshal.length);
-        System.out.println("dataTobeUnmarshal"+this.dataToBeUnMarshal);
-
 
         int length = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,0);
         System.out.println(length);
@@ -59,8 +56,10 @@ public class Control {
         int length3 = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 16);
         System.out.println(length3);
 
-        String realmsg = UnMarshal.unmarshalString(this.dataToBeUnMarshal,20, 20+length3);
-        System.out.println(realmsg);
+        this.serviceID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 20);
+        System.out.println("serviceID:" + this.serviceID);
+
+
 
         if (request == 0){
             // Msg Type is ACK
@@ -70,33 +69,30 @@ public class Control {
         {
             System.out.println("Msg Type is request");
             this.msgID = msgID;
-//            this.serviceID = this.dataToBeUnMarshal[2];
-
             // Use serviceID check whether client request is valid or not
-//            if (this.serviceID >= 1 && this.serviceID <=5) {
+            if (this.serviceID >= 1 && this.serviceID <=4) {
+                System.out.println("Service ID"+this.serviceID);
 
 //                // Use msgID to check whether this message is processed or not
 //                //todo checking the msgID is only required at at-most-once semantics
-//                if (this.msgIDMap.containsKey(this.msgID))
-//                {
+//                if (this.msgIDMap.containsKey(this.msgID)) {
 //                    //todo: send the value of the msgID back to client
-//                }
-//                else {
+//                } else {
 //                    //todo: process the request and update the map
 //                } // TODO: What is the logic here?
 
                 // send reply to client with ACK =  1
-                this.ackType = new byte[] {1};
-                System.out.println("send: "+sendData);
+                this.ackType = new byte[]{1};
+                System.out.println("send: " + sendData);
                 udpSever.UDPsend(concat(ackType, sendData));
-
-//            else
-//            {
-//                // send reply to client with ACK = 0
-//                this.ackType = new byte[] {0};
-//                System.out.println("send reply to client with ACK = 0");
-//                udpSever.UDPsend(ackType);
-//            }
+            }
+            else
+            {
+                // send reply to client with ACK = 0
+                this.ackType = new byte[] {0};
+                System.out.println("send reply to client with ACK = 0");
+                udpSever.UDPsend(ackType);
+            }
 
         }
     }
