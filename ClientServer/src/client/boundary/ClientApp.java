@@ -1,10 +1,6 @@
 package client.boundary;
 
-import client.control.UDPClient;
-
 import java.io.IOException;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.Scanner;
 import java.util.concurrent.TimeoutException;
 
@@ -23,8 +19,9 @@ public class ClientApp{
                 nextpage.displayReply();
             } catch (TimeoutException | IOException te){
             System.err.println(te.getMessage());
-        }
-//            nextpage.displayReply();
+        } catch (Exception e) {
+                e.printStackTrace();
+            }
             isContiune();
         }
     } while (!selection.equalsIgnoreCase("6"));
@@ -46,7 +43,7 @@ public class ClientApp{
 
     private static void isContiune() {
         String isContinue = Boundary.readInputString("Do you want to continue?");
-        if(isContinue.equalsIgnoreCase("no")){
+        if(isContinue.toLowerCase().startsWith("n")){
             System.exit(1);
         }
     }

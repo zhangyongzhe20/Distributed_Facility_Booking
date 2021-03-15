@@ -32,7 +32,7 @@ public class Service1Control extends Control implements marshal, unmarshal{
      */
     public void marshal() throws TimeoutException, IOException {
             // header represents this is a request/response msg
-            collectedData.add(1);
+            collectedData.add(DataMSG);
             // message id
             collectedData.add(this.getMsgID());
             collectedData.add(SERVICEID);
@@ -43,8 +43,6 @@ public class Service1Control extends Control implements marshal, unmarshal{
     }
 
     public String unMarshal() {
-        //todo
-        // first 4 is ack type
         System.out.println("UnMarshal msg called");
         if(this.unMarShalData.length != 0) {
             int isAck = UnMarshal.unmarshalInteger(this.unMarShalData, 0);
