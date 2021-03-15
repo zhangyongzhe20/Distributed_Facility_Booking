@@ -6,7 +6,8 @@ import java.net.*;
 public class UDPserver {
     private DatagramSocket serverSocket;
     private InetAddress IPAddress;
-    private int port = 9876;
+    private int serverPort = 9876;
+    private int clientPort = 9877;
     private int udptimeout = 2000; //2s timeout
 
     public static UDPserver SINGLE_INSTANCE;
@@ -19,7 +20,7 @@ public class UDPserver {
 
     public UDPserver() throws UnknownHostException, SocketException{
         // Open UDP Socket at well-known port
-       this.serverSocket = new DatagramSocket(port);
+       this.serverSocket = new DatagramSocket(serverPort);
     }
 
     public byte[] UDPrecieve() throws IOException{
@@ -28,6 +29,7 @@ public class UDPserver {
         DatagramPacket request = new DatagramPacket(recieve_msg, recieve_msg.length);
         this.serverSocket.receive(request);
         this.IPAddress = request.getAddress();
+        this.clientPort = request.getPort();
         System.out.println("Received: " + new String(request.getData()));
         return request.getData();
     }
@@ -35,7 +37,7 @@ public class UDPserver {
     public void UDPsend(byte[] message) throws IOException {
         // Send UDP reply to client
         try {
-            DatagramPacket reply = new DatagramPacket(message, message.length, this.IPAddress, port);
+            DatagramPacket reply = new DatagramPacket(message, message.length, this.IPAddress, clientPort);
             serverSocket.send(reply);
         } catch (IOException e) {
             System.err.println("Failed to receive/send packet.");

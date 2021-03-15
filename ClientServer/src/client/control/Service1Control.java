@@ -45,7 +45,6 @@ public class Service1Control extends Control implements marshal, unmarshal{
     public String unMarshal() {
         //todo
         // first 4 is ack type
-        System.out.println("UnMarshal msg called");
         if(this.unMarShalData.length != 0) {
             int isAck = UnMarshal.unmarshalInteger(this.unMarShalData, 0);
             if (isAck == 0) {
@@ -53,8 +52,7 @@ public class Service1Control extends Control implements marshal, unmarshal{
                 return null;
             }
             // actual data
-            String actual_data = UnMarshal.unmarshalString(this.unMarShalData, 4, this.unMarShalData.length);
-            System.out.println(actual_data);
+            return UnMarshal.unmarshalString(this.unMarShalData, 4, this.unMarShalData.length);
         }
         return null;
     }

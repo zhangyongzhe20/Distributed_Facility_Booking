@@ -8,7 +8,8 @@ import java.net.*;
 public class UDPClient {
     private DatagramSocket clientSocket;
     private InetAddress IPAddress;
-    private int port = 9876;
+    private int serverPort = 9876;
+    private int clientPort = 9877;
     private int udptimeout = 2000; // 2s timeout
 
     private static UDPClient SINGLE_INSTANCE;
@@ -23,14 +24,14 @@ public class UDPClient {
     public UDPClient() throws UnknownHostException, SocketException {
         this.IPAddress = InetAddress.getByName("localhost");
         // ---------------------- 1. Open UDP Socket ----------------------
-        this.clientSocket = new DatagramSocket();
+        this.clientSocket = new DatagramSocket(clientPort);
         this.clientSocket.setSoTimeout(udptimeout);
     }
 
     public void UDPsend(byte[] message) throws IOException {
         // ---------------------- Send UDP request to server ----------------------
         try {
-            DatagramPacket request = new DatagramPacket(message, message.length, this.IPAddress, port);
+            DatagramPacket request = new DatagramPacket(message, message.length, this.IPAddress, serverPort);
             this.clientSocket.send(request);
         } catch (IOException e) {
             System.err.println("Failed to receive/send packet.");
@@ -43,7 +44,7 @@ public class UDPClient {
         byte[] receive_msg = new byte[1024];
         DatagramPacket reply = new DatagramPacket(receive_msg, receive_msg.length);
         this.clientSocket.receive(reply);
-        System.out.println("Reply: " + new String(reply.getData()));
+//        System.out.println("Reply: " + new String(reply.getData()));
         return reply.getData();
     }
 }
