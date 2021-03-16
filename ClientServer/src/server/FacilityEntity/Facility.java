@@ -4,7 +4,12 @@ public class Facility {
     String FacilityName;
     int FacilityType;
     boolean availability[][];
-    String printResult;
+    String slots;
+
+    public String getFacilityName() {
+        return FacilityName;
+    }
+
     public Facility(String facilityName) {
         this.FacilityName = facilityName;
         if (facilityName.substring(0, 2).equals("LT"))
@@ -30,12 +35,12 @@ public class Facility {
         this.availability[slot-1][day-1]=false;
     }
 
-    public void printFacility(int interval){
-        this.printResult = "";
+    public void setPrintSlot(int interval){
+        this.slots = "";
 
-        this.printResult += "\n";
-        this.printResult += this.FacilityName;
-        this.printResult += "   ";
+        this.slots += "\n";
+        this.slots += this.FacilityName;
+        this.slots += "   ";
 
         for (int j = 0; j < interval; j++) {
             String s = "[";
@@ -46,11 +51,11 @@ public class Facility {
                     s += "B";
             }
             s += "]";
-            this.printResult += s;
+            this.slots += s;
         }
     }
 
     public String getPrintResult() {
-        return printResult;
+        return slots;
     }
 }

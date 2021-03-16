@@ -20,10 +20,10 @@ public class testFacility {
         System.out.println(days);
 
 
-        LT1.printFacility(7);
+        LT1.setPrintSlot(7);
         System.out.println(LT1.getPrintResult());
 
-        LT2.printFacility(7);
+        LT2.setPrintSlot(7);
         System.out.println(LT2.getPrintResult());
     }
 
