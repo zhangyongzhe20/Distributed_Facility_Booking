@@ -38,24 +38,7 @@ public class Control {
     public void receive() throws IOException{
         // get the marshal data
         this.dataToBeUnMarshal = udpSever.UDPrecieve();
-
-        int length = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,0);
-        System.out.println(length);
-        this.request = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,4);
-        System.out.println(this.request);
-
-        int length2 = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,8);
-        System.out.println(length2);
-
-        int msgID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,12);
-        System.out.println(msgID);
-
-        int length3 = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 16);
-        System.out.println(length3);
-
-        this.serviceID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 20);
-        System.out.println("serviceID:" + this.serviceID);
-
+        parse(dataToBeUnMarshal);
     }
 
     public void send(byte[] sendData) throws IOException {
@@ -66,7 +49,6 @@ public class Control {
         else
         {
             System.out.println("Msg Type is request");
-            this.msgID = msgID;
             // Use serviceID check whether client request is valid or not
             if (this.serviceID >= 1 && this.serviceID <=4) {
                 System.out.println("Service ID"+this.serviceID);
@@ -101,5 +83,12 @@ public class Control {
         baos.write(b);
         byte[] c = baos.toByteArray();
         return c;
+    }
+
+    public void parse(byte[] dataToBeUnMarshal){
+        this.request = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,4);
+        this.msgID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,12);
+        this.serviceID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 20);
+        System.out.println("serviceID:" + this.serviceID);
     }
 }

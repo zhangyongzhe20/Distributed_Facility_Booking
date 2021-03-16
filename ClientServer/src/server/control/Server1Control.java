@@ -23,24 +23,12 @@ public class Server1Control extends Control{
         receive();
         if (this.dataToBeUnMarshal.length != 0)
         {
-            int realmsg_length = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 24);
-            String facilityName = UnMarshal.unmarshalString(this.dataToBeUnMarshal, 28, 28 + realmsg_length);
-            for (Facility f: facilityArrayList)
-            {
-                if (f.getFacilityName().equals(facilityName)){
-                    int intervals = 7;
+            int facilityName_length = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 24);
+            String facilityName = UnMarshal.unmarshalString(this.dataToBeUnMarshal, 28, 28 + facilityName_length);
 
-                    String days = "";
-                    for (int d = 0;d < intervals; d++) {
-                        days += "           ";
-                        days += (d+1);
-                    }
-                    this.queryInfo += days;
-                    f.setPrintSlot(intervals);
-                    this.queryInfo += f.getPrintResult();
-                }
-            }
-            System.out.println("real data: "+this.queryInfo);
+            int interval = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 32+facilityName_length);
+            this.queryInfo = getQueryInfo(facilityArrayList, interval, facilityName);
+
             return facilityName;
         }
         return null;
@@ -53,5 +41,24 @@ public class Server1Control extends Control{
         send(this.marshaledData);
     }
 
+    static String getQueryInfo(ArrayList<Facility> facilityArrayList, int interval, String facilityName)
+    {
+        String queryInfo = "";
+        for (Facility f: facilityArrayList)
+        {
+            if (f.getFacilityName().equals(facilityName)){
+
+                String days = "";
+                for (int d = 0;d < interval; d++) {
+                    days += "           ";
+                    days += (d+1);
+                }
+                queryInfo += days;
+                f.setPrintSlot(interval);
+                queryInfo += f.getPrintResult();
+            }
+        }
+        return queryInfo;
+    }
 
 }
