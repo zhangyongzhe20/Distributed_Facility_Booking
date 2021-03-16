@@ -16,6 +16,7 @@ public class Control {
     int msgID;
     int serviceID;
     byte[] ackType;
+    int request;
 
     // Define a hashmap to store MsgID
     HashMap<Integer, byte[]> msgIDMap = new HashMap<>();
@@ -31,17 +32,17 @@ public class Control {
 
     /**
      *
-     * @param sendData
+     * @param
      * @return
      */
-    public void sendAndReceive(byte[] sendData) throws IOException {
+    public void receive() throws IOException{
         // get the marshal data
         this.dataToBeUnMarshal = udpSever.UDPrecieve();
 
         int length = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,0);
         System.out.println(length);
-        int request = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,4);
-        System.out.println(request);
+        this.request = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,4);
+        System.out.println(this.request);
 
         int length2 = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,8);
         System.out.println(length2);
@@ -55,9 +56,10 @@ public class Control {
         this.serviceID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 20);
         System.out.println("serviceID:" + this.serviceID);
 
+    }
 
-
-        if (request == 0){
+    public void send(byte[] sendData) throws IOException {
+        if (this.request == 0){
             // Msg Type is ACK
             System.out.println("Received ACK msg");
         }
@@ -100,9 +102,4 @@ public class Control {
         byte[] c = baos.toByteArray();
         return c;
     }
-
-
-
-
-
 }

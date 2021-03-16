@@ -28,7 +28,7 @@ public class Service1_Boundary extends Boundary {
         //todo
         String response = s1C.unMarshal();
         if(response!=null){
-            System.out.println("Available intervals: " + response);
+            System.out.println("Available intervals: " + "\n"+ response);
         }
     }
 

@@ -11,8 +11,7 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
 public class Server1Control extends Control{
-    private String queryInfo = "BAC";
-    private String FacilityName;
+    private String queryInfo = "";
 
     public Server1Control() throws SocketException, UnknownHostException {
         super();
@@ -21,13 +20,14 @@ public class Server1Control extends Control{
     }
 
     public String unMarshal(ArrayList<Facility> facilityArrayList) throws IOException {
+        receive();
         if (this.dataToBeUnMarshal.length != 0)
         {
             int realmsg_length = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 24);
-            this.FacilityName = UnMarshal.unmarshalString(this.dataToBeUnMarshal,28, 28+realmsg_length);
+            String facilityName = UnMarshal.unmarshalString(this.dataToBeUnMarshal, 28, 28 + realmsg_length);
             for (Facility f: facilityArrayList)
             {
-                if (f.getFacilityName().equals(this.FacilityName)){
+                if (f.getFacilityName().equals(facilityName)){
                     int intervals = 7;
 
                     String days = "";
@@ -41,7 +41,7 @@ public class Server1Control extends Control{
                 }
             }
             System.out.println("real data: "+this.queryInfo);
-            return this.FacilityName;
+            return facilityName;
         }
         return null;
     }
@@ -49,8 +49,9 @@ public class Server1Control extends Control{
     public void marshal() throws TimeoutException, IOException
     {
         System.out.println("Marshal: "+this.queryInfo);
-
         this.marshaledData = Marshal.marshalString(this.queryInfo);
-        sendAndReceive(this.marshaledData);
+        send(this.marshaledData);
     }
+
+
 }
