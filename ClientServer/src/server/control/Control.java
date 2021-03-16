@@ -1,16 +1,12 @@
 package server.control;
 
-import utils.Marshal;
 import utils.UnMarshal;
 
-import javax.print.DocFlavor;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.concurrent.TimeoutException;
 
 public class Control {
     byte[] dataToBeUnMarshal;
@@ -82,14 +78,14 @@ public class Control {
 //                } // TODO: What is the logic here?
 
                 // send reply to client with ACK =  1
-                this.ackType = new byte[]{1};
-                System.out.println("send: " + sendData);
-                udpSever.UDPsend(concat(ackType, sendData));
+                this.ackType = new byte[]{0,0,0,1};
+                byte[] addAck_msg = concat(ackType, sendData);
+                udpSever.UDPsend(addAck_msg);
             }
             else
             {
                 // send reply to client with ACK = 0
-                this.ackType = new byte[] {0};
+                this.ackType = new byte[] {0,0,0,0};
                 System.out.println("send reply to client with ACK = 0");
                 udpSever.UDPsend(ackType);
             }
@@ -97,13 +93,15 @@ public class Control {
         }
     }
 
-    public static byte[] concat(byte[] a, byte[] b) {
-        int lenA = a.length;
-        int lenB = b.length;
-        byte[] c = Arrays.copyOf(a, lenA + lenB);
-        System.arraycopy(b, 0, c, lenA, lenB);
+    public static byte[] concat(byte[] a, byte[] b) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        baos.write(a);
+        baos.write(b);
+        byte[] c = baos.toByteArray();
         return c;
     }
+
+
 
 
 
