@@ -37,7 +37,7 @@ public class Control {
      */
     public void receive() throws IOException{
         // get the marshal data
-        this.dataToBeUnMarshal = udpSever.UDPrecieve();
+        this.dataToBeUnMarshal = udpSever.UDPreceive();
         parse(dataToBeUnMarshal);
     }
 

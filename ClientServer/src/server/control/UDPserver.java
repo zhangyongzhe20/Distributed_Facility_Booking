@@ -23,7 +23,7 @@ public class UDPserver {
        this.serverSocket = new DatagramSocket(serverPort);
     }
 
-    public byte[] UDPrecieve() throws IOException{
+    public byte[] UDPreceive() throws IOException{
         // Listen for UDP request from client
         byte[] recieve_msg = new byte[512];
         DatagramPacket request = new DatagramPacket(recieve_msg, recieve_msg.length);
