@@ -85,7 +85,7 @@ public class Control {
         return c;
     }
 
-    public void parse(byte[] dataToBeUnMarshal){
+    public void parse(){
         this.request = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,4);
         this.msgID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,12);
         this.serviceID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 20);
