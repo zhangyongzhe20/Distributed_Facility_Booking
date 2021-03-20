@@ -12,7 +12,6 @@ public class UDPClient {
     private int PORT = 9876;
     private int UDPTIMEOUT = 2000; // 2s timeout
     private int UDPBUFFERSIZE = 1024;
-
     private static UDPClient SINGLE_INSTANCE;
 
     /**
@@ -61,7 +60,7 @@ public class UDPClient {
         byte[] receive_msg = new byte[UDPBUFFERSIZE];
         DatagramPacket reply = new DatagramPacket(receive_msg, receive_msg.length);
         this.clientSocket.receive(reply);
-        System.out.println("Reply: " + new String(reply.getData()));
+//        System.out.println("Reply: " + new String(reply.getData()));
         return reply.getData();
     }
 }

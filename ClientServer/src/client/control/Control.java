@@ -46,6 +46,7 @@ public class Control {
                     this.unMarShalData = udpClient.UDPreceive();
                     if(this.unMarShalData != null){
                         sendAck(true);
+                        return;
                     }
                 }
             } catch (SocketTimeoutException e) {
@@ -79,7 +80,6 @@ public class Control {
      * @return {@code byte[]} the bytes contains data information, send followed by marshalMsgHeader
      */
     public static byte[] marshalMsg(ArrayList<Object> collectedMsg, Boolean isAck){
-        //System.out.println("collected Msg in marshalMsg function" + collectedMsg);
         return utils.Marshal.marshalMsgData(collectedMsg, isAck);
     }
 

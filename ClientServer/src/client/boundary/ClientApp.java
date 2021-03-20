@@ -9,22 +9,22 @@ public class ClientApp{
     Scanner sc = new Scanner(System.in);
     String selection;
     Boundary_Factory bf = new Boundary_Factory();
-    do {
-        displayMain();
-        selection = sc.nextLine();
-        if (Integer.parseInt(selection) > 0 && Integer.parseInt(selection) < 6) {
-            Boundary nextpage = bf.createBoundary(selection);
-            try {
-                nextpage.displayMain();
-                nextpage.displayReply();
-            } catch (TimeoutException | IOException te){
-            System.err.println(te.getMessage());
-        } catch (Exception e) {
-                e.printStackTrace();
+        do {
+            displayMain();
+            selection = sc.nextLine();
+            if (Integer.parseInt(selection) > 0 && Integer.parseInt(selection) < 6) {
+                Boundary nextpage = bf.createBoundary(selection);
+                try {
+                    nextpage.displayMain();
+                    nextpage.displayReply();
+                } catch (TimeoutException | IOException te){
+                    System.err.println(te.getMessage());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                isContiune();
             }
-            isContiune();
-        }
-    } while (!selection.equalsIgnoreCase("6"));
+        } while (!selection.equalsIgnoreCase("6"));
 }
 
     private static void displayMain() {

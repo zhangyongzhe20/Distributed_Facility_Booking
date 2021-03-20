@@ -1,12 +1,8 @@
 package client.boundary;
 
 import client.control.Service2Control;
-
-import java.io.IOException;
 import java.net.SocketException;
-import java.net.StandardSocketOptions;
 import java.net.UnknownHostException;
-import java.util.concurrent.TimeoutException;
 
 public class Service2_Boundary extends Boundary {
     private Service2Control s2C;
@@ -57,6 +53,13 @@ public class Service2_Boundary extends Boundary {
         s2C.setEndTime(end);
         return end;
     }
+
+    /**
+     * Only allow users book up to 2 hours every time
+     * @param start
+     * @param end
+     * @return
+     */
     private boolean checkTimeBound(int start, int end) {
         if((end - start) <= 0 || (end - start) > 2){
             System.err.println("You can book a facility up to 2 hours");
