@@ -1,4 +1,3 @@
 package client.control;
 
-public interface unmarshal {
-}
+public interface unmarshal {}

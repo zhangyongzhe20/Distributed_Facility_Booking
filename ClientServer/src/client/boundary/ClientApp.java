@@ -1,10 +1,6 @@
 package client.boundary;
 
-import client.control.UDPClient;
-
 import java.io.IOException;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.Scanner;
 import java.util.concurrent.TimeoutException;
 
@@ -13,19 +9,22 @@ public class ClientApp{
     Scanner sc = new Scanner(System.in);
     String selection;
     Boundary_Factory bf = new Boundary_Factory();
-    do {
-        displayMain();
-        selection = sc.nextLine();
-        if (Integer.parseInt(selection) > 0 && Integer.parseInt(selection) < 6) {
-            Boundary nextpage = bf.createBoundary(selection);
-            try {
-                nextpage.displayMain();
-            } catch (TimeoutException | IOException te){
-            System.err.println(te.getMessage());
-        }
-            isContiune();
-        }
-    } while (!selection.equalsIgnoreCase("6"));
+        do {
+            displayMain();
+            selection = sc.nextLine();
+            if (Integer.parseInt(selection) > 0 && Integer.parseInt(selection) < 6) {
+                Boundary nextpage = bf.createBoundary(selection);
+                try {
+                    nextpage.displayMain();
+                    nextpage.displayReply();
+                } catch (TimeoutException | IOException te){
+                    System.err.println(te.getMessage());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                isContiune();
+            }
+        } while (!selection.equalsIgnoreCase("6"));
 }
 
     private static void displayMain() {
@@ -44,7 +43,7 @@ public class ClientApp{
 
     private static void isContiune() {
         String isContinue = Boundary.readInputString("Do you want to continue?");
-        if(isContinue.equalsIgnoreCase("no")){
+        if(isContinue.toLowerCase().startsWith("n")){
             System.exit(1);
         }
     }
