@@ -19,7 +19,11 @@ public class ServerApp {
         facilityArrayList.add(MR2);
 
         Server1_Boundary server1_boundary = new Server1_Boundary();
-        server1_boundary.processRequest(facilityArrayList);
+        Server2_Boundary server2_boundary = new Server2_Boundary();
+
+        // server1_boundary.processRequest(facilityArrayList);
+        server2_boundary.processRequest(facilityArrayList);
+
     }
 
 

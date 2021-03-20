@@ -13,10 +13,12 @@ import java.util.concurrent.TimeoutException;
 public class Server1Control extends Control{
     private String queryInfo = "";
 
+
     public Server1Control() throws SocketException, UnknownHostException {
         super();
         this.dataToBeUnMarshal = new byte[0];
         this.marshaledData = new byte[0];
+        this.id = 1;
     }
 
     public String unMarshal(ArrayList<Facility> facilityArrayList) throws IOException {

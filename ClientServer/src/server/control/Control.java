@@ -14,7 +14,8 @@ public class Control {
     UDPserver udpSever;
 
     int msgID;
-    int serviceID;
+    int serviceID_receive;
+    int id;
     byte[] ackType;
     int request;
 
@@ -50,8 +51,8 @@ public class Control {
         {
             System.out.println("Msg Type is request");
             // Use serviceID check whether client request is valid or not
-            if (this.serviceID >= 1 && this.serviceID <=4) {
-                System.out.println("Service ID"+this.serviceID);
+            if (this.serviceID_receive >= 1 && this.serviceID_receive <=4) {
+                System.out.println("Service ID"+this.serviceID_receive);
 
 //                // Use msgID to check whether this message is processed or not
 //                //todo checking the msgID is only required at at-most-once semantics
@@ -62,9 +63,12 @@ public class Control {
 //                } // TODO: What is the logic here?
 
                 // send reply to client with ACK =  1
-                this.ackType = new byte[]{0,0,0,1};
-                byte[] addAck_msg = concat(ackType, sendData);
-                udpSever.UDPsend(addAck_msg);
+                if(this.serviceID_receive == this.id)
+                {
+                    this.ackType = new byte[]{0,0,0,1};
+                    byte[] addAck_msg = concat(ackType, sendData);
+                    udpSever.UDPsend(addAck_msg);
+                }
             }
             else
             {
@@ -88,7 +92,7 @@ public class Control {
     public void parse(){
         this.request = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,4);
         this.msgID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,12);
-        this.serviceID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 20);
-        System.out.println("serviceID:" + this.serviceID);
+        this.serviceID_receive = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 20);
+        System.out.println("serviceID:" + this.serviceID_receive);
     }
 }
