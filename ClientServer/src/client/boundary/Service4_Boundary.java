@@ -35,7 +35,6 @@ public class Service4_Boundary extends Boundary {
         }catch (IOException e) {
             System.err.println(e.getMessage());
             // restore the timeout to be the default
-            //todo: need testing
             s4C.setInterval(s4C.maxTimeout);
         }
     }
@@ -53,7 +52,7 @@ public class Service4_Boundary extends Boundary {
         s4C.setFacName(name);
     }
     private void enterMonitorIntervals() {
-        int interval = readInputInteger("Enter your previous booking ID: ");
+        int interval = readInputInteger("Enter your how long you want to monitor the facility (in seconds): ");
         s4C.setInterval(interval);
     }
 }
