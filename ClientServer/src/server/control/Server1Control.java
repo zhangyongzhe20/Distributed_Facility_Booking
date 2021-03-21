@@ -12,11 +12,13 @@ import java.util.concurrent.TimeoutException;
 
 public class Server1Control extends Control{
     private String queryInfo = "";
+    private Boolean successQuery = false;
 
     public Server1Control() throws SocketException, UnknownHostException {
         super();
         this.dataToBeUnMarshal = new byte[0];
         this.marshaledData = new byte[0];
+        this.id = 1;
     }
 
     public String unMarshal(ArrayList<Facility> facilityArrayList) throws IOException {
@@ -37,17 +39,25 @@ public class Server1Control extends Control{
     public void marshal() throws TimeoutException, IOException
     {
         System.out.println("Marshal: "+this.queryInfo);
-        this.marshaledData = Marshal.marshalString(this.queryInfo);
-        send(this.marshaledData);
+        if (this.successQuery)
+        {
+            this.marshaledData = Marshal.marshalString(this.queryInfo);
+            send(this.marshaledData);
+        }else
+        {
+            this.marshaledData = Marshal.marshalString("There is no such Facility. Pls choose in LT1, LT2, MR1, MR2");
+            send(this.marshaledData);
+        }
+
     }
 
-    static String getQueryInfo(ArrayList<Facility> facilityArrayList, int interval, String facilityName)
+    String getQueryInfo(ArrayList<Facility> facilityArrayList, int interval, String facilityName)
     {
         String queryInfo = "";
         for (Facility f: facilityArrayList)
         {
             if (f.getFacilityName().equals(facilityName)){
-
+                this.successQuery = true;
                 String days = "";
                 for (int d = 0;d < interval; d++) {
                     days += "           ";

@@ -18,10 +18,10 @@ public class Server1_Boundary {
 
     public void processRequest(ArrayList<Facility> facilityArrayList) throws TimeoutException, IOException{
         server1.unMarshal(facilityArrayList);
-        reply(facilityArrayList);
+        reply();
     }
 
-    public void reply(ArrayList<Facility> facilityArrayList) throws IOException, TimeoutException {
+    public void reply() throws IOException, TimeoutException {
         server1.marshal();
     }
 }
