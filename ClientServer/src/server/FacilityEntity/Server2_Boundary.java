@@ -16,8 +16,8 @@ public class Server2_Boundary {
     }
 
 
-    public void processRequest(ArrayList<Facility> facilityArrayList) throws TimeoutException, IOException{
-        server2.unMarshal(facilityArrayList);
+    public void processRequest(ArrayList<Facility> facilityArrayList, ArrayList<BookingID> BookingIDArrayList) throws TimeoutException, IOException{
+        server2.unMarshal(facilityArrayList, BookingIDArrayList);
         reply();
     }
 

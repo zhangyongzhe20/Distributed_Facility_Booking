@@ -1,5 +1,6 @@
 package server.control;
 
+import server.FacilityEntity.BookingID;
 import server.FacilityEntity.Facility;
 import utils.Marshal;
 import utils.UnMarshal;
@@ -11,13 +12,15 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
 public class Server2Control extends Control{
-    private String bookingReceipt = "";
     private String facilityName;
     private String bookingRequirement;
     private String timeSlots ="";
 
     private int slotStartIndex;
     private int slots = 0;
+    private int day;
+    private int bookedFacilityID;
+    private BookingID newBookingID;
 
     public Server2Control() throws SocketException, UnknownHostException {
         super();
@@ -26,7 +29,7 @@ public class Server2Control extends Control{
         this.id = 2;
     }
 
-    public String unMarshal(ArrayList<Facility> facilityArrayList) throws IOException{
+    public String unMarshal(ArrayList<Facility> facilityArrayList, ArrayList<BookingID> BookingIDArrayList) throws IOException{
         receive();
         if (this.dataToBeUnMarshal.length != 0)
         {
@@ -37,8 +40,9 @@ public class Server2Control extends Control{
             this.bookingRequirement = UnMarshal.unmarshalString(this.dataToBeUnMarshal, 32+facilityName_length, 32+facilityName_length+bookingRequirement_length);
 
             bookFacility(facilityArrayList);
+            newBookingID = new BookingID(BookingIDArrayList.size()+1, this.day, this.bookedFacilityID , this.slotStartIndex, this.slotStartIndex+slots);
+            BookingIDArrayList.add(newBookingID);
 
-            this.bookingReceipt = getBookingReceipt();
             return facilityName;
         }
         return null;
@@ -46,8 +50,8 @@ public class Server2Control extends Control{
 
     public void marshal() throws TimeoutException, IOException
     {
-        System.out.println("Marshal: "+this.bookingReceipt);
-        this.marshaledData = Marshal.marshalString(this.bookingReceipt);
+        System.out.println("Marshal: "+this.newBookingID.getBookingInfoString());
+        this.marshaledData = Marshal.marshalString(this.newBookingID.getBookingInfoString());
         send(this.marshaledData);
     }
 
@@ -56,11 +60,12 @@ public class Server2Control extends Control{
         {
             if (f.getFacilityName().equals(this.facilityName))
             {
-                int day = Integer.parseInt(String.valueOf(this.bookingRequirement.charAt(0)));
+                this.bookedFacilityID = f.getFacilityID();
+                this.day = Integer.parseInt(String.valueOf(this.bookingRequirement.charAt(0)));
                 for (int i = 1; i < this.bookingRequirement.length(); i++) {
                     if(this.bookingRequirement.charAt(i) == '0')
                     {
-                        f.bookAvailability(day, i);
+                        f.bookAvailability(this.day, i);
                         this.slotStartIndex = (i+7);
                         slots += 1;
                     }
@@ -70,18 +75,5 @@ public class Server2Control extends Control{
             this.timeSlots += f.getPrintResult();
         }
     }
-
-    public String getBookingReceipt()
-    {
-        String confirmBook = "Your booking start time is: "+ this.slotStartIndex + "\n"+
-                "Your booking end time is: "+ (this.slotStartIndex+this.slots) + "\n"+"Thanks for your booking\n"+
-                "The available facilities now are: "+this.timeSlots;
-        return confirmBook;
-    }
-
-
-
-
-
 
 }

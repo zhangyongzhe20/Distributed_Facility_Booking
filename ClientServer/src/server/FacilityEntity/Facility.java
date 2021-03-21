@@ -5,12 +5,17 @@ public class Facility {
     int FacilityType;
     boolean availability[][];
     String slots;
+    private int facilityID;
 
     public String getFacilityName() {
         return FacilityName;
     }
 
-    public Facility(String facilityName) {
+    public int getFacilityID() {
+        return facilityID;
+    }
+
+    public Facility(String facilityName, int facilityID) {
         this.FacilityName = facilityName;
         if (facilityName.substring(0, 2).equals("LT"))
             setFacilityType(0);
@@ -21,6 +26,7 @@ public class Facility {
         for (int i = 0; i < 10; i++) {
             java.util.Arrays.fill(this.availability[i], true);
         }
+        this.facilityID = facilityID;
     }
 
     public void setFacilityName(String facilityName) {

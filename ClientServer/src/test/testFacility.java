@@ -6,8 +6,8 @@ public class testFacility {
 
 
     public static void main(String[] args) {
-        Facility LT1 = new Facility("LT1");
-        Facility LT2 = new Facility("LT2");
+        Facility LT1 = new Facility("LT1", 1);
+        Facility LT2 = new Facility("LT2", 2);
 
         LT1.bookAvailability(7,2);
         LT2.bookAvailability(3, 4);
