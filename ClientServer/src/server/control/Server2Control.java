@@ -21,6 +21,8 @@ public class Server2Control extends Control{
     private int day;
     private int bookedFacilityID;
     private BookingID newBookingID;
+    private boolean successBooking = false;
+
 
     public Server2Control() throws SocketException, UnknownHostException {
         super();
@@ -40,9 +42,11 @@ public class Server2Control extends Control{
             this.bookingRequirement = UnMarshal.unmarshalString(this.dataToBeUnMarshal, 32+facilityName_length, 32+facilityName_length+bookingRequirement_length);
 
             bookFacility(facilityArrayList);
-            newBookingID = new BookingID(BookingIDArrayList.size()+1, this.day, this.bookedFacilityID , this.slotStartIndex, this.slotStartIndex+slots);
-            BookingIDArrayList.add(newBookingID);
-
+            if (successBooking)
+            {
+                newBookingID = new BookingID(BookingIDArrayList.size()+1, this.day, this.bookedFacilityID , this.slotStartIndex, this.slotStartIndex+slots);
+                BookingIDArrayList.add(newBookingID);
+            }
             return facilityName;
         }
         return null;
@@ -50,9 +54,17 @@ public class Server2Control extends Control{
 
     public void marshal() throws TimeoutException, IOException
     {
-        System.out.println("Marshal: "+this.newBookingID.getBookingInfoString());
-        this.marshaledData = Marshal.marshalString(this.newBookingID.getBookingInfoString());
-        send(this.marshaledData);
+        if (successBooking)
+        {
+            System.out.println("Marshal: "+this.newBookingID.getBookingInfoString());
+            this.marshaledData = Marshal.marshalString(Integer.toString(this.newBookingID.getID())+this.newBookingID.getBookingInfoString());
+            send(this.marshaledData);
+        }
+        else
+        {
+            this.marshaledData = Marshal.marshalString("There is no such Facility. Pls choose in LT1, LT2, MR1, MR2");
+            send(this.marshaledData);
+        }
     }
 
     public void bookFacility(ArrayList<Facility> facilityArrayList){
@@ -60,13 +72,14 @@ public class Server2Control extends Control{
         {
             if (f.getFacilityName().equals(this.facilityName))
             {
+                this.successBooking = true;
                 this.bookedFacilityID = f.getFacilityID();
                 this.day = Integer.parseInt(String.valueOf(this.bookingRequirement.charAt(0)));
                 for (int i = 1; i < this.bookingRequirement.length(); i++) {
                     if(this.bookingRequirement.charAt(i) == '0')
                     {
                         f.bookAvailability(this.day, i);
-                        this.slotStartIndex = (i+7);
+                        this.slotStartIndex = (i+6);
                         slots += 1;
                     }
                 }

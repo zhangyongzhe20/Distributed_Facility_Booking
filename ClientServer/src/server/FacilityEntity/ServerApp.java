@@ -24,7 +24,7 @@ public class ServerApp {
         Server1_Boundary server1_boundary = new Server1_Boundary();
         Server2_Boundary server2_boundary = new Server2_Boundary();
 
-        // server1_boundary.processRequest(facilityArrayList);
+//        server1_boundary.processRequest(facilityArrayList);
         server2_boundary.processRequest(facilityArrayList, BookingIDArrayList);
 
         for(BookingID b: BookingIDArrayList)
