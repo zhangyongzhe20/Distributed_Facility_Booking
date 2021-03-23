@@ -11,7 +11,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
-public class Server2Control extends Control{
+public class Server2ControlTest extends ControlTest {
     private String facilityName;
     private String bookingRequirement;
     private String timeSlots ="";
@@ -24,11 +24,11 @@ public class Server2Control extends Control{
     private boolean successBooking = false;
 
 
-    public Server2Control() throws SocketException, UnknownHostException {
+    public Server2ControlTest() throws SocketException, UnknownHostException {
         super();
         this.dataToBeUnMarshal = new byte[0];
         this.marshaledData = new byte[0];
-        this.id = 2;
+        this.ControlID = 2;
     }
 
     public String unMarshal(ArrayList<Facility> facilityArrayList, ArrayList<BookingID> BookingIDArrayList) throws IOException{
@@ -79,7 +79,7 @@ public class Server2Control extends Control{
                     if(this.bookingRequirement.charAt(i) == '0')
                     {
                         f.bookAvailability(this.day, i);
-                        this.slotStartIndex = (i+6);
+                        this.slotStartIndex = (i+7);
                         slots += 1;
                     }
                 }

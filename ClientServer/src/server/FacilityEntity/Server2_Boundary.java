@@ -1,6 +1,6 @@
 package server.FacilityEntity;
 
-import server.control.Server2Control;
+import server.control.Server2ControlTest;
 
 import java.io.IOException;
 import java.net.SocketException;
@@ -9,10 +9,10 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
 public class Server2_Boundary {
-    private Server2Control server2;
+    private Server2ControlTest server2;
 
     public Server2_Boundary() throws SocketException, UnknownHostException {
-        this.server2 = new Server2Control();
+        this.server2 = new Server2ControlTest();
     }
 
 
