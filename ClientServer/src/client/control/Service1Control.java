@@ -40,6 +40,7 @@ public class Service1Control extends Control implements marshal, unmarshal{
             collectedData.add(this.numOfDays);
             marShalData = marshalMsg(collectedData, false);
             sendAndReceive(marShalData);
+            collectedData = new ArrayList<>();
     }
 
     public String unMarshal() {
