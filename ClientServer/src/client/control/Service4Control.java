@@ -31,9 +31,10 @@ public class Service4Control extends Control implements marshal, unmarshal{
             collectedData.add(SERVICEID);
             collectedData.add(name);
             collectedData.add(interval);
-        System.out.println("data collect of service4: " + collectedData);
-        marShalData = marshalMsg(collectedData, false);
+            System.out.println("data collect of service4: " + collectedData);
+            marShalData = marshalMsg(collectedData, false);
             sendAndReceive(marShalData);
+            collectedData = new ArrayList<>();
     }
 
     public int unMarshal() {
