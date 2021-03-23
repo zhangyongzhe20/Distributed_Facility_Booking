@@ -45,9 +45,10 @@ public class Service2Control extends Control implements marshal, unmarshal{
             collectedData.add(SERVICEID);
             collectedData.add(facilityName);
             collectedData.add(processDate());
-        System.out.println("data collect of service2: " + collectedData);
-        marShalData = marshalMsg(collectedData, false);
+            System.out.println("data collect of service2: " + collectedData);
+            marShalData = marshalMsg(collectedData, false);
             sendAndReceive(marShalData);
+            collectedData = new ArrayList<>();
     }
 
     public String unMarshal() {
