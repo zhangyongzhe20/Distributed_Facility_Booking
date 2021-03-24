@@ -10,7 +10,7 @@ public class UDPClient {
     private DatagramSocket clientSocket;
     private InetAddress IPAddress;
     private int PORT = 9876;
-    private int UDPTIMEOUT = 2000; // 2s timeout
+    private int UDPTIMEOUT = 1000; // 1s timeout
     private int UDPBUFFERSIZE = 1024;
     private static UDPClient SINGLE_INSTANCE;
 
