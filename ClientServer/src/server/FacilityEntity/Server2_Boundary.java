@@ -1,6 +1,6 @@
 package server.FacilityEntity;
 
-import server.control.Server2ControlTest;
+import server.control.Server2Control;
 
 import java.io.IOException;
 import java.net.SocketException;
@@ -9,19 +9,24 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
 public class Server2_Boundary {
-    private Server2ControlTest server2;
+    private Server2Control server2;
 
     public Server2_Boundary() throws SocketException, UnknownHostException {
-        this.server2 = new Server2ControlTest();
+        this.server2 = new Server2Control();
     }
 
 
-    public void processRequest(ArrayList<Facility> facilityArrayList, ArrayList<BookingID> BookingIDArrayList) throws TimeoutException, IOException{
-        server2.unMarshal(facilityArrayList, BookingIDArrayList);
+    public void processRequest(byte[] dataTobeUnmarshal, ArrayList<Facility> facilityArrayList, ArrayList<BookingID> BookingIDArrayList) throws TimeoutException, IOException{
+        System.out.println("Server2 process request");
+        server2.unMarshal(dataTobeUnmarshal, facilityArrayList, BookingIDArrayList);
         reply();
     }
 
     public void reply() throws IOException, TimeoutException {
-        server2.marshal();
+        server2.marshalAndSend();
+    }
+
+    public void clearTimeSlotInfo(){
+        server2.clearTimeSlots();
     }
 }

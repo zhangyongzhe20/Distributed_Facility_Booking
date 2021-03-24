@@ -34,19 +34,17 @@ public class ServerApp {
         while (true)
         {
             byte[] dataTobeUnmarshal = control.receive();
-
             if (control.getServiceID_receive() == 1){
-                System.out.println(UnMarshal.unmarshalString(dataTobeUnmarshal,28,50));
                 control.clearDataToBeUnMarshal();
                 server1_boundary.processRequest(dataTobeUnmarshal, facilityArrayList);
                 server1_boundary.clearQueryInfo();
             }
             else if (control.getServiceID_receive() ==  2){
-
+                control.clearDataToBeUnMarshal();
+                server2_boundary.processRequest(dataTobeUnmarshal, facilityArrayList, BookingIDArrayList);
+                server2_boundary.clearTimeSlotInfo();
             }
         }
-
-
         // server3_boundary.processRequest(facilityArrayList, BookingIDArrayList);
 
     }

@@ -5,34 +5,39 @@ import server.FacilityEntity.Facility;
 import utils.Marshal;
 import utils.UnMarshal;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
-public class Server2ControlTest extends ControlTest {
+public class Server2Control {
     private String facilityName;
     private String bookingRequirement;
     private String timeSlots ="";
-
+    private boolean successBooking = false;
     private int slotStartIndex;
     private int slots = 0;
     private int day;
     private int bookedFacilityID;
     private BookingID newBookingID;
-    private boolean successBooking = false;
 
+    private byte[] dataToBeUnMarshal;
+    private byte[] marshaledData;
+    UDPserver udpSever;
+    byte[] ackType;
 
-    public Server2ControlTest() throws SocketException, UnknownHostException {
-        super();
+    public Server2Control() throws SocketException, UnknownHostException {
+        this.udpSever = UDPserver.getInstance();
         this.dataToBeUnMarshal = new byte[0];
         this.marshaledData = new byte[0];
-        this.ControlID = 2;
     }
 
-    public String unMarshal(ArrayList<Facility> facilityArrayList, ArrayList<BookingID> BookingIDArrayList) throws IOException{
-        receive();
+    public void clearTimeSlots(){this.timeSlots="";}
+
+    public String unMarshal(byte[] dataToBeUnMarshal, ArrayList<Facility> facilityArrayList, ArrayList<BookingID> BookingIDArrayList) throws IOException {
+        this.dataToBeUnMarshal = dataToBeUnMarshal;
         if (this.dataToBeUnMarshal.length != 0)
         {
             int facilityName_length = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 24);
@@ -52,19 +57,22 @@ public class Server2ControlTest extends ControlTest {
         return null;
     }
 
-    public void marshal() throws TimeoutException, IOException
-    {
-        if (successBooking)
-        {
-            System.out.println("Marshal: "+this.newBookingID.getBookingInfoString());
-            this.marshaledData = Marshal.marshalString(Integer.toString(this.newBookingID.getID())+this.newBookingID.getBookingInfoString());
-            send(this.marshaledData);
+    public void marshalAndSend() throws TimeoutException, IOException{
+        if (UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,4) == 0){
+            // Msg Type is ACK
+            System.out.println("Received ACK msg");
+        }else{
+            System.out.println("Msg Type is request");
+            if (this.successBooking){
+                System.out.println("Marshal: "+this.newBookingID.getBookingInfoString());
+                this.marshaledData = Marshal.marshalString(Integer.toString(this.newBookingID.getID())+this.newBookingID.getBookingInfoString());
+                send(this.marshaledData);
+            }else{
+                this.marshaledData = Marshal.marshalString("Booking Failed");
+                send(this.marshaledData);
+            }
         }
-        else
-        {
-            this.marshaledData = Marshal.marshalString("There is no such Facility. Pls choose in LT1, LT2, MR1, MR2");
-            send(this.marshaledData);
-        }
+        this.dataToBeUnMarshal = new byte[0];
     }
 
     public void bookFacility(ArrayList<Facility> facilityArrayList){
@@ -87,6 +95,29 @@ public class Server2ControlTest extends ControlTest {
             f.setPrintSlot(7);
             this.timeSlots += f.getPrintResult();
         }
+    }
+
+    public void send(byte[] sendData) throws IOException{
+        System.out.println("Success booking: "+this.successBooking);
+        if (this.successBooking){
+            this.ackType = new byte[]{0,0,0,1};
+            byte[] addAck_msg = concat(ackType, sendData);
+            udpSever.UDPsend(addAck_msg);
+        }
+        else {
+            this.ackType = new byte[] {0,0,0,0};
+            System.out.println("send reply to client with ACK = 0");
+            byte[] addAck_msg = concat(ackType, sendData);
+            udpSever.UDPsend(addAck_msg);
+        }
+    }
+
+    public static byte[] concat(byte[] a, byte[] b) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        baos.write(a);
+        baos.write(b);
+        byte[] c = baos.toByteArray();
+        return c;
     }
 
 }

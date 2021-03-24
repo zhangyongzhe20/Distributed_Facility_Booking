@@ -14,13 +14,13 @@ import java.util.concurrent.TimeoutException;
 public class Server1Control {
     private String queryInfo;
     private Boolean successQuery = false;
+
     private byte[] dataToBeUnMarshal;
     private byte[] marshaledData;
     UDPserver udpSever;
     byte[] ackType;
 
     public Server1Control() throws SocketException, UnknownHostException {
-        super();
         this.udpSever = UDPserver.getInstance();
         this.dataToBeUnMarshal = new byte[0];
         this.marshaledData = new byte[0];
