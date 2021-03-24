@@ -16,7 +16,9 @@ public class Server2Control extends ControlFactory{
     private String facilityName;
     private String bookingRequirement;
     private String timeSlots;
-    private boolean successBooking = false;
+
+    private boolean facilityExist = false;
+    private boolean hasVacancy = false;
 
     private int slotStartIndex;
     private int slots = 0;
@@ -44,7 +46,7 @@ public class Server2Control extends ControlFactory{
             this.bookingRequirement = UnMarshal.unmarshalString(this.dataToBeUnMarshal, 32+facilityName_length, 32+facilityName_length+bookingRequirement_length);
 
             bookFacility(facilityArrayList);
-            if (successBooking)
+            if (facilityExist)
             {
                 newBookingID = new BookingID(BookingIDArrayList.size()+1, this.day, this.bookedFacilityID , this.slotStartIndex, this.slotStartIndex+slots);
                 BookingIDArrayList.add(newBookingID);
@@ -58,17 +60,25 @@ public class Server2Control extends ControlFactory{
     public void marshalAndSend() throws TimeoutException, IOException{
         if (UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,4) == 0){
             // Msg Type is ACK
-            System.out.println("Received ACK msg");
+            System.out.println("[Server2]   Received ACK msg");
         }else{
-            System.out.println("Msg Type is request");
-            if (this.successBooking){
-                System.out.println("Marshal: "+this.newBookingID.getBookingInfoString());
-                this.marshaledData = Marshal.marshalString(Integer.toString(this.newBookingID.getID())+this.newBookingID.getBookingInfoString());
+            System.out.println("[Server2]   Msg Type is request");
+            if (!this.facilityExist){
+                System.out.println("[Server2]   The facility does not exist"); // TODO: Delete this print after client can parse
+                this.marshaledData = Marshal.marshalString("The facility does not exist");
                 send(this.marshaledData);
-            }else{
-                this.marshaledData = Marshal.marshalString("Booking Failed");
+            }else if (!this.hasVacancy){
+                System.out.println("[Server2]   The facility is not available in selected time period.");  // TODO: Delete this print after client can parse
+                this.marshaledData = Marshal.marshalString("The facility is not available in selected time period.");
                 send(this.marshaledData);
             }
+            else{
+                System.out.println("[Server2]   Marshal: "+this.newBookingID.getBookingInfoString());
+                this.marshaledData = Marshal.marshalString(Integer.toString(this.newBookingID.getID())+this.newBookingID.getBookingInfoString());
+                send(this.marshaledData);
+            }
+            this.facilityExist = false;
+            this.hasVacancy = false;
         }
         this.dataToBeUnMarshal = new byte[0];
     }
@@ -78,13 +88,16 @@ public class Server2Control extends ControlFactory{
         {
             if (f.getFacilityName().equals(this.facilityName))
             {
-                this.successBooking = true;
+                this.facilityExist = true;
                 this.bookedFacilityID = f.getFacilityID();
                 this.day = Integer.parseInt(String.valueOf(this.bookingRequirement.charAt(0)));
                 for (int i = 1; i < this.bookingRequirement.length(); i++) {
                     if(this.bookingRequirement.charAt(i) == '0')
                     {
-                        f.bookAvailability(this.day, i);
+                        this.hasVacancy = f.bookAvailability(this.day, i);
+                        if(!this.hasVacancy){
+                            break;
+                        }
                         this.slotStartIndex = (i+7);
                         slots += 1;
                     }
@@ -97,15 +110,15 @@ public class Server2Control extends ControlFactory{
 
     @Override
     public void send(byte[] sendData) throws IOException{
-        System.out.println("Success booking: "+this.successBooking);
-        if (this.successBooking){
+        System.out.println("[Server2]   Success booking: "+this.facilityExist);
+        if (this.facilityExist && this.hasVacancy){
             this.ackType = new byte[]{0,0,0,1};
             byte[] addAck_msg = concat(ackType, sendData);
             udpSever.UDPsend(addAck_msg);
         }
         else {
             this.ackType = new byte[] {0,0,0,0};
-            System.out.println("send reply to client with ACK = 0");
+            System.out.println("[Server2]   send reply to client with ACK = 0");
             byte[] addAck_msg = concat(ackType, sendData);
             udpSever.UDPsend(addAck_msg);
         }

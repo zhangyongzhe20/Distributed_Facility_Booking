@@ -35,11 +35,11 @@ public class Control {
     public void parse(){
         this.msgID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,12);
         this.serviceID_receive = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 20);
-        System.out.println("serviceID:   " + this.serviceID_receive);
+        System.out.println("[Control]   --parse--   serviceID:   " + this.serviceID_receive);
     }
 
     public void clearDataToBeUnMarshal() {
-        System.out.println("clear data to be unmarshal");
+        System.out.println("[Control]   -- clearDataToBeUnMarshal-- Clear Data");
         this.dataToBeUnMarshal = new byte[0];
     }
 }

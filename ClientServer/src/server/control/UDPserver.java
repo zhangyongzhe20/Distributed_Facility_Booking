@@ -37,7 +37,7 @@ public class UDPserver {
         this.serverSocket.receive(request);
         this.clientIPAddress = request.getAddress();
         this.clientPort = request.getPort();
-        System.out.println("Received UDP: " + new String(request.getData()));
+        System.out.println("[UDP Server]    --UDPreceive--  Received UDP: " + new String(request.getData()));
         return request.getData();
     }
 
@@ -47,13 +47,13 @@ public class UDPserver {
             DatagramPacket reply = new DatagramPacket(message, message.length, this.clientIPAddress, clientPort);
             serverSocket.send(reply);
         } catch (IOException e) {
-            System.err.println("Failed to receive/send packet.");
+            System.err.println("[UDP Server]    --UDPsend--     Failed to receive/send packet.");
             e.printStackTrace();
         }
     }
 
     public void clearRecieveMsg() {
-        System.out.println(" clear receive msg");
+        System.out.println("[UDP Server]    --clearRecieveMsg--  clear");
         this.recieve_msg = new byte[512];
     }
     public InetAddress getClientIPAddress() {
