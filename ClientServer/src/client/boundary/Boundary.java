@@ -64,4 +64,19 @@ public abstract class Boundary {
         }
         return input;
     }
+
+    /**
+     * Used in service3
+     * @param message
+     * @return
+     */
+    public static int readChangeOffset(String message) {
+        int input = -1;
+            try {
+                input = Integer.parseInt(readInputString(message));
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter in digits");
+            }
+        return input;
+    }
 }

@@ -19,7 +19,7 @@ public class Server4Control extends Control{
     public Server4Control() throws SocketException, UnknownHostException {
         super();
         this.dataToBeUnMarshal = new byte[0];
-        this.marshaledData = new byte[0];
+        //this.marshaledData = new byte[0];
     }
 
     public String unMarshal() throws IOException {

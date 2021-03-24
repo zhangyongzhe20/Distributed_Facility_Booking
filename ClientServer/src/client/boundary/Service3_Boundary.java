@@ -50,7 +50,7 @@ public class Service3_Boundary extends Boundary {
         s3C.setBookingID(id);
     }
     private void enterOffset() {
-        int offset = readInputInteger("enter # of hours that you want to advance or postpone your current booking\n" +
+        int offset = readChangeOffset("enter # of hours that you want to advance or postpone your current booking\n" +
                 "(eg. 1: advance 1 hour, -1: postpone by 1 hour):");
         s3C.setOffset(offset);
     }
