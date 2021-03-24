@@ -1,4 +1,4 @@
 package server.control;
 
-public class Server3Control {
+public class Server3Control{
 }

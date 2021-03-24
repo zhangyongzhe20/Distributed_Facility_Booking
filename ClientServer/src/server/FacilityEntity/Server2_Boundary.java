@@ -16,12 +16,17 @@ public class Server2_Boundary {
     }
 
 
-    public void processRequest(ArrayList<Facility> facilityArrayList, ArrayList<BookingID> BookingIDArrayList) throws TimeoutException, IOException{
-        server2.unMarshal(facilityArrayList, BookingIDArrayList);
+    public void processRequest(byte[] dataTobeUnmarshal, ArrayList<Facility> facilityArrayList, ArrayList<BookingID> BookingIDArrayList) throws TimeoutException, IOException{
+        System.out.println("Server2 process request");
+        server2.unMarshal(dataTobeUnmarshal, facilityArrayList, BookingIDArrayList);
         reply();
     }
 
     public void reply() throws IOException, TimeoutException {
-        server2.marshal();
+        server2.marshalAndSend();
+    }
+
+    public void clearTimeSlotInfo(){
+        server2.clearTimeSlots();
     }
 }

@@ -4,56 +4,68 @@ import server.FacilityEntity.Facility;
 import utils.Marshal;
 import utils.UnMarshal;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
-public class Server1Control extends Control{
-    private String queryInfo = "";
+public class Server1Control extends ControlFactory{
+    private String queryInfo;
     private Boolean successQuery = false;
 
+
     public Server1Control() throws SocketException, UnknownHostException {
-        super();
+        this.udpSever = UDPserver.getInstance();
         this.dataToBeUnMarshal = new byte[0];
         this.marshaledData = new byte[0];
-        this.id = 1;
+        this.queryInfo = "";
     }
 
-    public String unMarshal(ArrayList<Facility> facilityArrayList) throws IOException {
-        receive();
-        if (this.dataToBeUnMarshal.length != 0)
+    public void clearQueryInfo() {
+        this.queryInfo = "";
+    }
+
+    public String unMarshal(byte[] dataTobeUnmarshal, ArrayList<Facility> facilityArrayList) throws IOException {
+        this.dataToBeUnMarshal = dataTobeUnmarshal;
+        if (dataTobeUnmarshal.length != 0)
         {
-            int facilityName_length = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 24);
-            String facilityName = UnMarshal.unmarshalString(this.dataToBeUnMarshal, 28, 28 + facilityName_length);
+            int facilityName_length = UnMarshal.unmarshalInteger(dataTobeUnmarshal, 24);
+            String facilityName = UnMarshal.unmarshalString(dataTobeUnmarshal, 28, 28 + facilityName_length);
 
-            int interval = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 32+facilityName_length);
+            int interval = UnMarshal.unmarshalInteger(dataTobeUnmarshal, 32+facilityName_length);
             this.queryInfo = getQueryInfo(facilityArrayList, interval, facilityName);
-
+            System.out.println("queryinfo: "+queryInfo);
             return facilityName;
         }
         return null;
     }
 
-    public void marshal() throws TimeoutException, IOException
+    public void marshalAndSend() throws TimeoutException, IOException
     {
-        System.out.println("Marshal: "+this.queryInfo);
-        if (this.successQuery)
-        {
-            this.marshaledData = Marshal.marshalString(this.queryInfo);
-            send(this.marshaledData);
-        }else
-        {
-            this.marshaledData = Marshal.marshalString("There is no such Facility. Pls choose in LT1, LT2, MR1, MR2");
-            send(this.marshaledData);
-        }
 
+        if (UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,4) == 0){
+            // Msg Type is ACK
+            System.out.println("Received ACK msg");
+        }
+        else {
+            System.out.println("Msg Type is request");
+            if (this.successQuery)
+            {
+                this.marshaledData = Marshal.marshalString(this.queryInfo);
+                send(this.marshaledData);
+            }else
+            {
+                this.marshaledData = Marshal.marshalString("There is no such Facility. Pls choose in LT1, LT2, MR1, MR2");
+                send(this.marshaledData);
+            }
+        }
+        this.dataToBeUnMarshal = new byte[0];
     }
 
     String getQueryInfo(ArrayList<Facility> facilityArrayList, int interval, String facilityName)
     {
-        String queryInfo = "";
         for (Facility f: facilityArrayList)
         {
             if (f.getFacilityName().equals(facilityName)){
@@ -71,4 +83,19 @@ public class Server1Control extends Control{
         return queryInfo;
     }
 
+    public void send(byte[] sendData) throws IOException{
+        System.out.println("Success query: "+this.successQuery);
+        if (this.successQuery){
+            this.ackType = new byte[]{0,0,0,1};
+            byte[] addAck_msg = concat(ackType, sendData);
+            udpSever.UDPsend(addAck_msg);
+        }
+        else {
+                this.ackType = new byte[] {0,0,0,0};
+                byte[] addAck_msg = concat(ackType, sendData);
+                udpSever.UDPsend(addAck_msg);
+        }
+    }
+
 }
+

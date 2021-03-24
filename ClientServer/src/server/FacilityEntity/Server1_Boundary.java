@@ -16,12 +16,17 @@ public class Server1_Boundary {
         this.server1 = new Server1Control();
     }
 
-    public void processRequest(ArrayList<Facility> facilityArrayList) throws TimeoutException, IOException{
-        server1.unMarshal(facilityArrayList);
+    public void processRequest(byte[] dataTobeUnmarshal, ArrayList<Facility> facilityArrayList) throws TimeoutException, IOException{
+        System.out.println("Server1 process request");
+        server1.unMarshal(dataTobeUnmarshal, facilityArrayList);
         reply();
     }
 
     public void reply() throws IOException, TimeoutException {
-        server1.marshal();
+        server1.marshalAndSend();
+    }
+
+    public void clearQueryInfo(){
+        server1.clearQueryInfo();
     }
 }
