@@ -37,8 +37,14 @@ public class Facility {
         this.FacilityType = facilityType;
     }
 
-    public void bookAvailability(int day, int slot) {
-        this.availability[slot-1][day-1]=false;
+    public boolean bookAvailability(int day, int slot) {
+        if (!this.availability[slot-1][day-1])
+            return false; // the slot is booked already
+        else
+        {
+            this.availability[slot-1][day-1]=false;
+            return true;
+        }
     }
 
     public void setPrintSlot(int interval){

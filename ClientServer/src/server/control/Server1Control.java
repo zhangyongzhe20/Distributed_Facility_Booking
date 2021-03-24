@@ -6,19 +6,16 @@ import utils.UnMarshal;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.instrument.UnmodifiableClassException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
-public class Server1Control {
+public class Server1Control extends ControlFactory{
     private String queryInfo;
-    private Boolean successQuery = false;
+    private Boolean facilityExist = false;
 
-    private byte[] dataToBeUnMarshal;
-    private byte[] marshaledData;
-    UDPserver udpSever;
-    byte[] ackType;
 
     public Server1Control() throws SocketException, UnknownHostException {
         this.udpSever = UDPserver.getInstance();
@@ -40,7 +37,7 @@ public class Server1Control {
 
             int interval = UnMarshal.unmarshalInteger(dataTobeUnmarshal, 32+facilityName_length);
             this.queryInfo = getQueryInfo(facilityArrayList, interval, facilityName);
-            System.out.println("queryinfo: "+queryInfo);
+            System.out.println("[Server1]   --unMarshal--   queryInfo: "+queryInfo);
             return facilityName;
         }
         return null;
@@ -49,18 +46,20 @@ public class Server1Control {
     public void marshalAndSend() throws TimeoutException, IOException
     {
 
-        if (UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,4) == 0){
+        if (UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,8)==0){
             // Msg Type is ACK
-            System.out.println("Received ACK msg");
+            System.out.println("[Server1]   --marshalAndSend--  Received ACK msg");
         }
         else {
-            System.out.println("Msg Type is request");
-            if (this.successQuery)
+            System.out.println("[Server1]   --marshalAndSend--  Msg Type is request");
+            if (this.facilityExist)
             {
                 this.marshaledData = Marshal.marshalString(this.queryInfo);
                 send(this.marshaledData);
+                this.facilityExist = false;
             }else
             {
+                System.out.println("[Server1]   --marshalAndSend--  There is no such Facility. Pls choose in LT1, LT2, MR1, MR2");
                 this.marshaledData = Marshal.marshalString("There is no such Facility. Pls choose in LT1, LT2, MR1, MR2");
                 send(this.marshaledData);
             }
@@ -73,7 +72,7 @@ public class Server1Control {
         for (Facility f: facilityArrayList)
         {
             if (f.getFacilityName().equals(facilityName)){
-                this.successQuery = true;
+                this.facilityExist = true;
                 String days = "";
                 for (int d = 0;d < interval; d++) {
                     days += "           ";
@@ -88,25 +87,18 @@ public class Server1Control {
     }
 
     public void send(byte[] sendData) throws IOException{
-        System.out.println("Success query: "+this.successQuery);
-        if (this.successQuery){
+        System.out.println("[Server1]   --send--    Success query: "+this.facilityExist);
+        if (this.facilityExist){
             this.ackType = new byte[]{0,0,0,1};
             byte[] addAck_msg = concat(ackType, sendData);
             udpSever.UDPsend(addAck_msg);
         }
         else {
                 this.ackType = new byte[] {0,0,0,0};
-                System.out.println("send reply to client with ACK = 0");
-                udpSever.UDPsend(ackType);
+                byte[] addAck_msg = concat(ackType, sendData);
+                udpSever.UDPsend(addAck_msg);
         }
     }
 
-    public static byte[] concat(byte[] a, byte[] b) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        baos.write(a);
-        baos.write(b);
-        byte[] c = baos.toByteArray();
-        return c;
-    }
-
 }
+
