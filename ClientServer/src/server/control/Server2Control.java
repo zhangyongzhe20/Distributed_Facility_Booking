@@ -48,7 +48,8 @@ public class Server2Control extends ControlFactory{
             bookFacility(facilityArrayList);
             if (facilityExist)
             {
-                newBookingID = new BookingID(BookingIDArrayList.size()+1, this.day, this.bookedFacilityID , this.slotStartIndex, this.slotStartIndex+slots);
+                newBookingID = new BookingID(BookingIDArrayList.size()+1, this.day, this.bookedFacilityID ,
+                        this.slotStartIndex-1, this.slotStartIndex+slots-1);
                 BookingIDArrayList.add(newBookingID);
             }
             return facilityName;

@@ -26,4 +26,8 @@ public class BookingID {
     public int getID() {
         return ID;
     }
+
+    public void cancelBooking(){
+        this.cancel = true;
+    }
 }
