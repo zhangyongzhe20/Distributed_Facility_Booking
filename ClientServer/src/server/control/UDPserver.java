@@ -5,7 +5,7 @@ import java.net.*;
 
 public class UDPserver {
     private DatagramSocket serverSocket;
-    private InetAddress IPAddress;
+    private InetAddress clientIPAddress;
     private int serverPort = 9876;
     private int clientPort = 9877;
     private int udptimeout = 2000; //2s timeout
@@ -25,11 +25,17 @@ public class UDPserver {
        this.serverSocket = new DatagramSocket(serverPort);
     }
 
+    public UDPserver(InetAddress ipaddress, int port) throws SocketException {
+        this.serverSocket = new DatagramSocket(serverPort);
+        this.clientIPAddress = ipaddress;
+        this.clientPort = port;
+    }
+
     public byte[] UDPreceive() throws IOException{
         // Listen for UDP request from client
         DatagramPacket request = new DatagramPacket(recieve_msg, recieve_msg.length);
         this.serverSocket.receive(request);
-        this.IPAddress = request.getAddress();
+        this.clientIPAddress = request.getAddress();
         this.clientPort = request.getPort();
         System.out.println("Received UDP: " + new String(request.getData()));
         return request.getData();
@@ -38,7 +44,7 @@ public class UDPserver {
     public void UDPsend(byte[] message) throws IOException {
         // Send UDP reply to client
         try {
-            DatagramPacket reply = new DatagramPacket(message, message.length, this.IPAddress, clientPort);
+            DatagramPacket reply = new DatagramPacket(message, message.length, this.clientIPAddress, clientPort);
             serverSocket.send(reply);
         } catch (IOException e) {
             System.err.println("Failed to receive/send packet.");
@@ -49,5 +55,12 @@ public class UDPserver {
     public void clearRecieveMsg() {
         System.out.println(" clear receive msg");
         this.recieve_msg = new byte[512];
+    }
+    public InetAddress getClientIPAddress() {
+        return clientIPAddress;
+    }
+
+    public int getClientPort() {
+        return clientPort;
     }
 }
