@@ -12,30 +12,27 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
-public class Server2Control {
+public class Server2Control extends ControlFactory{
     private String facilityName;
     private String bookingRequirement;
-    private String timeSlots ="";
+    private String timeSlots;
     private boolean successBooking = false;
+
     private int slotStartIndex;
     private int slots = 0;
     private int day;
     private int bookedFacilityID;
     private BookingID newBookingID;
 
-    private byte[] dataToBeUnMarshal;
-    private byte[] marshaledData;
-    UDPserver udpSever;
-    byte[] ackType;
 
     public Server2Control() throws SocketException, UnknownHostException {
-        this.udpSever = UDPserver.getInstance();
-        this.dataToBeUnMarshal = new byte[0];
-        this.marshaledData = new byte[0];
+        super();
+        this.timeSlots = "";
     }
 
     public void clearTimeSlots(){this.timeSlots="";}
 
+    @Override
     public String unMarshal(byte[] dataToBeUnMarshal, ArrayList<Facility> facilityArrayList, ArrayList<BookingID> BookingIDArrayList) throws IOException {
         this.dataToBeUnMarshal = dataToBeUnMarshal;
         if (this.dataToBeUnMarshal.length != 0)
@@ -57,6 +54,7 @@ public class Server2Control {
         return null;
     }
 
+    @Override
     public void marshalAndSend() throws TimeoutException, IOException{
         if (UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,4) == 0){
             // Msg Type is ACK
@@ -97,6 +95,7 @@ public class Server2Control {
         }
     }
 
+    @Override
     public void send(byte[] sendData) throws IOException{
         System.out.println("Success booking: "+this.successBooking);
         if (this.successBooking){
@@ -110,14 +109,6 @@ public class Server2Control {
             byte[] addAck_msg = concat(ackType, sendData);
             udpSever.UDPsend(addAck_msg);
         }
-    }
-
-    public static byte[] concat(byte[] a, byte[] b) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        baos.write(a);
-        baos.write(b);
-        byte[] c = baos.toByteArray();
-        return c;
     }
 
 }

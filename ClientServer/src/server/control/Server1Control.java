@@ -11,14 +11,10 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
-public class Server1Control {
+public class Server1Control extends ControlFactory{
     private String queryInfo;
     private Boolean successQuery = false;
 
-    private byte[] dataToBeUnMarshal;
-    private byte[] marshaledData;
-    UDPserver udpSever;
-    byte[] ackType;
 
     public Server1Control() throws SocketException, UnknownHostException {
         this.udpSever = UDPserver.getInstance();
@@ -96,17 +92,9 @@ public class Server1Control {
         }
         else {
                 this.ackType = new byte[] {0,0,0,0};
-                System.out.println("send reply to client with ACK = 0");
-                udpSever.UDPsend(ackType);
+                byte[] addAck_msg = concat(ackType, sendData);
+                udpSever.UDPsend(addAck_msg);
         }
-    }
-
-    public static byte[] concat(byte[] a, byte[] b) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        baos.write(a);
-        baos.write(b);
-        byte[] c = baos.toByteArray();
-        return c;
     }
 
 }
