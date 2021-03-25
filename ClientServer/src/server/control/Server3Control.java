@@ -15,12 +15,12 @@ public class Server3Control extends ControlFactory{
     private int offset;
 
     private boolean bookingIDExist;
-    private String parsedBookingInfo;
+    private String receivedBookingInfo;
 
     public Server3Control() throws SocketException, UnknownHostException {
         super();
         this.bookingIDExist = false;
-        this.parsedBookingInfo = "";
+        this.receivedBookingInfo = "";
     }
 
     @Override
@@ -51,14 +51,24 @@ public class Server3Control extends ControlFactory{
             if (bid.getID() == this.bookingID)
             {
                 bookingIDExist = true;
-                this.parsedBookingInfo = bid.getBookingInfoString();
-                System.out.println("[Server3 Control] --ChangeBookingSlot-- "+parsedBookingInfo);
+                this.receivedBookingInfo = bid.getBookingInfoString();
+                System.out.println("[Server3 Control] --ChangeBookingSlot-- "+receivedBookingInfo);
+
+                parseBookingInfo(receivedBookingInfo);
             }
         }
     }
 
     public static void parseBookingInfo(String bookingInfo){
+        String day = bookingInfo.substring(6,8);
+        char facilityID = bookingInfo.charAt(9);
+        String startIndex = bookingInfo.substring(10,12);
+        String endIndex = bookingInfo.substring(12,14);
 
+        System.out.println("day: "+day);
+        System.out.println("facilityID: "+facilityID);
+        System.out.println("Start Index: "+startIndex);
+        System.out.println("End index: "+endIndex);
     }
 
 

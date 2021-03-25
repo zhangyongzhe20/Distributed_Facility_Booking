@@ -26,9 +26,9 @@ public class ServerApp {
 
 
         // Add some user predefined data here
-        LT1.bookAvailability(5,7); // 2021-03-29 14-15
-        LT1.bookAvailability(5,8); // 2021-03-29 15-16
-        LT2.bookAvailability(3, 2); // 2021-03-27 9-10
+        LT1.bookAvailability(5,7); // 2021-03-30 14-15
+        LT1.bookAvailability(5,8); // 2021-03-30 15-16
+        LT2.bookAvailability(3, 2); // 2021-03-28 9-10
 
         BookingID testBookID1 = new BookingID(1,5,1,14, 16);
         BookingID testBookID2 = new BookingID(2,3,2,9,10);
