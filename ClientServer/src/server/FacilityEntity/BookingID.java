@@ -8,6 +8,10 @@ public class BookingID {
     private int ID;
     private boolean cancel;
 
+    public boolean isCancel() {
+        return cancel;
+    }
+
     public BookingID(int id, int day, int facilityID, int StartTime, int EndTime) {
         String DATE_FORMAT = "yyyyMMddHHmmss";
         SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);

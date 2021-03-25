@@ -62,20 +62,20 @@ public class Server2Control extends ControlFactory{
     public void marshalAndSend() throws TimeoutException, IOException{
         if (UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,4) == 0){
             // Msg Type is ACK
-            System.out.println("[Server2]   Received ACK msg");
+            System.out.println("[Server2]   --marshalAndSend--    Received ACK msg");
         }else{
-            System.out.println("[Server2]   Msg Type is request");
+            System.out.println("[Server2]   --marshalAndSend--  Msg Type is request");
             if (!this.facilityExist){
-                System.out.println("[Server2]   The facility does not exist"); // TODO: Delete this print after client can parse
+                System.out.println("[Server2]   --marshalAndSend--  The facility does not exist"); // TODO: Delete this print after client can parse
                 this.marshaledData = Marshal.marshalString("The facility does not exist");
                 send(this.marshaledData);
             }else if (!this.hasVacancy){
-                System.out.println("[Server2]   The facility is not available in selected time period.");  // TODO: Delete this print after client can parse
+                System.out.println("[Server2]   --marshalAndSend--  The facility is not available in selected time period.");  // TODO: Delete this print after client can parse
                 this.marshaledData = Marshal.marshalString("The facility is not available in selected time period.");
                 send(this.marshaledData);
             }
             else{
-                System.out.println("[Server2]   Marshal: "+this.newBookingID.getBookingInfoString());
+                System.out.println("[Server2]   --marshalAndSend--  Marshal: "+this.newBookingID.getBookingInfoString());
                 this.marshaledData = Marshal.marshalString(Integer.toString(this.newBookingID.getID())+this.newBookingID.getBookingInfoString());
                 send(this.marshaledData);
             }
@@ -112,7 +112,7 @@ public class Server2Control extends ControlFactory{
 
     @Override
     public void send(byte[] sendData) throws IOException{
-        System.out.println("[Server2]   Success booking: "+this.facilityExist);
+        System.out.println("[Server2]   --send--    Success booking: "+this.facilityExist);
         if (this.facilityExist && this.hasVacancy){
             this.ackType = new byte[]{0,0,0,1};
             byte[] addAck_msg = concat(ackType, sendData);
@@ -120,7 +120,7 @@ public class Server2Control extends ControlFactory{
         }
         else {
             this.ackType = new byte[] {0,0,0,0};
-            System.out.println("[Server2]   send reply to client with ACK = 0");
+            System.out.println("[Server2]   --send--    send reply to client with ACK = 0");
             byte[] addAck_msg = concat(ackType, sendData);
             udpSever.UDPsend(addAck_msg);
         }

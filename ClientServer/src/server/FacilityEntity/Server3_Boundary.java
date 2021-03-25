@@ -18,7 +18,11 @@ public class Server3_Boundary {
     public void processRequest(byte[] dataTobeUnmarshal, ArrayList<Facility> facilityArrayList, ArrayList<BookingID> BookingIDArrayList) throws TimeoutException, IOException {
         System.out.println("Server3 process request");
         server3.unMarshal(dataTobeUnmarshal, facilityArrayList, BookingIDArrayList);
-        // reply();
+        reply();
+    }
+
+    public void reply() throws IOException, TimeoutException {
+        server3.marshalAndSend();
     }
 
 

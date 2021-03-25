@@ -47,6 +47,11 @@ public class Facility {
         }
     }
 
+    public void cancelBooking(int day, int slot){
+        this.availability[slot-1][day-1]=true;
+    }
+
+
     public void setPrintSlot(int interval){
         this.slots = "";
 
