@@ -43,7 +43,13 @@ public class ServerApp {
         while (true)
         {
             byte[] dataTobeUnmarshal = control.receive();
-
+            for (BookingID id: BookingIDArrayList){
+                if (!id.isCancel())
+                {
+                    System.out.println("[Server APP]    Booking ID is: "+ id.getID());
+                    System.out.println("[Server APP]    The Booking info is: "+ id.getBookingInfoString());
+                }
+            }
             if (control.getServiceID_receive() == 1){
                 control.clearDataToBeUnMarshal();
                 server1_boundary.processRequest(dataTobeUnmarshal, facilityArrayList);
@@ -54,14 +60,11 @@ public class ServerApp {
                 server2_boundary.processRequest(dataTobeUnmarshal, facilityArrayList, BookingIDArrayList);
                 server2_boundary.clearTimeSlotInfo();
 
-                for (BookingID id: BookingIDArrayList){
-                    System.out.println("[Server APP]    Booking ID is: "+ id.getID());
-                    System.out.println("[Server APP]    The Booking info is: "+ id.getBookingInfoString());
-                }
             } else if (control.getServiceID_receive() == 3){
                 control.clearDataToBeUnMarshal();
                 server3_boundary.processRequest(dataTobeUnmarshal, facilityArrayList, BookingIDArrayList);
             }
+
         }
         // server3_boundary.processRequest(facilityArrayList, BookingIDArrayList);
 
