@@ -3,6 +3,7 @@ package client.boundary;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.concurrent.TimeoutException;
 
@@ -51,6 +52,21 @@ public abstract class Boundary {
         public static String readInputString(String message) {
         System.out.println(message);
         return sc.nextLine();
+    }
+
+    /**
+     * Used to limit the requested facility
+     * @param message
+     * @return
+     */
+    public static String readInputFacility(String message) {
+        String[] availableFac ={"LT1", "LT2", "MR1", "MR2"};
+        String input = readInputString(message);
+        while(!Arrays.stream(availableFac).anyMatch(input::equals)) {
+            System.err.println("Facility is not found");
+            input = readInputString(message);
+        }
+        return input;
     }
 
     public static int readInputInteger(String message) {
