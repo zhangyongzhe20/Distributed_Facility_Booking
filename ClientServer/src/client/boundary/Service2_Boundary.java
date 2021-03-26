@@ -12,7 +12,7 @@ public class Service2_Boundary extends Boundary {
     }
     @Override
     public void displayMain() throws Exception {
-        readInputFacility();
+        enterFacilityName();
         
         enterDate();
         int start = enterStartTime();
@@ -31,8 +31,8 @@ public class Service2_Boundary extends Boundary {
         System.out.println("Your booking ID: " + s2C.unMarshal());
     }
 
-    private void readInputFacility() {
-        String name = readInputString("Enter Facility Name: ");
+    private void enterFacilityName() {
+        String name = readInputFacility("Enter Facility Name: ");
         s2C.setFacName(name);
     }
 

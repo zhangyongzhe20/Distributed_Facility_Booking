@@ -25,7 +25,7 @@ public class Service1_Boundary extends Boundary {
 
     @Override
     public void displayReply() {
-        //todo
+        //todo CALL TWICE
         String response = s1C.unMarshal();
         if(response!=null){
             System.out.println("Available intervals: " + "\n"+ response);
