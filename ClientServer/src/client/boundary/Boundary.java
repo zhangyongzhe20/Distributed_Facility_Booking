@@ -81,6 +81,18 @@ public abstract class Boundary {
         return input;
     }
 
+    public static int readFacType(String message) {
+        int input = -1;
+        while (input!=1 || input != 2) {
+            try {
+                input = Integer.parseInt(readInputString(message));
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter in digits");
+            }
+        }
+        return input;
+    }
+
     /**
      * Used in service3
      * @param message
