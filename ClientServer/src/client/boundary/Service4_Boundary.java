@@ -6,7 +6,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 
 
-public class Service4_Boundary extends Boundary {
+public class  Service4_Boundary extends Boundary {
     private Service4Control s4C;
 
     public Service4_Boundary() throws SocketException, UnknownHostException {
