@@ -31,24 +31,6 @@ public class Service3Control extends Control implements marshal, unmarshal{
             collectedData.add(offset);
             System.out.println("data collect of service3: " + collectedData);
             marShalData = marshalMsg(collectedData, false);
-            sendAndReceive(marShalData);
-            collectedData = new ArrayList<>();
-    }
-
-    public int unMarshal() {
-        System.out.println("UnMarshal msg called");
-        int actual_data = -1;
-        if(this.unMarShalData.length != 0) {
-            int isAck = UnMarshal.unmarshalInteger(this.unMarShalData, 0);
-            if (isAck == 0) {
-                System.err.println("Unsupported operation!!!");
-                return -2;
-            }
-            // actual data
-            actual_data = UnMarshal.unmarshalInteger(this.unMarShalData, 4);
-            System.out.println(actual_data);
-        }
-        return actual_data;
     }
 
     public void setBookingID(int id) {

@@ -8,6 +8,7 @@ import java.util.concurrent.TimeoutException;
 
 public class Service1_Boundary extends Boundary {
     private Service1Control s1C;
+    private String response;
 
     public Service1_Boundary() throws SocketException, UnknownHostException {
         this.s1C = new Service1Control();
@@ -17,16 +18,24 @@ public class Service1_Boundary extends Boundary {
     public void displayMain() throws TimeoutException, IOException {
         enterFacilityName();
         enterNumOfDays();
-        // marshal
+        /**
+         * Diff Services contain diff marshalled data
+         */
         s1C.marshal();
-        //handle response and display reply
+        try {
+            /**
+             * integratedProcess: sendAndReceive + handleACK + unmarsall
+             */
+            response = s1C.integratedProcess();
+        }catch (Exception e){
+            System.err.println(e.getMessage());
+            return;
+        }
         displayReply();
     }
 
     @Override
     public void displayReply() {
-        //todo CALL TWICE
-        String response = s1C.unMarshal();
         if(response!=null){
             System.out.println("Available intervals: " + "\n"+ response);
         }
@@ -38,7 +47,7 @@ public class Service1_Boundary extends Boundary {
     }
 
     private void enterNumOfDays(){
-        int days = readInputInteger("Enter the number of days: ");
+        int days = readNumOfQueryDays("Enter the number of days: ");
         s1C.setNumOfDays(days);
     }
 }

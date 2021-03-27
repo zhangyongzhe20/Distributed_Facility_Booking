@@ -1,6 +1,10 @@
 package test;
 
 import server.FacilityEntity.Facility;
+import utils.MonthDateParser;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 public class testFacility {
 
@@ -12,10 +16,12 @@ public class testFacility {
         LT1.bookAvailability(7,2);
         LT2.bookAvailability(3, 4);
 
-        String days = "";
+        MonthDateParser dateParser = new MonthDateParser();
+
+        String days = "   ";
         for (int d = 0;d < 7; d++) {
-            days += "           ";
-            days += (d+1);
+            days += "            ";
+            days += dateParser.getMonth() + (d+1+dateParser.getDate());
         }
         System.out.println(days);
 
@@ -26,5 +32,6 @@ public class testFacility {
         LT2.setPrintSlot(7);
         System.out.println(LT2.getPrintResult());
     }
+
 
 }

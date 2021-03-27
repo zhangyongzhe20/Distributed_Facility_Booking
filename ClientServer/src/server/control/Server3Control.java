@@ -19,7 +19,8 @@ public class Server3Control extends ControlFactory{
     private int offset;
 
     private boolean bookingIDExist;
-    private boolean successChange;
+    private boolean noCollision;
+    private BookingID changedBookingID;
 
     private String receivedBookingInfo;
     private int day;
@@ -30,7 +31,7 @@ public class Server3Control extends ControlFactory{
     public Server3Control() throws SocketException, UnknownHostException {
         super();
         this.bookingIDExist = false;
-        this.successChange = true;
+        this.noCollision = false;
         this.receivedBookingInfo = "";
     }
 
@@ -52,6 +53,14 @@ public class Server3Control extends ControlFactory{
             System.out.println("offset: "+offset);
 
             ChangeBookingSlot(facilityArrayList, BookingIDArrayList);
+            if (noCollision)
+            {
+                // create a new bid
+                changedBookingID = new BookingID(BookingIDArrayList.size()+1, this.day, this.facilityID ,
+                        this.startIndex+offset+7, this.endIndex+offset+7);
+                BookingIDArrayList.add(changedBookingID);
+                System.out.println("[Server3 Control]   --changeBookingTime-- Add the changed BookingID: \n"+changedBookingID.getBookingInfoString());
+            }
         }
         return null;
     }
@@ -68,20 +77,14 @@ public class Server3Control extends ControlFactory{
                     this.receivedBookingInfo = bid.getBookingInfoString();
                     parseBookingInfo(receivedBookingInfo);
 
-                    if (this.offset == 0){
-                        // choose to cancel booking
-                        System.out.println("[Server3 Control]   --ChangeBookingSlot-- "+receivedBookingInfo);
-                        cancelBooking(facilityArrayList, BookingIDArrayList);
-                        this.successChange = true;
-                    }else{
-                        // choose to change booking slots
-                        System.out.println("[Server3 Control]   --ChangeBookingSlot-- "+receivedBookingInfo);
-                    }
+                    System.out.println("[Server3 Control]   --ChangeBookingSlot-- "+receivedBookingInfo);
+                    changeBookingTime(facilityArrayList, BookingIDArrayList);
+                }
+                else {
+                    System.out.println("[Server3 Control]   --ChangeBookingSlot-- The BookingID dosenot exist ");
                 }
             }
         }
-        if (!bookingIDExist)
-            System.out.println("[Server3 Control]   --ChangeBookingSlot-- The BookingID dosenot exist ");
     }
 
     @Override
@@ -95,50 +98,53 @@ public class Server3Control extends ControlFactory{
                 System.out.println("[Server3]   --marshalAndSend-- The BookingID dose not exist.");
                 this.marshaledData = Marshal.marshalString("The facility does not exist");
                 send(this.marshaledData);
-            }
-            else if (this.successChange && this.bookingIDExist){
-                System.out.println("[Server3]   --marshalAndSend-- The cancel booking is success.");
-                this.marshaledData = Marshal.marshalString("Your cancel is success");
+            } else if (this.noCollision){
+                System.out.println("[Server3]   --marshalAndSend-- The change booking is success.");
+                this.marshaledData = Marshal.marshalString(Integer.toString(this.changedBookingID.getID())+this.changedBookingID.getBookingInfoString());
                 send(this.marshaledData);
             }
         }
+        this.bookingIDExist = false;
+        this.noCollision = false;
     }
 
     @Override
     public void send(byte[] sendData) throws IOException{
-        if (this.successChange && this.bookingIDExist){
-            this.ackType = new byte[]{0,0,0,1};
+        if (!this.bookingIDExist){
+            this.ackType = new byte[] {0,0,0,1};
+            System.out.println("[Server2]   --send--    send reply to client with ACK = 0");
             byte[] addAck_msg = concat(ackType, sendData);
             udpSever.UDPsend(addAck_msg);
-        }
-        else if (!this.bookingIDExist){
-            this.ackType = new byte[] {0,0,0,-1};
+        } else if (!this.noCollision){
+            this.ackType = new byte[] {0,0,0,1};
             System.out.println("[Server2]   --send--    send reply to client with ACK = 0");
             byte[] addAck_msg = concat(ackType, sendData);
             udpSever.UDPsend(addAck_msg);
         }
     }
-    public void cancelBooking(ArrayList<Facility> facilityArrayList, ArrayList<BookingID> BookingIDArrayList){
+
+
+
+    public void changeBookingTime(ArrayList<Facility> facilityArrayList, ArrayList<BookingID> BookingIDArrayList){
         for (BookingID bid: BookingIDArrayList){
             if (bid.getID() == this.bookingID){
                 bid.cancelBooking();
-                System.out.println("[Server3 Control]   --cancelBooking-- Set BID to cancel");
+                System.out.println("[Server3 Control]   --changeBookingTime-- Set previous BID to cancel");
             }
         }
-        for (Facility fc: facilityArrayList){
+        for (Facility fc: facilityArrayList) {
             if (fc.getFacilityID() == this.facilityID){
-                for (int i = 0; i < (this.endIndex-this.startIndex); i++) {
-                    fc.cancelBooking(this.day, this.startIndex+i);
-                    System.out.println("[Server3 Control]   --cancelBooking-- Set Facility to available");
-                }
+                this.noCollision = fc.changeBooking(this.day, this.offset, this.startIndex-1, this.endIndex-1);
+                System.out.println("There is collision: "+this.noCollision);
+                fc.setPrintSlot(7);
+                System.out.println("[Server3 Control]   --changeBookingTime-- The new availability is: \n" + fc.getPrintResult());
             }
         }
     }
 
-
     public void parseBookingInfo(String bookingInfo){
         this.day = StringDayToInt(bookingInfo.substring(6,8)) - getCurrentDay();
-        this.facilityID = Integer.parseInt(bookingInfo.substring(9,10));
+        this.facilityID = Integer.parseInt(bookingInfo.substring(8,9));
         this.startIndex = Integer.parseInt(bookingInfo.substring(9,11))-7;
         this.endIndex = Integer.parseInt(bookingInfo.substring(11,13))-7;
 

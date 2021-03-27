@@ -11,7 +11,7 @@ public class UDPClient {
     private InetAddress IPAddress;
     private int PORT = 9876;
     private int UDPTIMEOUT = 1000; // 1s timeout
-    private int UDPBUFFERSIZE = 1024;
+    private int UDPBUFFERSIZE = 2*1024;
     private static UDPClient SINGLE_INSTANCE;
 
     /**

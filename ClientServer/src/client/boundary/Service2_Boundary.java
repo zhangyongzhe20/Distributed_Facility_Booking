@@ -6,6 +6,7 @@ import java.net.UnknownHostException;
 
 public class Service2_Boundary extends Boundary {
     private Service2Control s2C;
+    private String response;
 
     public Service2_Boundary() throws SocketException, UnknownHostException {
         this.s2C = new Service2Control();
@@ -20,15 +21,28 @@ public class Service2_Boundary extends Boundary {
         do{
             end = enterEndTime();
         }while(!checkTimeBound(start, end));
-        // marshal
+        /**
+         * Diff Services contain diff marshalled data
+         */
         s2C.marshal();
-        //handle response and display reply
+        try {
+            /**
+             * integratedProcess: sendAndReceive + handleACK + unmarsall
+             */
+            response = s2C.integratedProcess();
+        }catch (Exception e){
+            System.err.println(e.getMessage());
+            return;
+        }
         displayReply();
-
     }
+
     @Override
     public void displayReply() {
-        System.out.println("Your booking ID: " + s2C.unMarshal());
+        if(response != null)
+        System.out.println("Your booking is successful!\n" +
+                "Your booking ID: " + response.substring(0,1));
+       // System.out.println("Your booking Info: " + s2C.unMarshal().substring(1));
     }
 
     private void enterFacilityName() {

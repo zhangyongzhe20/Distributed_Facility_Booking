@@ -3,7 +3,7 @@ package server.control;
 import server.FacilityEntity.Facility;
 import utils.Marshal;
 import utils.UnMarshal;
-
+import utils.MonthDateParser;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.instrument.UnmodifiableClassException;
@@ -15,6 +15,7 @@ import java.util.concurrent.TimeoutException;
 public class Server1Control extends ControlFactory{
     private String queryInfo;
     private Boolean facilityExist = false;
+    private MonthDateParser dateParser;
 
 
     public Server1Control() throws SocketException, UnknownHostException {
@@ -22,6 +23,7 @@ public class Server1Control extends ControlFactory{
         this.dataToBeUnMarshal = new byte[0];
         this.marshaledData = new byte[0];
         this.queryInfo = "";
+        this.dateParser = new MonthDateParser();
     }
 
     public void clearQueryInfo() {
@@ -73,10 +75,10 @@ public class Server1Control extends ControlFactory{
         {
             if (f.getFacilityName().equals(facilityName)){
                 this.facilityExist = true;
-                String days = "";
+                String days = "   ";
                 for (int d = 0;d < interval; d++) {
-                    days += "           ";
-                    days += (d+1);
+                    days += "            ";
+                    days += this.dateParser.getMonth() + (d+1+dateParser.getDate());
                 }
                 queryInfo += days;
                 f.setPrintSlot(interval);
@@ -88,16 +90,9 @@ public class Server1Control extends ControlFactory{
 
     public void send(byte[] sendData) throws IOException{
         System.out.println("[Server1]   --send--    Success query: "+this.facilityExist);
-        if (this.facilityExist){
             this.ackType = new byte[]{0,0,0,1};
             byte[] addAck_msg = concat(ackType, sendData);
             udpSever.UDPsend(addAck_msg);
-        }
-        else {
-                this.ackType = new byte[] {0,0,0,0};
-                byte[] addAck_msg = concat(ackType, sendData);
-                udpSever.UDPsend(addAck_msg);
-        }
     }
 
 }

@@ -1,36 +1,26 @@
 package client.control;
 
 import utils.UnMarshal;
-import java.io.IOException;
+
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.concurrent.TimeoutException;
 
-public class Service1Control extends Control implements marshal, unmarshal{
-    private static final int SERVICEID = 1;
-    private String facilityName;
-    private int numOfDays;
+public class Service6Control extends Control implements marshal, unmarshal{
+    private static final int SERVICEID = 6;
+    private int bookingID;
 
-    public Service1Control() throws SocketException, UnknownHostException {
+    public Service6Control() throws SocketException, UnknownHostException {
         super();
         this.collectedData = new ArrayList<>();
         this.marShalData = new byte[0];
         this.unMarShalData = new byte[0];
     }
 
-    public void setFacName(String name) {
-        this.facilityName = name;
-    }
-
-    public void setNumOfDays(int days) {
-        this.numOfDays = days;
-    }
-
     /**
      *  Marshal service data
      */
-    public void marshal() throws TimeoutException, IOException {
+    public void marshal() throws Exception {
             //reset every time
             this.collectedData = new ArrayList<>();
             // header represents this is a request/response msg
@@ -38,8 +28,13 @@ public class Service1Control extends Control implements marshal, unmarshal{
             // message id
             collectedData.add(this.getMsgID());
             collectedData.add(SERVICEID);
-            collectedData.add(this.facilityName);
-            collectedData.add(this.numOfDays);
+            collectedData.add(bookingID);
+            System.out.println("data collect of service6: " + collectedData);
             marShalData = marshalMsg(collectedData, false);
     }
+
+    public void setBookingID(int id) {
+        this.bookingID = id;
+    }
+
 }
