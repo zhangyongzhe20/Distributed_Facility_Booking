@@ -6,6 +6,7 @@ import java.net.UnknownHostException;
 
 public class Service3_Boundary extends Boundary {
     private Service3Control s3C;
+    private String response;
 
     public Service3_Boundary() throws SocketException, UnknownHostException {
         this.s3C = new Service3Control();
@@ -15,34 +16,27 @@ public class Service3_Boundary extends Boundary {
         enterBookingID();
         enterOffset();
 
-        //marshal
+        /**
+         * Diff Services contain diff marshalled data
+         */
         s3C.marshal();
-        //handle response and display reply
+        try {
+            /**
+             * integratedProcess: sendAndReceive + handleACK + unmarsall
+             */
+            response = s3C.integratedProcess();
+        }catch (Exception e){
+            System.err.println(e.getMessage());
+            return;
+        }
         displayReply();
     }
 
-
     @Override
     public void displayReply() {
-        int reply;
-        do {
-            reply = s3C.unMarshal();
-            switch (reply) {
-                case -2:
-                    System.err.println("This service is not available in server");
-                case -1:
-                    System.err.println("Your booking ID is not found, please enter a correct one.");
-                    break;
-                case 0:
-                    System.err.println("Your new time slots are not available, please enter another offset.");
-                    break;
-                case 1:
-                    System.out.println("Your change is successfully!");
-                    break;
-                default:
-                    System.err.println("Wrong reply from server.");
-                }
-        }while(reply == -1 || reply == 0);  // ask users re-enter
+        if(response!=null){
+            System.out.println("Your change is successful: " + "\n"+ response);
+        }
     }
 
     private void enterBookingID() {

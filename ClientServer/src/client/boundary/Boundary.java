@@ -23,7 +23,7 @@ public abstract class Boundary {
         while (input <= 0) {
             try {
                 input = Integer.parseInt(readInputString(message));
-                if(input > 6){
+                if(input > 7){
                     System.err.println("You only can query the availabilities up to 7 days");
                     input = -1;
                 }

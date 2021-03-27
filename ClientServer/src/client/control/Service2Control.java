@@ -38,6 +38,8 @@ public class Service2Control extends Control implements marshal, unmarshal{
      *  Marshal service data
      */
     public void marshal() throws Exception {
+            //reset every time
+            this.collectedData = new ArrayList<>();
             // header represents this is a request/response msg
             collectedData.add(DataMSG);
             // message id
@@ -47,23 +49,6 @@ public class Service2Control extends Control implements marshal, unmarshal{
             collectedData.add(processDate());
             //System.out.println("data collect of service2: " + collectedData);
             marShalData = marshalMsg(collectedData, false);
-            sendAndReceive(marShalData);
-            collectedData = new ArrayList<>();
-    }
-
-    public String unMarshal() {
-        if(this.unMarShalData.length != 0) {
-            int isAck = UnMarshal.unmarshalInteger(this.unMarShalData, 0);
-            if (isAck == 0) {
-                String errMsg = UnMarshal.unmarshalString(this.unMarShalData, 4, this.unMarShalData.length);
-                System.err.println(errMsg);
-                return null;
-            }
-            // actual data
-            String actual_data = UnMarshal.unmarshalString(this.unMarShalData, 4, this.unMarShalData.length);
-            return actual_data;
-        }
-        return null;
     }
 
     public void setFacName(String name) {

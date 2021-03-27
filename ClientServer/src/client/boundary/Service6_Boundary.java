@@ -8,6 +8,7 @@ import java.net.UnknownHostException;
 
 public class Service6_Boundary extends Boundary {
     private Service6Control s6C;
+    private String response;
 
     public Service6_Boundary() throws SocketException, UnknownHostException {
         this.s6C = new Service6Control();
@@ -16,31 +17,27 @@ public class Service6_Boundary extends Boundary {
     public void displayMain() throws Exception {
         enterBookingID();
 
-        //marshal
+        /**
+         * Diff Services contain diff marshalled data
+         */
         s6C.marshal();
-        //handle response and display reply
+        try {
+            /**
+             * integratedProcess: sendAndReceive + handleACK + unmarsall
+             */
+            response = s6C.integratedProcess();
+        }catch (Exception e){
+            System.err.println(e.getMessage());
+            return;
+        }
         displayReply();
     }
 
-
     @Override
     public void displayReply() {
-        int reply;
-        do {
-            reply = s6C.unMarshal();
-            switch (reply) {
-                case -2:
-                    System.err.println("This service is not available in server");
-                case -1:
-                    System.err.println("Your booking ID is not found, please enter a correct one.");
-                    break;
-                case 1:
-                    System.out.println("Your change is successfully!");
-                    break;
-                default:
-                    System.err.println("Wrong reply from server.");
-                }
-        }while(reply == -1 || reply == 0);  // ask users re-enter
+        if(response!=null){
+            System.out.println("Your cancel is successful: " + "\n"+ response);
+        }
     }
 
     private void enterBookingID() {

@@ -6,6 +6,7 @@ import java.net.UnknownHostException;
 
 public class Service5_Boundary extends Boundary {
     private final Service5Control s5C;
+    private String response;
 
     public Service5_Boundary() throws SocketException, UnknownHostException {
         this.s5C = new Service5Control();
@@ -13,18 +14,30 @@ public class Service5_Boundary extends Boundary {
     @Override
     public void displayMain() throws Exception {
         enterFacType();
-        //marshall
+        /**
+         * Diff Services contain diff marshalled data
+         */
         s5C.marshal();
-        //handle response and display reply
+        try {
+            /**
+             * integratedProcess: sendAndReceive + handleACK + unmarsall
+             */
+            response = s5C.integratedProcess();
+        }catch (Exception e){
+            System.err.println(e.getMessage());
+            return;
+        }
         displayReply();
     }
 
     @Override
     public void displayReply() {
-        System.out.println("Your booking ID: " + s5C.unMarshal());
-        //todo
-        //System.out.println("Your booking facility name: " + s5C.unMarshal());
-        //System.out.println("Your booking time: " + s5C.unMarshal());
+        if(response!=null) {
+            System.out.println("Your booking ID: " + response);
+            //todo
+            //System.out.println("Your booking facility name: " + s5C.unMarshal());
+            //System.out.println("Your booking time: " + s5C.unMarshal());
+        }
     }
 
     private void enterFacType() {

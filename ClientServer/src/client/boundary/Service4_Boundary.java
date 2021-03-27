@@ -44,7 +44,7 @@ public class  Service4_Boundary extends Boundary {
     @Override
     public void displayReply() {
         //todo
-        System.out.println("Available intervals: " + s4C.unMarshal());
+       // System.out.println("Available intervals: " + s4C.unMarshal());
     }
 
     private void enterFacilityName() {

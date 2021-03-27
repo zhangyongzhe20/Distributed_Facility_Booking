@@ -31,6 +31,8 @@ public class Service1Control extends Control implements marshal, unmarshal{
      *  Marshal service data
      */
     public void marshal() throws TimeoutException, IOException {
+            //reset every time
+            this.collectedData = new ArrayList<>();
             // header represents this is a request/response msg
             collectedData.add(DataMSG);
             // message id
@@ -39,20 +41,5 @@ public class Service1Control extends Control implements marshal, unmarshal{
             collectedData.add(this.facilityName);
             collectedData.add(this.numOfDays);
             marShalData = marshalMsg(collectedData, false);
-            sendAndReceive(marShalData);
-            collectedData = new ArrayList<>();
-    }
-
-    public String unMarshal() {
-        if(this.unMarShalData.length != 0) {
-            int isAck = UnMarshal.unmarshalInteger(this.unMarShalData, 0);
-            if (isAck == 0) {
-                System.err.println("Unsupported operation!!!");
-                return null;
-            }
-            // actual data
-            return UnMarshal.unmarshalString(this.unMarShalData, 4, this.unMarShalData.length);
-        }
-        return null;
     }
 }
