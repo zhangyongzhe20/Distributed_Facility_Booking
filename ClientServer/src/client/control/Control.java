@@ -5,25 +5,18 @@ import java.io.IOException;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
+import static client.config.Constants.*;
 
 /**
  * @author Z. YZ
  */
 public class Control {
-    private static final int MAXRESENDS = 3;
     ArrayList<Object> collectedData;
     byte[] marShalData;
     byte[] unMarShalData;
     UDPClient udpClient;
-    //UDP control params
+    //TODO: Diff client???
     public static int msgID = 0;
-    public float failureRate = 0;
-    public int maxTimeout = 1;
-    public int ACK  = 1;
-    public int NACK = 0;
-    public int ACKMSG = 0;
-    public int DataMSG = 1;
-    public int INTEGER_LENGTH = 4; //4 bytes
 
     public Control() throws SocketException, UnknownHostException {
         this.udpClient = UDPClient.getInstance();
@@ -41,7 +34,7 @@ public class Control {
         do {
             try {
                 // simulate this sent message is lost during transmission
-                if (Math.random() < this.failureRate) {
+                if (Math.random() < FRATE) {
                     System.out.println("Simulate this sent message is lost during transmission");
                 } else {
                     udpClient.UDPsend(sendData);
@@ -54,7 +47,7 @@ public class Control {
                 }
             } catch (SocketTimeoutException e) {
                 timeout++;
-                if (timeout >= this.maxTimeout){
+                if (timeout >= MAXTIMEOUTCOUNT){
                     sendAck(false);
                     throw new TimeoutException("Exceed max time out");
                 }
@@ -94,26 +87,25 @@ public class Control {
     public String unMarshal() throws Exception {
         if(this.unMarShalData.length != 0) {
             //check oepration status
-            int status = UnMarshal.unmarshalInteger(this.unMarShalData, 4);
-            System.err.println("status: " + status);
+            int status = UnMarshal.unmarshalInteger(this.unMarShalData, INTEGER_LENGTH);
             //todo: remove later
             //status  = 0;
             if(status == 0){
-                throw new Exception(UnMarshal.unmarshalString(this.unMarShalData, 8, this.unMarShalData.length));
+                throw new Exception(UnMarshal.unmarshalString(this.unMarShalData, 2*INTEGER_LENGTH, this.unMarShalData.length));
             }
             // actual data
-            return UnMarshal.unmarshalString(this.unMarShalData, 8, this.unMarShalData.length);
+            return UnMarshal.unmarshalString(this.unMarShalData, 2*INTEGER_LENGTH, this.unMarShalData.length);
         }
         return null;
     }
 
     public void handleACK() throws Exception {
-        int isAck = UnMarshal.unmarshalInteger(this.unMarShalData, 0);
+        int isAck = UnMarshal.unmarshalInteger(this.unMarShalData, INTEGER_LENGTH);
         int numOfResend = 0;
         while(isAck == 0 && numOfResend < MAXRESENDS){
             System.err.println("Server not receive ACK!");
             sendAndReceive(marShalData);
-            isAck = UnMarshal.unmarshalInteger(this.unMarShalData, 0);
+            isAck = UnMarshal.unmarshalInteger(this.unMarShalData, INTEGER_LENGTH);
             //Increase counter
             numOfResend++;
         }

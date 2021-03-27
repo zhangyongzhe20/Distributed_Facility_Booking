@@ -5,6 +5,7 @@ import utils.UnMarshal;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import static client.config.Constants.*;
 
 public class Service6Control extends Control implements marshal, unmarshal{
     private static final int SERVICEID = 6;
@@ -29,7 +30,6 @@ public class Service6Control extends Control implements marshal, unmarshal{
             collectedData.add(this.getMsgID());
             collectedData.add(SERVICEID);
             collectedData.add(bookingID);
-            System.out.println("data collect of service6: " + collectedData);
             marShalData = marshalMsg(collectedData, false);
     }
 

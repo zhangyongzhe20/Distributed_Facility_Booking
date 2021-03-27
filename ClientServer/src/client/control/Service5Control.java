@@ -5,6 +5,7 @@ import utils.UnMarshal;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import static client.config.Constants.*;
 
 public class Service5Control extends Control implements marshal, unmarshal{
     private static final int SERVICEID = 5;

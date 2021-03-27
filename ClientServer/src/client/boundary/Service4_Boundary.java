@@ -1,9 +1,14 @@
 package client.boundary;
 
 import client.control.Service4Control;
+import client.control.UDPClient;
+
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+
+import static client.config.Constants.MAXTIMEOUTCOUNT;
+import static client.config.Constants.UDPTIMEOUT;
 
 
 public class  Service4_Boundary extends Boundary {
@@ -33,9 +38,9 @@ public class  Service4_Boundary extends Boundary {
                 }
             }
         }catch (IOException e) {
-            System.err.println(e.getMessage());
+            System.err.println("Monitoring timeouts");
             // restore the timeout to be the default
-            s4C.setInterval(s4C.maxTimeout);
+            UDPClient.getInstance().setTimeOut(UDPTIMEOUT);
         }
     }
 
@@ -48,7 +53,7 @@ public class  Service4_Boundary extends Boundary {
     }
 
     private void enterFacilityName() {
-        String name = readInputString("Enter the Facility name that you want to monitor: ");
+        String name = readInputFacility("Enter the Facility name that you want to monitor: ");
         s4C.setFacName(name);
     }
     private void enterMonitorIntervals() {
