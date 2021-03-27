@@ -1,20 +1,16 @@
 package server.FacilityEntity;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 public class Facility {
     String FacilityName;
     int FacilityType;
     boolean availability[][];
-    String slots;
+    String slotsString;
     private int facilityID;
 
-    public String getFacilityName() {
-        return FacilityName;
-    }
-
-    public int getFacilityID() {
-        return facilityID;
-    }
-
+    // ------------------------------------------ Constructor ------------------------------------------
     public Facility(String facilityName, int facilityID) {
         this.FacilityName = facilityName;
         if (facilityName.substring(0, 2).equals("LT"))
@@ -29,6 +25,8 @@ public class Facility {
         this.facilityID = facilityID;
     }
 
+
+    // ------------------------------------------ Set Methods ------------------------------------------
     public void setFacilityName(String facilityName) {
         this.FacilityName = facilityName;
     }
@@ -37,6 +35,45 @@ public class Facility {
         this.FacilityType = facilityType;
     }
 
+    public void setPrintSlot(int interval){
+        this.slotsString = "";
+
+        this.slotsString += "\n";
+        this.slotsString += this.FacilityName;
+        this.slotsString += "\n";
+
+        for (int j = 0; j < 10; j++) {
+            String s = "";
+            if ((8+j)<10){
+                s+="        "+"0"+Integer.toString(8+j);
+            }else {
+                s+="        "+Integer.toString(8+j);
+            }
+            for (int i = 0; i < interval; i++) {
+                if (this.availability[j][i])
+                    s += "    -           ";
+                else
+                    s += "    B           ";
+            }
+            s += "\n";
+            this.slotsString += s;
+        }
+    }
+
+    // ------------------------------------------   Get Method  ------------------------------------------
+    public String getPrintResult() {
+        return slotsString;
+    }
+
+    public String getFacilityName() {
+        return FacilityName;
+    }
+
+    public int getFacilityID() {
+        return facilityID;
+    }
+
+    // ------------------------------------------ Functional Methods  ------------------------------------------
     public boolean bookAvailability(int day, int slot) {
         if (!this.availability[slot-1][day-1])
             return false; // the slot is booked already
@@ -80,27 +117,4 @@ public class Facility {
     }
 
 
-    public void setPrintSlot(int interval){
-        this.slots = "";
-
-        this.slots += "\n";
-        this.slots += this.FacilityName;
-        this.slots += "   ";
-
-        for (int j = 0; j < interval; j++) {
-            String s = "[";
-            for (int i = 0; i < 10; i++) {
-                if (this.availability[i][j])
-                    s += "-";
-                else
-                    s += "B";
-            }
-            s += "]";
-            this.slots += s;
-        }
-    }
-
-    public String getPrintResult() {
-        return slots;
-    }
 }
