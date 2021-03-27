@@ -15,7 +15,6 @@ import java.util.concurrent.TimeoutException;
 public class Server6Control extends ControlFactory{
     private int bookingID;
     private boolean bookingIDExist;
-    private boolean successcancel;
 
     private String receivedBookingInfo;
     private int day;
@@ -27,7 +26,6 @@ public class Server6Control extends ControlFactory{
     public Server6Control() throws SocketException, UnknownHostException {
         super();
         this.bookingIDExist = false;
-        this.successcancel = false;
     }
 
     @Override
@@ -41,7 +39,6 @@ public class Server6Control extends ControlFactory{
             System.out.println("BookingID: " + bookingID);
 
             cancelBooking(facilityArrayList, BookingIDArrayList);
-
         }
         return null;
     }
@@ -50,35 +47,36 @@ public class Server6Control extends ControlFactory{
     public void marshalAndSend() throws TimeoutException, IOException{
         if (UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,4) == 0){
             // Msg Type is ACK
-            System.out.println("[Server3]   --marshalAndSend--  Received ACK msg");
+            System.out.println("[Server6]   --marshalAndSend--  Received ACK msg");
         }else {
-            System.out.println("[Server3]   --marshalAndSend--  Msg Type is request");
-            if (!this.bookingIDExist){
-                System.out.println("[Server3]   --marshalAndSend-- The BookingID dose not exist.");
-                this.marshaledData = Marshal.marshalString("The facility does not exist");
-                send(this.marshaledData);
-            } else if (this.successcancel){
-                System.out.println("[Server3]   --marshalAndSend-- The change booking is success.");
+            System.out.println("[Server6]   --marshalAndSend--  Msg Type is request");
+            if(!this.bookingIDExist){
+                System.out.println("[Server6]   --marshalAndSend-- The BookingID dose not exist.");
+                this.marshaledData = Marshal.marshalString("The BookingID does not exist");
+                this.status = new byte[]{0,0,0,0};
+            } else {
+                System.out.println("[Server6]   --marshalAndSend-- The change booking is success.");
+                this.status = new byte[]{0,0,0,1};
                 this.marshaledData = Marshal.marshalString("The cancel is success");
-                send(this.marshaledData);
             }
+            send(this.marshaledData);
         }
         this.bookingIDExist = false;
-        this.successcancel = false;
     }
 
     public void cancelBooking(ArrayList<Facility> facilityArrayList, ArrayList<BookingID> BookingIDArrayList){
         for (BookingID bid: BookingIDArrayList){
             if (bid.getID() == this.bookingID){
-                this.bookingIDExist = true;
-                bid.cancelBooking();
-                System.out.println("[Server3 Control]   --cancelBooking-- Set BID to cancel");
-                this.receivedBookingInfo = bid.getBookingInfoString();
-                parseBookingInfo(receivedBookingInfo);
-                this.successcancel = true;
+                if (!bid.isCancel()){
+                    this.bookingIDExist = true;
+                    bid.cancelBooking();
+                    System.out.println("[Server6 Control]   --cancelBooking-- Set BID to cancel");
+                    this.receivedBookingInfo = bid.getBookingInfoString();
+                    parseBookingInfo(receivedBookingInfo);
+                }
                 break;
             }else {
-                System.out.println("[Server3 Control]   --ChangeBookingSlot-- The BookingID dosenot exist ");
+                System.out.println("[Server6 Control]   --ChangeBookingSlot-- The BookingID dosenot exist ");
             }
         }
 
@@ -86,11 +84,11 @@ public class Server6Control extends ControlFactory{
             if (fc.getFacilityID() == this.facilityID){
                 for (int i = 0; i < (this.endIndex-this.startIndex); i++) {
                     fc.cancelBooking(this.day, this.startIndex+i);
-                    System.out.println("[Server3 Control]   --cancelBooking-- Set Facility to available");
+                    System.out.println("[Server6 Control]   --cancelBooking-- Set Facility to available");
                 }
+                break;
             }
         }
-
     }
 
     public void parseBookingInfo(String bookingInfo){
@@ -99,7 +97,7 @@ public class Server6Control extends ControlFactory{
         this.startIndex = Integer.parseInt(bookingInfo.substring(9,11))-7;
         this.endIndex = Integer.parseInt(bookingInfo.substring(11,13))-7;
 
-        System.out.println("[Server3 Control]   --parseBooking Info day: "+day+" facilityID: "+facilityID
+        System.out.println("[Server6 Control]   --parseBooking Info day: "+day+" facilityID: "+facilityID
                 +"  Start Index: "+startIndex+"  End index: "+endIndex);
     }
 
@@ -110,4 +108,11 @@ public class Server6Control extends ControlFactory{
             return Integer.parseInt(day);
     }
 
+    @Override
+    public void send(byte[] sendData) throws IOException{
+        System.out.println("[Server2]   --send--    Success Cancel: "+this.bookingIDExist);
+        this.ackType = new byte[]{0,0,0,1};
+        byte[] addAck_msg = concat(ackType, this.status, sendData);
+        udpSever.UDPsend(addAck_msg);
+    }
 }

@@ -15,6 +15,7 @@ public class ControlFactory {
     protected byte[] marshaledData;
     protected UDPserver udpSever;
     protected byte[] ackType;
+    protected byte[] status;
 
     public ControlFactory() throws SocketException, UnknownHostException {
         this.udpSever = UDPserver.getInstance();
@@ -34,12 +35,13 @@ public class ControlFactory {
     public void marshalAndSend() throws TimeoutException, IOException {}
 
 
-    public static byte[] concat(byte[] a, byte[] b) throws IOException {
+    public static byte[] concat(byte[] a, byte[] b, byte[] c) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         baos.write(a);
         baos.write(b);
-        byte[] c = baos.toByteArray();
-        return c;
+        baos.write(c);
+        byte[] d = baos.toByteArray();
+        return d;
     }
 
     public void send(byte[] sendData) throws IOException{}

@@ -91,7 +91,8 @@ public class Server1Control extends ControlFactory{
     public void send(byte[] sendData) throws IOException{
         System.out.println("[Server1]   --send--    Success query: "+this.facilityExist);
             this.ackType = new byte[]{0,0,0,1};
-            byte[] addAck_msg = concat(ackType, sendData);
+            this.status = new byte[]{0,0,0,1};
+            byte[] addAck_msg = concat(ackType, this.status, sendData);
             udpSever.UDPsend(addAck_msg);
     }
 

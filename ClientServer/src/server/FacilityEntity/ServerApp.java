@@ -39,6 +39,7 @@ public class ServerApp {
         Server1_Boundary server1_boundary = new Server1_Boundary();
         Server2_Boundary server2_boundary = new Server2_Boundary();
         Server3_Boundary server3_boundary = new Server3_Boundary();
+        Server6_Boundary server6_boundary = new Server6_Boundary();
 
         while (true)
         {
@@ -63,8 +64,10 @@ public class ServerApp {
             } else if (control.getServiceID_receive() == 3){
                 control.clearDataToBeUnMarshal();
                 server3_boundary.processRequest(dataTobeUnmarshal, facilityArrayList, BookingIDArrayList);
+            }else if (control.getServiceID_receive() == 6){
+                control.clearDataToBeUnMarshal();
+                server6_boundary.processRequest(dataTobeUnmarshal, facilityArrayList, BookingIDArrayList);
             }
-
         }
         // server3_boundary.processRequest(facilityArrayList, BookingIDArrayList);
 
