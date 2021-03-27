@@ -45,9 +45,14 @@ public class Facility {
         for (int j = 0; j < 10; j++) {
             String s = "";
             if ((8+j)<10){
-                s+="        "+"0"+Integer.toString(8+j);
+                s+=Integer.toString(j)+"        "+"0"+Integer.toString(8+j);
             }else {
-                s+="        "+Integer.toString(8+j);
+                s+=Integer.toString(j)+"        "+Integer.toString(8+j);
+            }
+            if ((8+j+1)<10){
+                s+="-0"+Integer.toString(8+j+1);
+            }else {
+                s+="-"+Integer.toString(8+j+1);
             }
             for (int i = 0; i < interval; i++) {
                 if (this.availability[j][i])
@@ -73,15 +78,14 @@ public class Facility {
         return facilityID;
     }
 
+    public boolean checkAvailability(int day, int slot){
+        return this.availability[slot-1][day-1];
+    }
+
     // ------------------------------------------ Functional Methods  ------------------------------------------
-    public boolean bookAvailability(int day, int slot) {
-        if (!this.availability[slot-1][day-1])
-            return false; // the slot is booked already
-        else
-        {
-            this.availability[slot-1][day-1]=false;
-            return true;
-        }
+    public void bookAvailability(int day, int slot) {
+        this.availability[slot-1][day-1]=false;
+
     }
 
     public void cancelBooking(int day, int slot){

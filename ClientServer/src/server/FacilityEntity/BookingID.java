@@ -37,10 +37,10 @@ public class BookingID {
 
     public static String convertIntToString(int time){
         if (time<10){
-            System.out.println("original time"+time);
+            System.out.println("[BookingID] --convertIntToString-- original time"+(time));
             return ("0" + Integer.toString(time));
         }else
-            System.out.println("original time"+time);
+            System.out.println("[BookingID] --convertIntToString-- original time"+(time));
             return Integer.toString(time);
     }
 }

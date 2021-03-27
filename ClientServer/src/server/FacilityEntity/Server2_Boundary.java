@@ -17,7 +17,7 @@ public class Server2_Boundary {
 
 
     public void processRequest(byte[] dataTobeUnmarshal, ArrayList<Facility> facilityArrayList, ArrayList<BookingID> BookingIDArrayList) throws TimeoutException, IOException{
-        System.out.println("Server2 process request");
+        System.out.println("[Server2_Boundary] --processRequest--  Server2 process request");
         server2.unMarshal(dataTobeUnmarshal, facilityArrayList, BookingIDArrayList);
         reply();
     }
