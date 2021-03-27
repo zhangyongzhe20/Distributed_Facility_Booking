@@ -110,17 +110,17 @@ public class Server3Control extends ControlFactory{
 
     @Override
     public void send(byte[] sendData) throws IOException{
-        if (!this.bookingIDExist){
-            this.ackType = new byte[] {0,0,0,1};
-            System.out.println("[Server2]   --send--    send reply to client with ACK = 0");
-            byte[] addAck_msg = concat(ackType, sendData);
-            udpSever.UDPsend(addAck_msg);
-        } else if (!this.noCollision){
-            this.ackType = new byte[] {0,0,0,1};
-            System.out.println("[Server2]   --send--    send reply to client with ACK = 0");
-            byte[] addAck_msg = concat(ackType, sendData);
-            udpSever.UDPsend(addAck_msg);
-        }
+//        if (!this.bookingIDExist){
+//            this.ackType = new byte[] {0,0,0,1};
+//            System.out.println("[Server2]   --send--    send reply to client with ACK = 0");
+//            byte[] addAck_msg = concat(ackType, sendData);
+//            udpSever.UDPsend(addAck_msg);
+//        } else if (!this.noCollision){
+//            this.ackType = new byte[] {0,0,0,1};
+//            System.out.println("[Server2]   --send--    send reply to client with ACK = 0");
+//            byte[] addAck_msg = concat(ackType, sendData);
+//            udpSever.UDPsend(addAck_msg);
+//        }
     }
 
 

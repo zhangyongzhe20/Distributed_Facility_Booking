@@ -45,7 +45,7 @@ public class Server2Control extends ControlFactory{
             this.bookingRequirement = UnMarshal.unmarshalString(this.dataToBeUnMarshal, 32+facilityName_length, 32+facilityName_length+bookingRequirement_length);
 
             bookFacility(facilityArrayList);
-            if (hasVacancy == 3){
+            if (hasVacancy == 4){
                 newBookingID = new BookingID(BookingIDArrayList.size()+1, this.day, this.bookedFacilityID ,
                         this.slotStartIndex, this.slotStartIndex+slots);
                 BookingIDArrayList.add(newBookingID);
@@ -65,16 +65,25 @@ public class Server2Control extends ControlFactory{
             if (hasVacancy==1){ // fully has no vacancy
                 System.out.println("[Server2]   --marshalAndSend--  The facility is fully not available in selected time period.");  // TODO: Delete this print after client can parse
                 this.marshaledData = Marshal.marshalString("The facility is fully not available in selected time period.");
+                this.status = new byte[]{0,0,0,0};
                 send(this.marshaledData);
             }
-            else if (hasVacancy == 2){ // partial vacancy
+            else if (hasVacancy == 2){ // partial vacancy 1st half cannot
                 System.out.println("[Server2]   --marshalAndSend--  The facility is partially not available in selected time period.");  // TODO: Delete this print after client can parse
-                this.marshaledData = Marshal.marshalString("The facility is partially not available in selected time period.");
+                this.marshaledData = Marshal.marshalString("The facility is partially not available in selected time period. You can postpone one slot.");
+                this.status = new byte[]{0,0,0,0};
                 send(this.marshaledData);
             }
-            else if (hasVacancy == 3){
+            else if (hasVacancy == 3){ // partial vacancy 2nd half cannot
+                System.out.println("[Server2]   --marshalAndSend--  The facility is partially not available in selected time period.");  // TODO: Delete this print after client can parse
+                this.marshaledData = Marshal.marshalString("The facility is partially not available in selected time period. You can shift one slot advance.");
+                this.status = new byte[]{0,0,0,0};
+                send(this.marshaledData);
+            }
+            else if (hasVacancy == 4){
                 System.out.println("[Server2]   --marshalAndSend--  Marshal: "+this.newBookingID.getBookingInfoString());
                 this.marshaledData = Marshal.marshalString(Integer.toString(this.newBookingID.getID())+this.newBookingID.getBookingInfoString());
+                this.status = new byte[]{0,0,0,1};
                 send(this.marshaledData);
             }
             this.hasVacancy = -1;
@@ -106,7 +115,7 @@ public class Server2Control extends ControlFactory{
                             } // fully no vancancy when booking only one slot\
                             else{
                                 f.bookAvailability(day, i);
-                                this.hasVacancy = 3;
+                                this.hasVacancy = 4;
                                 this.slotStartIndex = (i + 7);
                             }
                             break;
@@ -118,12 +127,12 @@ public class Server2Control extends ControlFactory{
                             if (f.checkAvailability(this.day, i) && f.checkAvailability(this.day, i+1)){
                                 f.bookAvailability(day,i);
                                 f.bookAvailability(day,i+1);
-                                this.hasVacancy = 3;
+                                this.hasVacancy = 4;
                             }
                             else if (f.checkAvailability(this.day, i) && !f.checkAvailability(this.day, i+1)){
-                                this.hasVacancy = 2; // partial vacancy
+                                this.hasVacancy = 3; // partial vacancy 2nd half cannot
                             }else if (!f.checkAvailability(this.day, i) && f.checkAvailability(this.day, i+1)){
-                                this.hasVacancy = 2; // partial vacancy
+                                this.hasVacancy = 2; // partial vacancy first half cannot
                             }else if (!f.checkAvailability(this.day, i) && !f.checkAvailability(this.day, i+1)){
                                 this.hasVacancy = 1; // fully no vacancy
                             }
@@ -142,7 +151,7 @@ public class Server2Control extends ControlFactory{
     public void send(byte[] sendData) throws IOException{
             System.out.println("[Server2]   --send--    Has Vacancy: "+this.hasVacancy);
             this.ackType = new byte[]{0,0,0,1};
-            byte[] addAck_msg = concat(ackType, sendData);
+            byte[] addAck_msg = concat(ackType, this.status, sendData);
             udpSever.UDPsend(addAck_msg);
     }
 }
