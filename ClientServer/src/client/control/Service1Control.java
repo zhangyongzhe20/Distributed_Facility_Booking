@@ -44,7 +44,6 @@ public class Service1Control extends Control implements marshal, unmarshal{
     }
 
     public String unMarshal() {
-        System.out.println("UnMarshal msg called");
         if(this.unMarShalData.length != 0) {
             int isAck = UnMarshal.unmarshalInteger(this.unMarShalData, 0);
             if (isAck == 0) {

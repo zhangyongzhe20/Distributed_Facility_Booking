@@ -38,7 +38,7 @@ public class Service1_Boundary extends Boundary {
     }
 
     private void enterNumOfDays(){
-        int days = readInputInteger("Enter the number of days: ");
+        int days = readNumOfQueryDays("Enter the number of days: ");
         s1C.setNumOfDays(days);
     }
 }

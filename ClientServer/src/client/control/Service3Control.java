@@ -36,10 +36,10 @@ public class Service3Control extends Control implements marshal, unmarshal{
     }
 
     public int unMarshal() {
-        System.out.println("UnMarshal msg called");
         int actual_data = -1;
         if(this.unMarShalData.length != 0) {
             int isAck = UnMarshal.unmarshalInteger(this.unMarShalData, 0);
+            System.out.println(isAck);
             if (isAck == 0) {
                 System.err.println("Unsupported operation!!!");
                 return -2;

@@ -30,7 +30,7 @@ public class Service5_Boundary extends Boundary {
     private void enterFacType() {
         System.out.println("1. Lecture Theater");
         System.out.println("2. Meeting Room");
-        int type = readFacType("Select the type of facility that you want to book: ");
+        int type = readFacType("Select the type of facility that you want auto book: ");
         s5C.setType(type);
     }
 }

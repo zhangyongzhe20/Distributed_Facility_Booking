@@ -4,15 +4,16 @@ import java.io.IOException;
 import java.util.Scanner;
 import java.util.concurrent.TimeoutException;
 
+import static client.boundary.Boundary.readInputInteger;
+
 public class ClientApp{
     public static void main(String[] args) throws IOException  {
     Scanner sc = new Scanner(System.in);
-    String selection;
+    int selection;
     Boundary_Factory bf = new Boundary_Factory();
         do {
-            displayMain();
-            selection = sc.nextLine();
-            if (Integer.parseInt(selection) > 0 && Integer.parseInt(selection) < 6) {
+            selection = readInputInteger(displayMain());
+            if (selection <= bf.getNumOfBoundaries()) {
                 Boundary nextpage = bf.createBoundary(selection);
                 try {
                     nextpage.displayMain();
@@ -23,20 +24,22 @@ public class ClientApp{
                 }
                 isContiune();
             }
-        } while (!selection.equalsIgnoreCase("6"));
+        } while (selection!=6);
 }
 
-    private static void displayMain() {
-        System.out.println("Facility Booking System (FBS)");
-        System.out.println("===========================================");
-        System.out.println("1. Service 1. ");
-        System.out.println("2. Service 2. ");
-        System.out.println("3. Service 3. ");
-        System.out.println("4. Service 4. ");
-        System.out.println("5. Service 5. ");
-        System.out.println("6. Quit");
-        System.out.println("============================================");
-        System.out.println("Enter choice : ");
+    private static String displayMain() {
+        String mainPage = "\tFacility Booking System (FBS)\n" +
+        "===========================================\n" +
+        "1. Query the availability of a facility.\n" +
+        "2. Book a facility.\n" +
+        "3. Change booking time.\n" +
+        "4. Monitor a facility. \n" +
+        "5. Auto booking facility(Non-idempotent).\n" +
+        "6. Cancel Booking (Idempotent).\n" +
+        "7. Quit\n" +
+        "============================================\n" +
+        "Enter choice : ";
+        return mainPage;
     }
 
 

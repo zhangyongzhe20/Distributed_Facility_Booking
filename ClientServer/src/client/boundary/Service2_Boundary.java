@@ -28,7 +28,10 @@ public class Service2_Boundary extends Boundary {
     }
     @Override
     public void displayReply() {
-        System.out.println("Your booking ID: " + s2C.unMarshal());
+        if(s2C.unMarshal() != null)
+        System.out.println("Your booking is successful!\n" +
+                "Your booking ID: " + s2C.unMarshal().substring(0,1));
+       // System.out.println("Your booking Info: " + s2C.unMarshal().substring(1));
     }
 
     private void enterFacilityName() {

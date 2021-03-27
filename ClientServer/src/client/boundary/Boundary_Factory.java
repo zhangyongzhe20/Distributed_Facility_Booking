@@ -15,7 +15,10 @@ public class Boundary_Factory {
         allBoundaries.add(new Service3_Boundary());
         allBoundaries.add(new Service4_Boundary());
         allBoundaries.add(new Service5_Boundary());
+        allBoundaries.add(new Service6_Boundary());
     }
-    public Boundary createBoundary(String selection) { return allBoundaries.get(Integer.parseInt(selection) - 1);}
+    public Boundary createBoundary(int selection) { return allBoundaries.get(selection - 1);}
+
+    public int getNumOfBoundaries(){ return allBoundaries.size();}
 
 }

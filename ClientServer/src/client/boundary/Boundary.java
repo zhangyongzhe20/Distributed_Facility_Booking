@@ -13,6 +13,27 @@ public abstract class Boundary {
     public abstract void displayReply();
     //todo parsers defined in the blow
 
+    /**
+     * Used in Service1
+     * @param message
+     * @return
+     */
+    public static int readNumOfQueryDays(String message) {
+        int input = -1;
+        while (input <= 0) {
+            try {
+                input = Integer.parseInt(readInputString(message));
+                if(input > 6){
+                    System.err.println("You only can query the availabilities up to 7 days");
+                    input = -1;
+                }
+            } catch (NumberFormatException e) {
+                System.err.println("Please enter in digits");
+            }
+        }
+        return input;
+    }
+
     public static String readInputDate(String message){
         String output = null;
         while(output == null) {
@@ -22,8 +43,8 @@ public abstract class Boundary {
                 LocalDate endtDate = LocalDate.parse(readInputString(message));
                 // Range = End date - Start date
                 int diff = Period.between(startDate, endtDate).getDays();
-                if (diff < 0 || diff > 6) {
-                    throw new Exception("Please enter the date within a week away from today.");
+                if (diff < 1 || diff > 6) {
+                    throw new Exception("Please enter the date from tomorrow onwards and within a week away from today.");
                 }
                 output = String.valueOf(diff);
             } catch (Exception e) {
@@ -43,7 +64,7 @@ public abstract class Boundary {
                         input = -1;
                     }
                 } catch (NumberFormatException e) {
-                    System.out.println("Please enter in digits");
+                    System.err.println("Please enter in digits");
                 }
             }
             return input;
@@ -75,19 +96,19 @@ public abstract class Boundary {
             try {
                 input = Integer.parseInt(readInputString(message));
             } catch (NumberFormatException e) {
-                System.out.println("Please enter in digits");
+                System.err.println("Please enter in digits");
             }
         }
         return input;
     }
 
     public static int readFacType(String message) {
-        int input = -1;
-        while (input!=1 || input != 2) {
+        int input = readInputInteger(message);
+        while (input != 1 && input != 2) {
             try {
-                input = Integer.parseInt(readInputString(message));
+                input = readInputInteger(message);
             } catch (NumberFormatException e) {
-                System.out.println("Please enter in digits");
+                System.err.println("Please enter in digits");
             }
         }
         return input;
@@ -103,7 +124,7 @@ public abstract class Boundary {
             try {
                 input = Integer.parseInt(readInputString(message));
             } catch (NumberFormatException e) {
-                System.out.println("Please enter in digits");
+                System.err.println("Please enter in digits");
             }
         return input;
     }
