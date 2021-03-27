@@ -19,7 +19,6 @@ public class Server3Control extends ControlFactory{
     private int offset;
 
     private boolean bookingIDExist;
-    private boolean successcancel;
     private boolean noCollision;
     private BookingID changedBookingID;
 
@@ -32,7 +31,6 @@ public class Server3Control extends ControlFactory{
     public Server3Control() throws SocketException, UnknownHostException {
         super();
         this.bookingIDExist = false;
-        this.successcancel = false;
         this.noCollision = false;
         this.receivedBookingInfo = "";
     }
@@ -55,7 +53,7 @@ public class Server3Control extends ControlFactory{
             System.out.println("offset: "+offset);
 
             ChangeBookingSlot(facilityArrayList, BookingIDArrayList);
-            if (noCollision && (!successcancel))
+            if (noCollision)
             {
                 // create a new bid
                 changedBookingID = new BookingID(BookingIDArrayList.size()+1, this.day, this.facilityID ,
@@ -79,16 +77,8 @@ public class Server3Control extends ControlFactory{
                     this.receivedBookingInfo = bid.getBookingInfoString();
                     parseBookingInfo(receivedBookingInfo);
 
-                    if (this.offset == 0){
-                        // choose to cancel booking
-                        System.out.println("[Server3 Control]   --CancelBookingSlot-- "+receivedBookingInfo);
-                        cancelBooking(facilityArrayList, BookingIDArrayList);
-                        this.successcancel = true;
-                    }else{
-                        // choose to change booking slots
-                        System.out.println("[Server3 Control]   --ChangeBookingSlot-- "+receivedBookingInfo);
-                        changeBookingTime(facilityArrayList, BookingIDArrayList);
-                    }
+                    System.out.println("[Server3 Control]   --ChangeBookingSlot-- "+receivedBookingInfo);
+                    changeBookingTime(facilityArrayList, BookingIDArrayList);
                 }
                 else {
                     System.out.println("[Server3 Control]   --ChangeBookingSlot-- The BookingID dosenot exist ");
@@ -108,11 +98,6 @@ public class Server3Control extends ControlFactory{
                 System.out.println("[Server3]   --marshalAndSend-- The BookingID dose not exist.");
                 this.marshaledData = Marshal.marshalString("The facility does not exist");
                 send(this.marshaledData);
-            }
-            else if (this.successcancel){
-                System.out.println("[Server3]   --marshalAndSend-- The cancel booking is success.");
-                this.marshaledData = Marshal.marshalString("Your cancel is success");
-                send(this.marshaledData);
             } else if (this.noCollision){
                 System.out.println("[Server3]   --marshalAndSend-- The change booking is success.");
                 this.marshaledData = Marshal.marshalString(Integer.toString(this.changedBookingID.getID())+this.changedBookingID.getBookingInfoString());
@@ -120,24 +105,18 @@ public class Server3Control extends ControlFactory{
             }
         }
         this.bookingIDExist = false;
-        this.successcancel = false;
         this.noCollision = false;
     }
 
     @Override
     public void send(byte[] sendData) throws IOException{
-        if ((this.successcancel && this.bookingIDExist) || this.noCollision){
-            this.ackType = new byte[]{0,0,0,1};
-            byte[] addAck_msg = concat(ackType, sendData);
-            udpSever.UDPsend(addAck_msg);
-        }
-        else if (!this.bookingIDExist){
-            this.ackType = new byte[] {0,0,0,-1};
+        if (!this.bookingIDExist){
+            this.ackType = new byte[] {0,0,0,1};
             System.out.println("[Server2]   --send--    send reply to client with ACK = 0");
             byte[] addAck_msg = concat(ackType, sendData);
             udpSever.UDPsend(addAck_msg);
         } else if (!this.noCollision){
-            this.ackType = new byte[] {0,0,0,0};
+            this.ackType = new byte[] {0,0,0,1};
             System.out.println("[Server2]   --send--    send reply to client with ACK = 0");
             byte[] addAck_msg = concat(ackType, sendData);
             udpSever.UDPsend(addAck_msg);
@@ -145,22 +124,6 @@ public class Server3Control extends ControlFactory{
     }
 
 
-    public void cancelBooking(ArrayList<Facility> facilityArrayList, ArrayList<BookingID> BookingIDArrayList){
-        for (BookingID bid: BookingIDArrayList){
-            if (bid.getID() == this.bookingID){
-                bid.cancelBooking();
-                System.out.println("[Server3 Control]   --cancelBooking-- Set BID to cancel");
-            }
-        }
-        for (Facility fc: facilityArrayList){
-            if (fc.getFacilityID() == this.facilityID){
-                for (int i = 0; i < (this.endIndex-this.startIndex); i++) {
-                    fc.cancelBooking(this.day, this.startIndex+i);
-                    System.out.println("[Server3 Control]   --cancelBooking-- Set Facility to available");
-                }
-            }
-        }
-    }
 
     public void changeBookingTime(ArrayList<Facility> facilityArrayList, ArrayList<BookingID> BookingIDArrayList){
         for (BookingID bid: BookingIDArrayList){
