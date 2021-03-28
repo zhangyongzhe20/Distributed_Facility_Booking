@@ -44,8 +44,6 @@ public class  Service4_Boundary extends Boundary {
         }
     }
 
-
-
     @Override
     public void displayReply() {
         //todo

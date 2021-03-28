@@ -23,30 +23,22 @@ public class Server4Control extends ControlFactory{
     }
 
     public String unMarshal() throws IOException {
-//        receive();
-//        if (this.dataToBeUnMarshal.length != 0)
-//        {
-//            int facilityName_length = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 24);
-//            this.facilityName = UnMarshal.unmarshalString(this.dataToBeUnMarshal, 28, 28 + facilityName_length);
-//
-//            this.intervals = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 32+facilityName_length);
-//            // update Monitor Tables
-//            updateMonitorTables();
-//        }
-//
-        return null;
+            // update Monitor Tables
+            updateMonitorTables();
+
+            return new String();
     }
 
     private void updateMonitorTables() {
 //        //TODO: Need to check the request is duplicated or not if uses at-most-semantics
-//        ArrayList<Member> members = CallBack.MonitorTables.get(this.facilityName);
-//        if(members == null){
-//            members = new ArrayList<>();
-//        }
-//            Member newMember = new Member(this.udpSever.getClientIPAddress(), this.udpSever.getClientPort(),
-//                    this.intervals, LocalDate.now());
-//            members.add(newMember);
-//            CallBack.MonitorTables.put(this.facilityName, members);
-//    }
+        ArrayList<Member> members = CallBack.MonitorTables.get(this.facilityName);
+        if(members == null){
+            members = new ArrayList<>();
+        }
+            Member newMember = new Member(this.udpSever.getClientIPAddress(), this.udpSever.getClientPort(),
+                    this.intervals, LocalDate.now());
+            members.add(newMember);
+            // add this new member to the monitorTables
+            CallBack.MonitorTables.put(this.facilityName, members);
     }
 }

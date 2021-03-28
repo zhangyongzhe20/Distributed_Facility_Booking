@@ -4,6 +4,7 @@ import utils.UnMarshal;
 import java.io.IOException;
 import java.net.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.TimeoutException;
 import static client.config.Constants.*;
 
@@ -41,6 +42,8 @@ public class Control {
                     // get the unMarShalData
                     this.unMarShalData = udpClient.UDPreceive();
                     if(this.unMarShalData != null){
+                        //TODO REMOVE LATER
+                        //System.out.println("received: " + Arrays.toString(unMarShalData));
                         sendAck(true);
                         return;
                     }
@@ -100,12 +103,15 @@ public class Control {
     }
 
     public void handleACK() throws Exception {
-        int isAck = UnMarshal.unmarshalInteger(this.unMarShalData, INTEGER_LENGTH);
+//        for(byte data: unMarShalData) {
+//            System.err.println("marshal: " + unMarShalData);
+//        }
+        int isAck = UnMarshal.unmarshalInteger(this.unMarShalData, 0);
         int numOfResend = 0;
         while(isAck == 0 && numOfResend < MAXRESENDS){
             System.err.println("Server not receive ACK!");
             sendAndReceive(marShalData);
-            isAck = UnMarshal.unmarshalInteger(this.unMarShalData, INTEGER_LENGTH);
+            isAck = UnMarshal.unmarshalInteger(this.unMarShalData, 0);
             //Increase counter
             numOfResend++;
         }
