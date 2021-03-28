@@ -23,6 +23,8 @@ public class Service3Control extends Control implements marshal, unmarshal{
      *  Marshal service data
      */
     public void marshal() throws Exception {
+            //reset every time
+            this.collectedData = new ArrayList<>();
             // header represents this is a request/response msg
             collectedData.add(DataMSG);
             // message id
