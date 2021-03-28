@@ -49,16 +49,10 @@ public class ServerApp {
         Server6_Boundary server6_boundary = new Server6_Boundary();
 
 
-
         while (true)
         {
             byte[] dataTobeUnmarshal = control.receive();
             //todo: handle ack
-            if(!handleACK(dataTobeUnmarshal)){
-                control.clearDataToBeUnMarshal();
-                System.err.println("receive nack");
-                continue;
-            }
             int serviceID = control.getServiceID_receive();
 
             switch (serviceID){
@@ -93,34 +87,6 @@ public class ServerApp {
         }
     }
 
-    public static boolean handleACK(byte[] receivedData) {
-//        for(byte data: unMarShalData) {
-//            System.err.println("marshal: " + unMarShalData);
-//        }
-        try {
-            int isAck = UnMarshal.unmarshalInteger(receivedData, 0);
-            //todo: step1: if its nack
-            if (isAck == 0) {
-                int msgID = UnMarshal.unmarshalInteger(receivedData, 4);
-                int status = UnMarshal.unmarshalInteger(receivedData, 8);
-                if (status == 0) {
-                    byte[] preProcess = ProcessedTable.get(msgID);
-                    //todo step2: check in the hashtable
-                    if (preProcess == null) {
-                        //todo step3: if not found: return nack
-                        ArrayList<Object> ackData = new ArrayList<>();
-                        ackData.add(0);
-                        UDPserver.getInstance().UDPsend(marshalMsgData(ackData, true));
-                        return false;
-                    }
-                    UDPserver.getInstance().UDPsend(preProcess);
-                }
-            }
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-        }
-        return true;
-    }
 //    private static byte[] checkInTable(int msgID) {
 //        return new byte[0];
 //    }
