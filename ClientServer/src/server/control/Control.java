@@ -32,6 +32,10 @@ public class Control {
         return this.dataToBeUnMarshal;
     }
 
+    public void send(byte[] preProcess) throws IOException{
+        udpSever.UDPsend(preProcess);
+    }
+
     public void parse(){
         this.msgID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,12);
         this.serviceID_receive = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 20);

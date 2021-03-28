@@ -8,6 +8,7 @@ public class Constants {
     //UDP control params
     public static final int MAXTIMEOUTCOUNT = 1;
     public static final float REQFRATE = 1;
+    public static final float RESFRATE = 0;
     public static final float ACKFRATE = 0;
     public static final int ACK  = 1;
     public static final int NACK = 0;

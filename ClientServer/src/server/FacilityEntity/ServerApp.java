@@ -1,13 +1,19 @@
 package server.FacilityEntity;
 
 import server.control.Control;
+import server.control.UDPserver;
 import utils.UnMarshal;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.TimeoutException;
 
+import static client.config.Constants.*;
+import static utils.Marshal.marshalMsgData;
+
 public class ServerApp {
+    public static HashMap<Integer, byte[]> ProcessedTable = new HashMap<>();
 
     public static void main(String[] args) throws IOException, TimeoutException {
         Facility LT1 = new Facility("LT1", 1);
@@ -42,10 +48,19 @@ public class ServerApp {
         Server5_Boundary server5_boundary = new Server5_Boundary();
         Server6_Boundary server6_boundary = new Server6_Boundary();
 
+
+
         while (true)
         {
             byte[] dataTobeUnmarshal = control.receive();
+            //todo: handle ack
+            if(!handleACK(dataTobeUnmarshal)){
+                control.clearDataToBeUnMarshal();
+                System.err.println("receive nack");
+                continue;
+            }
             int serviceID = control.getServiceID_receive();
+
             switch (serviceID){
                 case 1:
                     control.clearDataToBeUnMarshal();
@@ -77,4 +92,36 @@ public class ServerApp {
             }
         }
     }
+
+    public static boolean handleACK(byte[] receivedData) {
+//        for(byte data: unMarShalData) {
+//            System.err.println("marshal: " + unMarShalData);
+//        }
+        try {
+            int isAck = UnMarshal.unmarshalInteger(receivedData, 0);
+            //todo: step1: if its nack
+            if (isAck == 0) {
+                int msgID = UnMarshal.unmarshalInteger(receivedData, 4);
+                int status = UnMarshal.unmarshalInteger(receivedData, 8);
+                if (status == 0) {
+                    byte[] preProcess = ProcessedTable.get(msgID);
+                    //todo step2: check in the hashtable
+                    if (preProcess == null) {
+                        //todo step3: if not found: return nack
+                        ArrayList<Object> ackData = new ArrayList<>();
+                        ackData.add(0);
+                        UDPserver.getInstance().UDPsend(marshalMsgData(ackData, true));
+                        return false;
+                    }
+                    UDPserver.getInstance().UDPsend(preProcess);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+        return true;
+    }
+//    private static byte[] checkInTable(int msgID) {
+//        return new byte[0];
+//    }
 }

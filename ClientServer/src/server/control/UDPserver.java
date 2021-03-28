@@ -2,6 +2,7 @@ package server.control;
 
 import java.io.IOException;
 import java.net.*;
+import java.util.Arrays;
 
 public class UDPserver {
     private DatagramSocket serverSocket;
@@ -45,6 +46,7 @@ public class UDPserver {
         // Send UDP reply to client
         try {
             DatagramPacket reply = new DatagramPacket(message, message.length, this.clientIPAddress, clientPort);
+            System.err.println("server send: " + Arrays.toString(reply.getData()));
             serverSocket.send(reply);
         } catch (IOException e) {
             System.err.println("[UDP Server]    --UDPsend--     Failed to receive/send packet.");
