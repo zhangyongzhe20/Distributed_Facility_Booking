@@ -12,23 +12,34 @@ public class BookingID {
         return cancel;
     }
 
-    public BookingID(int id, int day, int facilityID, int StartTime, int EndTime) {
+    public BookingID(int id, int day, String facilityName, int StartTime, int EndTime) {
         String DATE_FORMAT = "yyyyMMddHHmmss";
         SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
         Calendar c1 = Calendar.getInstance(); // today
         String date = sdf.format(c1.getTime()); // date = date.substring(0,8) currTime = date.substring(8,12)
-        this.bookingInfoString = Integer.toString(day + Integer.parseInt(date.substring(0,8)))
-                +Integer.toString(facilityID)+convertIntToString(StartTime)+convertIntToString(EndTime)+date.substring(8,12);
         this.ID = id;
         this.cancel = false;
+        this.bookingInfoString = getIDString() + "-"+Integer.toString(day + Integer.parseInt(date.substring(0,8)))+"-"
+                +facilityName+"-"+convertIntToString(StartTime)+convertIntToString(EndTime)+"-"+date.substring(8,12);
     }
 
     public String getBookingInfoString() {
         return bookingInfoString;
     }
 
-    public int getID() {
+    public int getID(){
         return ID;
+    }
+
+    public String getIDString() {
+        String IDString = "0";
+        System.out.println("Get ID String");
+        if (this.ID<10){
+            IDString += Integer.toString(this.ID);
+            return IDString;
+        }else{
+            return Integer.toString(this.ID);
+        }
     }
 
     public void cancelBooking(){

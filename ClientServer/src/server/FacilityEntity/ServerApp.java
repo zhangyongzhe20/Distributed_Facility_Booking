@@ -30,8 +30,8 @@ public class ServerApp {
         LT1.bookAvailability(5,8); // 2021-03-30 15-16
         LT2.bookAvailability(3, 2); // 2021-03-28 9-10
 
-        BookingID testBookID1 = new BookingID(1,5,1,14, 16);
-        BookingID testBookID2 = new BookingID(2,3,2,9,10);
+        BookingID testBookID1 = new BookingID(1,5,"LT1",14, 16);
+        BookingID testBookID2 = new BookingID(2,3,"LT2",9,10);
         BookingIDArrayList.add(testBookID1);
         BookingIDArrayList.add(testBookID2);
 
@@ -45,11 +45,8 @@ public class ServerApp {
         {
             byte[] dataTobeUnmarshal = control.receive();
             for (BookingID id: BookingIDArrayList){
-                if (!id.isCancel())
-                {
-                    System.out.println("[Server APP]    Booking ID is: "+ id.getID());
+                    System.out.println("[Server APP]    Booking ID is: "+ id.getID() + "    Cancel Status: "+id.isCancel());
                     System.out.println("[Server APP]    The Booking info is: "+ id.getBookingInfoString());
-                }
             }
             if (control.getServiceID_receive() == 1){
                 control.clearDataToBeUnMarshal();
