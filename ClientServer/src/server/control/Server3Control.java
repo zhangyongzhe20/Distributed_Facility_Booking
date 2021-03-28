@@ -56,8 +56,8 @@ public class Server3Control extends ControlFactory{
             if (noCollision)
             {
                 // create a new bid
-                changedBookingID = new BookingID(BookingIDArrayList.size()+1, this.day, this.facilityID ,
-                        this.startIndex+offset+7, this.endIndex+offset+7);
+//                changedBookingID = new BookingID(BookingIDArrayList.size()+1, this.day, this.facilityID ,
+//                        this.startIndex+offset+7, this.endIndex+offset+7);
                 BookingIDArrayList.add(changedBookingID);
                 System.out.println("[Server3 Control]   --changeBookingTime-- Add the changed BookingID: \n"+changedBookingID.getBookingInfoString());
             }
