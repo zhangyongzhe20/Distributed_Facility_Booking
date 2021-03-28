@@ -36,7 +36,7 @@ public class Service6_Boundary extends Boundary {
     @Override
     public void displayReply() {
         if(response!=null){
-            System.out.println("Your cancel is successful: " + "\n"+ response);
+            System.out.println(response);
         }
     }
 

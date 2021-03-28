@@ -1,11 +1,11 @@
 package client.boundary;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.Arrays;
 import java.util.Scanner;
-import java.util.concurrent.TimeoutException;
+
+import static client.config.Constants.AVAILABLE_FACs;
 
 public abstract class Boundary {
     static Scanner sc = new Scanner(System.in);
@@ -70,10 +70,6 @@ public abstract class Boundary {
             return input;
         }
 
-        public static String readInputString(String message) {
-        System.out.println(message);
-        return sc.nextLine();
-    }
 
     /**
      * Used to limit the requested facility
@@ -81,26 +77,14 @@ public abstract class Boundary {
      * @return
      */
     public static String readInputFacility(String message) {
-        String[] availableFac ={"LT1", "LT2", "MR1", "MR2"};
         String input = readInputString(message);
-        while(!Arrays.stream(availableFac).anyMatch(input::equals)) {
+        while(!Arrays.stream(AVAILABLE_FACs).anyMatch(input::equals)) {
             System.err.println("Facility is not found");
             input = readInputString(message);
         }
         return input;
     }
 
-    public static int readInputInteger(String message) {
-        int input = -1;
-        while (input < 0) {
-            try {
-                input = Integer.parseInt(readInputString(message));
-            } catch (NumberFormatException e) {
-                System.err.println("Please enter in digits");
-            }
-        }
-        return input;
-    }
 
     public static int readFacType(String message) {
         int input = readInputInteger(message);
@@ -126,6 +110,25 @@ public abstract class Boundary {
             } catch (NumberFormatException e) {
                 System.err.println("Please enter in digits");
             }
+        return input;
+    }
+
+
+    public static String readInputString(String message) {
+        System.out.println(message);
+        return sc.nextLine();
+    }
+
+
+    public static int readInputInteger(String message) {
+        int input = -1;
+        while (input < 0) {
+            try {
+                input = Integer.parseInt(readInputString(message));
+            } catch (NumberFormatException e) {
+                System.err.println("Please enter in digits");
+            }
+        }
         return input;
     }
 }

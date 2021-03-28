@@ -2,6 +2,7 @@ package client.control;
 
 import java.io.IOException;
 import java.net.*;
+import static client.config.Constants.*;
 
 /**
  * @author zyz
@@ -9,9 +10,6 @@ import java.net.*;
 public class UDPClient {
     private DatagramSocket clientSocket;
     private InetAddress IPAddress;
-    private int PORT = 9876;
-    private int UDPTIMEOUT = 1000; // 1s timeout
-    private int UDPBUFFERSIZE = 2*1024;
     private static UDPClient SINGLE_INSTANCE;
 
     /**
@@ -28,9 +26,13 @@ public class UDPClient {
     }
 
     public UDPClient() throws UnknownHostException, SocketException {
-        this.IPAddress = InetAddress.getByName("localhost");
+        this.IPAddress = InetAddress.getByName(CLIENTNAME);
         // ---------------------- 1. Open UDP Socket ----------------------
         this.clientSocket = new DatagramSocket();
+        setTimeOut(UDPTIMEOUT);
+    }
+
+    public void setTimeOut(int UDPTIMEOUT) throws SocketException {
         this.clientSocket.setSoTimeout(UDPTIMEOUT);
     }
 

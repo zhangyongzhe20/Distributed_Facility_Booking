@@ -24,7 +24,7 @@ public class ClientApp{
                 }
                 isContiune();
             }
-        } while (selection!=6);
+        } while (selection!=7);
 }
 
     private static String displayMain() {

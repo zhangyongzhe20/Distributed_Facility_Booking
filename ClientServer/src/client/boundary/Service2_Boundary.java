@@ -4,6 +4,8 @@ import client.control.Service2Control;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
+import static client.config.Constants.MAX_BOOKING_HOURS;
+
 public class Service2_Boundary extends Boundary {
     private Service2Control s2C;
     private String response;
@@ -17,7 +19,7 @@ public class Service2_Boundary extends Boundary {
         
         enterDate();
         int start = enterStartTime();
-        int end = 0;
+        int end;
         do{
             end = enterEndTime();
         }while(!checkTimeBound(start, end));
@@ -41,7 +43,11 @@ public class Service2_Boundary extends Boundary {
     public void displayReply() {
         if(response != null)
         System.out.println("Your booking is successful!\n" +
-                "Your booking ID: " + response.substring(0,1));
+                "Your booking ID: " + response.substring(0,2));
+        //01-20210333-LT1-1416-0930
+        System.out.println("Date: "+response.substring(3,11));
+        System.out.println("Facility: "+response.substring(12,15));
+        System.out.println("Slot time is from "+response.substring(16,18)+" to "+response.substring(18,20));
        // System.out.println("Your booking Info: " + s2C.unMarshal().substring(1));
     }
 
@@ -76,7 +82,7 @@ public class Service2_Boundary extends Boundary {
      * @return
      */
     private boolean checkTimeBound(int start, int end) {
-        if((end - start) <= 0 || (end - start) > 2){
+        if((end - start) <= 0 || (end - start) > MAX_BOOKING_HOURS){
             System.err.println("You can book a facility up to 2 hours");
             return false;
         }

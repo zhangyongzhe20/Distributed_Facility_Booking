@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import static client.config.Constants.*;
 
 public class Service4Control extends Control implements marshal, unmarshal{
     private static final int SERVICEID = 4;
@@ -44,7 +45,13 @@ public class Service4Control extends Control implements marshal, unmarshal{
     public void setInterval(int interval) {
         this.interval = interval;
         // to set udp timeout to be the interval
-        this.maxTimeout = interval;
+        try {
+            UDPClient.getInstance().setTimeOut(interval * 1000);
+        } catch (Exception e){
+            System.err.println(e.getMessage());
+            System.exit(5);
+        }
+
     }
 
     public void monitoring() throws IOException {

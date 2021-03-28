@@ -18,7 +18,7 @@ public class Server6Control extends ControlFactory{
 
     private String receivedBookingInfo;
     private int day;
-    private int facilityID;
+    private String facilityName;
     private int startIndex;
     private int endIndex;
     MonthDateParser mp = new MonthDateParser();
@@ -81,7 +81,7 @@ public class Server6Control extends ControlFactory{
         }
 
         for (Facility fc: facilityArrayList){
-            if (fc.getFacilityID() == this.facilityID){
+            if (fc.getFacilityName().equals(this.facilityName)){
                 for (int i = 0; i < (this.endIndex-this.startIndex); i++) {
                     fc.cancelBooking(this.day, this.startIndex+i);
                     System.out.println("[Server6 Control]   --cancelBooking-- Set Facility to available");
@@ -92,12 +92,16 @@ public class Server6Control extends ControlFactory{
     }
 
     public void parseBookingInfo(String bookingInfo){
-        this.day = StringDayToInt(bookingInfo.substring(6,8)) - mp.getDate();
-        this.facilityID = Integer.parseInt(bookingInfo.substring(8,9));
-        this.startIndex = Integer.parseInt(bookingInfo.substring(9,11))-7;
-        this.endIndex = Integer.parseInt(bookingInfo.substring(11,13))-7;
+        this.day = StringDayToInt(bookingInfo.substring(9,11)) - mp.getDate();
+        System.out.println("day"+day);
+        this.facilityName = bookingInfo.substring(12,15);
+        System.out.println("facility name"+facilityName);
+        this.startIndex = Integer.parseInt(bookingInfo.substring(16,18))-7;
+        System.out.println("start index"+startIndex);
+        this.endIndex = Integer.parseInt(bookingInfo.substring(18,20))-7;
+        System.out.println("end index"+endIndex);
 
-        System.out.println("[Server6 Control]   --parseBooking Info day: "+day+" facilityID: "+facilityID
+        System.out.println("[Server6 Control]   --parseBooking Info day: "+day+" facilityName: "+ facilityName
                 +"  Start Index: "+startIndex+"  End index: "+endIndex);
     }
 

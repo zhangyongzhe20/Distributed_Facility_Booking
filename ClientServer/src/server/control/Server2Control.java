@@ -46,7 +46,8 @@ public class Server2Control extends ControlFactory{
 
             bookFacility(facilityArrayList);
             if (hasVacancy == 4){
-                newBookingID = new BookingID(BookingIDArrayList.size()+1, this.day, this.bookedFacilityID ,
+                System.out.println("Length the passed ID will be"+(BookingIDArrayList.size()+1));
+                newBookingID = new BookingID(BookingIDArrayList.size()+1, this.day, this.facilityName,
                         this.slotStartIndex, this.slotStartIndex+slots);
                 BookingIDArrayList.add(newBookingID);
             }
@@ -82,7 +83,7 @@ public class Server2Control extends ControlFactory{
             }
             else if (hasVacancy == 4){
                 System.out.println("[Server2]   --marshalAndSend--  Marshal: "+this.newBookingID.getBookingInfoString());
-                this.marshaledData = Marshal.marshalString(Integer.toString(this.newBookingID.getID())+this.newBookingID.getBookingInfoString());
+                this.marshaledData = Marshal.marshalString(this.newBookingID.getBookingInfoString());
                 this.status = new byte[]{0,0,0,1};
                 send(this.marshaledData);
             }
