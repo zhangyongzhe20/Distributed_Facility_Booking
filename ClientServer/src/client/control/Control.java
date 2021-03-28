@@ -4,7 +4,6 @@ import utils.UnMarshal;
 import java.io.IOException;
 import java.net.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.concurrent.TimeoutException;
 import static client.config.Constants.*;
 
@@ -35,26 +34,29 @@ public class Control {
         do {
             try {
                 // simulate this sent message is lost during transmission
-                if (Math.random() < FRATE) {
-                    System.out.println("Simulate this sent message is lost during transmission");
+                if (Math.random() < REQFRATE) {
+                    System.out.println("Simulate Request is lost during transmission");
                 } else {
                     udpClient.UDPsend(sendData);
+                }
                     // get the unMarShalData
                     this.unMarShalData = udpClient.UDPreceive();
-                    if(this.unMarShalData != null){
+                    if(this.unMarShalData != null) {
+                        //TODO check whether is NACK
+                        handleACK();
                         //TODO REMOVE LATER
                         //System.out.println("received: " + Arrays.toString(unMarShalData));
                         sendAck(true);
                         return;
                     }
-                }
             } catch (SocketTimeoutException e) {
                 timeout++;
+                //TODO: STEP1. Send NACK to server, at every timeout
+                sendAck(false);
                 if (timeout >= MAXTIMEOUTCOUNT){
-                    sendAck(false);
                     throw new TimeoutException("Exceed max time out");
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }while (true);
@@ -63,13 +65,21 @@ public class Control {
     protected void sendAck(boolean b) throws IOException {
         ArrayList<Object> ackData = new ArrayList<>();
         ackData.add(ACKMSG);
+        //TODO: add msg ID
+        ackData.add(this.collectedData.get(1));
         if(b){
             ackData.add(ACK);
         }
         else {
             ackData.add(NACK);
         }
-        this.udpClient.UDPsend(marshalMsg(ackData, true));
+        // simulate this sent message is lost during transmission
+        if (Math.random() < ACKFRATE) {
+            System.out.println("Simulate ACK message is lost during transmission");
+        } else {
+            this.udpClient.UDPsend(marshalMsg(ackData, true));
+        }
+
     }
 
     /**
