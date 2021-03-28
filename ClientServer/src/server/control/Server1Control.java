@@ -19,6 +19,7 @@ public class Server1Control extends ControlFactory{
 
 
     public Server1Control() throws SocketException, UnknownHostException {
+        super();
         this.udpSever = UDPserver.getInstance();
         this.dataToBeUnMarshal = new byte[0];
         this.marshaledData = new byte[0];

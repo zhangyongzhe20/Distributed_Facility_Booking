@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
 
-public class Server1_Boundary {
+public class Server1_Boundary implements ServerBoundary {
     private Server1Control server1;
 
     public Server1_Boundary() throws SocketException, UnknownHostException, IOException, TimeoutException {

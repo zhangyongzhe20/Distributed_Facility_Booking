@@ -26,11 +26,11 @@ public class ServerApp {
 
 
         // Add some user predefined data here
-        LT1.bookAvailability(5,7); // 2021-03-30 14-15
-        LT1.bookAvailability(5,8); // 2021-03-30 15-16
+        LT1.bookAvailability(1,2); // 2021-03-30 14-15
+        LT1.bookAvailability(1,3); // 2021-03-30 15-16
         LT2.bookAvailability(3, 2); // 2021-03-28 9-10
 
-        BookingID testBookID1 = new BookingID(1,5,"LT1",14, 16);
+        BookingID testBookID1 = new BookingID(1,1,"LT1",10, 12);
         BookingID testBookID2 = new BookingID(2,3,"LT2",9,10);
         BookingIDArrayList.add(testBookID1);
         BookingIDArrayList.add(testBookID2);
@@ -39,37 +39,42 @@ public class ServerApp {
         Server1_Boundary server1_boundary = new Server1_Boundary();
         Server2_Boundary server2_boundary = new Server2_Boundary();
         Server3_Boundary server3_boundary = new Server3_Boundary();
+        Server5_Boundary server5_boundary = new Server5_Boundary();
         Server6_Boundary server6_boundary = new Server6_Boundary();
 
         while (true)
         {
             byte[] dataTobeUnmarshal = control.receive();
-            for (BookingID id: BookingIDArrayList){
-                    System.out.println("[Server APP]    Booking ID is: "+ id.getID() + "    Cancel Status: "+id.isCancel());
-                    System.out.println("[Server APP]    The Booking info is: "+ id.getBookingInfoString());
-            }
-            if (control.getServiceID_receive() == 1){
-                control.clearDataToBeUnMarshal();
-                server1_boundary.processRequest(dataTobeUnmarshal, facilityArrayList);
-                server1_boundary.clearQueryInfo();
-            }
-            else if (control.getServiceID_receive() ==  2){
-                control.clearDataToBeUnMarshal();
-                server2_boundary.processRequest(dataTobeUnmarshal, facilityArrayList, BookingIDArrayList);
-                server2_boundary.clearTimeSlotInfo();
-
-            } else if (control.getServiceID_receive() == 3){
-                control.clearDataToBeUnMarshal();
-                server3_boundary.processRequest(dataTobeUnmarshal, facilityArrayList, BookingIDArrayList);
-            }else if (control.getServiceID_receive() == 6){
-                control.clearDataToBeUnMarshal();
-                server6_boundary.processRequest(dataTobeUnmarshal, facilityArrayList, BookingIDArrayList);
+            int serviceID = control.getServiceID_receive();
+            switch (serviceID){
+                case 1:
+                    control.clearDataToBeUnMarshal();
+                    server1_boundary.processRequest(dataTobeUnmarshal, facilityArrayList);
+                    server1_boundary.clearQueryInfo();
+                    break;
+                case 2:
+                    control.clearDataToBeUnMarshal();
+                    server2_boundary.processRequest(dataTobeUnmarshal, facilityArrayList, BookingIDArrayList);
+                    server2_boundary.clearTimeSlotInfo();
+                    break;
+                case 3:
+                    control.clearDataToBeUnMarshal();
+                    server3_boundary.processRequest(dataTobeUnmarshal, facilityArrayList, BookingIDArrayList);
+                    break;
+                case 4:
+                    break;
+                case 5:
+                    control.clearDataToBeUnMarshal();
+                    server5_boundary.processRequest(dataTobeUnmarshal, facilityArrayList, BookingIDArrayList);
+                    break;
+                case 6:
+                    control.clearDataToBeUnMarshal();
+                    server6_boundary.processRequest(dataTobeUnmarshal, facilityArrayList, BookingIDArrayList);
+                    break;
+                default:
+                    System.out.println("[Server APP] ~~~Unexpected case!!!!");
+                    break;
             }
         }
-        // server3_boundary.processRequest(facilityArrayList, BookingIDArrayList);
-
     }
-
-
-
 }
