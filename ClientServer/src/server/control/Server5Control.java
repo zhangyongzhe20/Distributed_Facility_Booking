@@ -37,7 +37,7 @@ public class Server5Control extends ControlFactory{
             {
                 System.out.println("[Server5] --unMarshal-- Chose a vacancy : Facility"+this.chosenFacilityName+" StartIndex: "+this.startIndex);
                 // create a new bookingID
-                newBookingID = new BookingID(BookingIDArrayList.size()+1, this.chosenDay, this.chosenFacilityName, this.startIndex+7, this.startIndex+9);
+                newBookingID = new BookingID(BookingIDArrayList.size()+1, this.chosenDay, this.chosenFacilityName, this.startIndex+7, this.startIndex+8);
                 BookingIDArrayList.add(newBookingID);
             }
         }
@@ -76,21 +76,19 @@ public class Server5Control extends ControlFactory{
         // check LT1 and LT2
         int day =1;
         for (int i = 1; i < 10; i++) {
-            if(facilityArrayList.get(0+fcIndex).checkAvailability(day,i) &&facilityArrayList.get(0+fcIndex).checkAvailability(day,i+1))
+            if(facilityArrayList.get(0+fcIndex).checkAvailability(day,i))
             { // LT1
                 this.hasVacancy = true;
                 this.startIndex = i;
                 facilityArrayList.get(0+fcIndex).bookAvailability(day,i);
-                facilityArrayList.get(0+fcIndex).bookAvailability(day,i+1);
                 this.chosenDay = day;
                 this.chosenFacilityName = facilityArrayList.get(0+fcIndex).getFacilityName();
                 break;
-            } else if (facilityArrayList.get(1+fcIndex).checkAvailability(day,i) && facilityArrayList.get(1+fcIndex).checkAvailability(day,i+1))
+            } else if (facilityArrayList.get(1+fcIndex).checkAvailability(day,i))
             { // LT2
                 this.hasVacancy = true;
                 this.startIndex = i;
                 facilityArrayList.get(1+fcIndex).bookAvailability(day,i);
-                facilityArrayList.get(1+fcIndex).bookAvailability(day,i+1);
                 this.chosenDay = day;
                 this.chosenFacilityName = facilityArrayList.get(1+fcIndex).getFacilityName();
                 break;

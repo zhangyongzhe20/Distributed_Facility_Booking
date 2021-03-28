@@ -89,7 +89,6 @@ public class Facility {
     // ------------------------------------------ Functional Methods  ------------------------------------------
     public void bookAvailability(int day, int slot) {
         this.availability[slot-1][day-1]=false;
-
     }
 
     public void cancelBooking(int day, int slot){
