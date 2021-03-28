@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class CallBack {
+    /**
+     * Key: facility name
+     */
     public static HashMap<String, ArrayList<Member>> MonitorTables;
     /**
      *

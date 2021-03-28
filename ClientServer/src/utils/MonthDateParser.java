@@ -22,4 +22,11 @@ public class MonthDateParser {
     public String getMonth() {
         return month;
     }
+
+    public int StringDayToInt(String day){
+        if (day.charAt(0) == '0'){
+            return Integer.parseInt(day.substring(1));
+        }else
+            return Integer.parseInt(day);
+    }
 }

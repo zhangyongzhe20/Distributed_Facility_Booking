@@ -12,7 +12,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
-public class Server6Control extends ControlFactory{
+public class Server6Control extends ControlFactory implements ControlChangeFactory{
     private int bookingID;
     private boolean bookingIDExist;
 
@@ -21,11 +21,12 @@ public class Server6Control extends ControlFactory{
     private String facilityName;
     private int startIndex;
     private int endIndex;
-    MonthDateParser mp = new MonthDateParser();
+    private MonthDateParser mp;
 
     public Server6Control() throws SocketException, UnknownHostException {
         super();
         this.bookingIDExist = false;
+        mp = new MonthDateParser();
     }
 
     @Override
@@ -92,25 +93,15 @@ public class Server6Control extends ControlFactory{
     }
 
     public void parseBookingInfo(String bookingInfo){
-        this.day = StringDayToInt(bookingInfo.substring(9,11)) - mp.getDate();
-        System.out.println("day"+day);
+        this.day = mp.StringDayToInt(bookingInfo.substring(9,11)) - mp.getDate();
         this.facilityName = bookingInfo.substring(12,15);
-        System.out.println("facility name"+facilityName);
         this.startIndex = Integer.parseInt(bookingInfo.substring(16,18))-7;
-        System.out.println("start index"+startIndex);
         this.endIndex = Integer.parseInt(bookingInfo.substring(18,20))-7;
-        System.out.println("end index"+endIndex);
 
         System.out.println("[Server6 Control]   --parseBooking Info day: "+day+" facilityName: "+ facilityName
                 +"  Start Index: "+startIndex+"  End index: "+endIndex);
     }
 
-    public static int StringDayToInt(String day){
-        if (day.charAt(0) == '0'){
-            return Integer.parseInt(day.substring(1));
-        }else
-            return Integer.parseInt(day);
-    }
 
     @Override
     public void send(byte[] sendData) throws IOException{
@@ -119,4 +110,5 @@ public class Server6Control extends ControlFactory{
         byte[] addAck_msg = concat(ackType, this.status, sendData);
         udpSever.UDPsend(addAck_msg);
     }
+
 }
