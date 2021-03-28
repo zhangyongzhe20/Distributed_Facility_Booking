@@ -6,6 +6,7 @@ import java.util.Calendar;
 public class Facility {
     String FacilityName;
     int FacilityType;
+
     boolean availability[][];
     String slotsString;
     private int facilityID;
@@ -80,6 +81,9 @@ public class Facility {
 
     public boolean checkAvailability(int day, int slot){
         return this.availability[slot-1][day-1];
+    }
+    public int getFacilityType() {
+        return FacilityType;
     }
 
     // ------------------------------------------ Functional Methods  ------------------------------------------
