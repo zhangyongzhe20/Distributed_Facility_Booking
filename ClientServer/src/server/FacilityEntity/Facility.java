@@ -92,33 +92,5 @@ public class Facility {
         this.availability[slot-1][day-1]=true;
     }
 
-    public boolean changeBooking(int day, int offset, int startIndex, int endIndex){
-        System.out.println("Facility:       "+offset);
-        if (offset>0)
-        {
-            for (int i = 0; i < (endIndex-startIndex); i++) {
-                if (!this.availability[endIndex+offset-1][day-1]){ // check if endindex + offset has collision
-                    return false; // cannot change slot
-                }
-            }
-            for (int i = 0; i < (endIndex-startIndex); i++) {
-                this.availability[startIndex+i-1][day-1]=true; //set availability of previous slot to true
-                this.availability[endIndex+offset+i-1][day-1]=false; // set availability of new slot to false
-            }
-        }else
-        {// offset<0
-            for (int i = 0; i < (endIndex-startIndex); i++) {
-                if (!this.availability[startIndex+offset-1][day-1]){ // check if startindex - offset has collision
-                    return false; // cannot change slot
-                }
-            }
-            for (int i = 0; i < (endIndex-startIndex); i++) {
-                this.availability[startIndex+i-1][day-1]=true; //set availability of previous slot to true
-                this.availability[startIndex+offset+i-1][day-1]=false; // set availability of new slot to false
-            }
-        }
-        return true;
-    }
-
 
 }

@@ -4,6 +4,7 @@ import server.FacilityEntity.BookingID;
 import server.FacilityEntity.Facility;
 import utils.Marshal;
 import utils.UnMarshal;
+import utils.MonthDateParser;
 
 import java.io.IOException;
 import java.lang.instrument.UnmodifiableClassException;
@@ -14,25 +15,31 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.concurrent.TimeoutException;
 
-public class Server3Control extends ControlFactory{
+
+public class Server3Control extends ControlFactory implements ControlChangeFactory{
     private int bookingID;
     private int offset;
 
     private boolean bookingIDExist;
-    private boolean noCollision;
+    private boolean offsetInBound;
+    private boolean collisionStatus; // 1: fully has no vacancy; 2: partial vacancy can postpone; 3: partial vacancy can advance; 4: ok
+    private String idAssociatedBookingInfo;
     private BookingID changedBookingID;
 
-    private String receivedBookingInfo;
     private int day;
-    private int facilityID;
+    private String facilityName;
     private int startIndex;
     private int endIndex;
+
+    private MonthDateParser mdParser;
 
     public Server3Control() throws SocketException, UnknownHostException {
         super();
         this.bookingIDExist = false;
-        this.noCollision = false;
-        this.receivedBookingInfo = "";
+        this.collisionStatus = true;
+        this.offsetInBound = false;
+        this.mdParser = new MonthDateParser();
+        this.idAssociatedBookingInfo="";
     }
 
     @Override
@@ -40,131 +47,157 @@ public class Server3Control extends ControlFactory{
         this.dataToBeUnMarshal = dataTobeUnmarshal;
         if (this.dataToBeUnMarshal.length != 0)
         {
-            int bookingID_length = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 24);
-            System.out.println("BookingID Length: "+bookingID_length);
-
             this.bookingID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 28);
-            System.out.println("BookingID: "+bookingID);
-
-            int hours_length = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 32);
-            System.out.println("hours length: "+hours_length);
+            System.out.println("[Server3 Control]   --unMarshal-- Received BookingID: "+bookingID);
 
             this.offset = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 36);
-            System.out.println("offset: "+offset);
+            System.out.println("[Server3 Control]   --unMarshal-- Wanted change offset is: "+offset);
 
-            ChangeBookingSlot(facilityArrayList, BookingIDArrayList);
-            if (noCollision)
-            {
-                // create a new bid
-//                changedBookingID = new BookingID(BookingIDArrayList.size()+1, this.day, this.facilityID ,
-//                        this.startIndex+offset+7, this.endIndex+offset+7);
-                BookingIDArrayList.add(changedBookingID);
-                System.out.println("[Server3 Control]   --changeBookingTime-- Add the changed BookingID: \n"+changedBookingID.getBookingInfoString());
-            }
+            // Check BookingID exist or not
+            for (BookingID bid: BookingIDArrayList){
+                if (bid.getID() == this.bookingID && !(bid.isCancel())){
+                    System.out.println("[Server3 Control]   --unMarshal-- The bookingID exist");
+                    this.bookingIDExist = true;
+                    this.idAssociatedBookingInfo = bid.getBookingInfoString();
+                    parseBookingInfo(idAssociatedBookingInfo);
+                    break;
+                }
+            }// end for
+
+            // If bookingID exist. Check if offset is in bound
+            if (this.bookingIDExist){
+                if (offset<0 && (startIndex+offset)<1){
+                    this.offsetInBound = false;
+                } else if (offset>0 && (endIndex+offset)>11){
+                    this.offsetInBound = false;
+                } else{
+                    this.offsetInBound =true;
+                }
+            }// endif
+
+            // If offset is in bound. Check booking time has collision or not.
+            if (this.offsetInBound){
+                changeBookingTime(facilityArrayList);
+                if (!this.collisionStatus){
+                    // if change is success. Set the previous bookingID status to cancel.
+                    for (BookingID bid: BookingIDArrayList){
+                        if (bid.getID() == this.bookingID){
+                            bid.cancelBooking();
+                            break;
+                        }
+                    }
+                    // And create a new one
+                    System.out.println("[Server3 Control]   --unMarshal-- Create a new bookingID");
+                    changedBookingID = new BookingID(BookingIDArrayList.size()+1, this.day, this.facilityName,
+                            this.startIndex+offset+7, this.endIndex+offset+7);
+                    BookingIDArrayList.add(changedBookingID);
+                }
+            } // end if
+
         }
         return null;
     }
 
-    public void ChangeBookingSlot(ArrayList<Facility> facilityArrayList, ArrayList<BookingID> BookingIDArrayList)
-    {
-        for (BookingID bid: BookingIDArrayList){
-            // check if the BookID is valid
-            if (bid.getID() == this.bookingID)
-            {
-                if (!bid.isCancel())
-                {
-                    bookingIDExist = true;
-                    this.receivedBookingInfo = bid.getBookingInfoString();
-                    parseBookingInfo(receivedBookingInfo);
-
-                    System.out.println("[Server3 Control]   --ChangeBookingSlot-- "+receivedBookingInfo);
-                    changeBookingTime(facilityArrayList, BookingIDArrayList);
-                }
-                else {
-                    System.out.println("[Server3 Control]   --ChangeBookingSlot-- The BookingID dosenot exist ");
-                }
-            }
-        }
-    }
 
     @Override
     public void marshalAndSend() throws TimeoutException, IOException{
         if (UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,4) == 0){
             // Msg Type is ACK
             System.out.println("[Server3]   --marshalAndSend--  Received ACK msg");
-        }else {
+        } else if (!this.bookingIDExist){
+            // Booking ID doesnot exist
+            this.marshaledData = Marshal.marshalString("The bookingID does not exist.");
+            this.status = new byte[]{0,0,0,0};
+            send(this.marshaledData);
+        } else if (!this.offsetInBound){
+            this.marshaledData = Marshal.marshalString("Shift slots out of time range 8am-6pm. Pls choose another slot");
+            this.status = new byte[]{0,0,0,0};
+            send(this.marshaledData);
+        }
+        else {
+            // Booking ID exist
             System.out.println("[Server3]   --marshalAndSend--  Msg Type is request");
-            if (!this.bookingIDExist){
-                System.out.println("[Server3]   --marshalAndSend-- The BookingID dose not exist.");
-                this.marshaledData = Marshal.marshalString("The facility does not exist");
+            if (this.collisionStatus){
+                System.out.println("[Server3]   --marshalAndSend--  The intended changed slot is fully not available.");  // TODO: Delete this print after client can parse
+                this.marshaledData = Marshal.marshalString("The intended changed slot is not available.");
+                this.status = new byte[]{0,0,0,0};
                 send(this.marshaledData);
-            } else if (this.noCollision){
-                System.out.println("[Server3]   --marshalAndSend-- The change booking is success.");
-                this.marshaledData = Marshal.marshalString(Integer.toString(this.changedBookingID.getID())+this.changedBookingID.getBookingInfoString());
+            } else {
+                System.out.println("[Server3]   --marshalAndSend--  Change is success. "+this.changedBookingID.getBookingInfoString());
+                this.marshaledData = Marshal.marshalString(this.changedBookingID.getBookingInfoString());
+                this.status = new byte[]{0,0,0,1};
                 send(this.marshaledData);
             }
         }
+        this.collisionStatus = true;
         this.bookingIDExist = false;
-        this.noCollision = false;
+        this.offsetInBound = false;
+        this.dataToBeUnMarshal = new byte[0];
     }
 
     @Override
     public void send(byte[] sendData) throws IOException{
-//        if (!this.bookingIDExist){
-//            this.ackType = new byte[] {0,0,0,1};
-//            System.out.println("[Server2]   --send--    send reply to client with ACK = 0");
-//            byte[] addAck_msg = concat(ackType, sendData);
-//            udpSever.UDPsend(addAck_msg);
-//        } else if (!this.noCollision){
-//            this.ackType = new byte[] {0,0,0,1};
-//            System.out.println("[Server2]   --send--    send reply to client with ACK = 0");
-//            byte[] addAck_msg = concat(ackType, sendData);
-//            udpSever.UDPsend(addAck_msg);
-//        }
+        System.out.println("[Server2]   --send--    Collision Status: "+this.collisionStatus + "ID exist: "+this.bookingIDExist);
+        this.ackType = new byte[]{0,0,0,1};
+        byte[] addAck_msg = concat(ackType, this.status, sendData);
+        udpSever.UDPsend(addAck_msg);
     }
 
-
-
-    public void changeBookingTime(ArrayList<Facility> facilityArrayList, ArrayList<BookingID> BookingIDArrayList){
-        for (BookingID bid: BookingIDArrayList){
-            if (bid.getID() == this.bookingID){
-                bid.cancelBooking();
-                System.out.println("[Server3 Control]   --changeBookingTime-- Set previous BID to cancel");
-            }
-        }
+    public void changeBookingTime(ArrayList<Facility> facilityArrayList){
         for (Facility fc: facilityArrayList) {
-            if (fc.getFacilityID() == this.facilityID){
-                this.noCollision = fc.changeBooking(this.day, this.offset, this.startIndex-1, this.endIndex-1);
-                System.out.println("There is collision: "+this.noCollision);
-                fc.setPrintSlot(7);
-                System.out.println("[Server3 Control]   --changeBookingTime-- The new availability is: \n" + fc.getPrintResult());
+            if (fc.getFacilityName().equals(facilityName)){
+                // only one booking slot
+                if ((startIndex-endIndex)==1){
+                    if (!fc.checkAvailability(this.day, this.startIndex+offset))
+                    {// has collision
+                        System.out.println("check slot: "+fc.checkAvailability(day, this.startIndex+offset));
+                    }else{// no collision
+                        fc.cancelBooking(this.day, this.startIndex);
+                        fc.bookAvailability(this.day, this.startIndex+offset);
+                        this.collisionStatus =false;
+                    }
+                }else {// two booking slots
+                    System.out.println("offset "+offset);
+                    if (this.offset == 1){
+                        // postpone one slot
+                        if (fc.checkAvailability(this.day, this.endIndex)){
+                            this.collisionStatus = false;
+                            fc.cancelBooking(this.day, this.startIndex);
+                            fc.bookAvailability(this.day, this.startIndex+2);
+                        }
+                    } else if (this.offset == -1){
+                        // advance one slot
+                        if (fc.checkAvailability(this.day, this.startIndex-1)){
+                            this.collisionStatus = false;
+                            fc.cancelBooking(this.day, this.endIndex-1);
+                            fc.bookAvailability(this.day, this.startIndex-1);
+                        }
+                    } else {
+                        // advance or postpone more than one slot
+                            if (fc.checkAvailability(this.day, this.startIndex+offset) && fc.checkAvailability(this.day, this.endIndex+offset-1)){
+                                // both 2 slots have availability
+                                this.collisionStatus = false;
+                                fc.cancelBooking(this.day, this.startIndex);
+                                fc.cancelBooking(this.day, this.endIndex-1);
+                                fc.bookAvailability(this.day, this.startIndex+offset);
+                                fc.bookAvailability(this.day, this.endIndex+offset-1);
+                            }
+                    }
+                    break;
+                }
+                break;
             }
         }
     }
 
+    @Override
     public void parseBookingInfo(String bookingInfo){
-        this.day = StringDayToInt(bookingInfo.substring(6,8)) - getCurrentDay();
-        this.facilityID = Integer.parseInt(bookingInfo.substring(8,9));
-        this.startIndex = Integer.parseInt(bookingInfo.substring(9,11))-7;
-        this.endIndex = Integer.parseInt(bookingInfo.substring(11,13))-7;
+        this.day = mdParser.StringDayToInt(bookingInfo.substring(9,11)) - mdParser.getDate();
+        this.facilityName = bookingInfo.substring(12,15);
+        this.startIndex = Integer.parseInt(bookingInfo.substring(16,18))-7;
+        this.endIndex = Integer.parseInt(bookingInfo.substring(18,20))-7;
 
-        System.out.println("[Server3 Control]   --parseBooking Info day: "+day+" facilityID: "+facilityID
+        System.out.println("[Server3 Control]   --parseBooking Info day: "+day+" facilityName: "+ facilityName
                 +"  Start Index: "+startIndex+"  End index: "+endIndex);
     }
-
-    public static int StringDayToInt(String day){
-        if (day.charAt(0) == '0'){
-            return Integer.parseInt(day.substring(1));
-        }else
-            return Integer.parseInt(day);
-    }
-
-    public static int getCurrentDay() {
-        String DATE_FORMAT = "yyyyMMddHHmmss";
-        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
-        Calendar c1 = Calendar.getInstance(); // today
-        String date = sdf.format(c1.getTime()); // date = date.substring(0,8) currTime = date.substring(8,12)
-        return Integer.parseInt(date.substring(6, 8));
-    }
-
 }
