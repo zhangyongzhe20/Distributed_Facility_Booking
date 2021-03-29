@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
+import static server.control.Control.msgIDresponseMap;
+
 public class ServerApp {
 
     public static void main(String[] args) throws IOException, TimeoutException {
@@ -44,7 +46,36 @@ public class ServerApp {
 
         while (true)
         {
+
+            System.err.println("echo table: " + msgIDresponseMap.keySet());
             byte[] dataTobeUnmarshal = control.receive();
+            //todo: interprete to get msg type and msgID
+            int msgType = control.getMsgType();
+            int msgID = control.getMsgID();
+            if(msgType == 0){
+                System.err.println("receive ack msg");
+                int status = control.getStatus();
+                if(status == 1){
+                    System.err.println("receive ack msg with status 1");
+                    msgIDresponseMap.remove(msgID);
+                }else {
+                    //if processed before
+                    if(msgIDresponseMap.get(msgID) != null) {
+                        control.sendResponse(msgIDresponseMap.get(msgID));
+                    }else{
+                        control.sendNACK();
+                    }
+                }
+                continue;
+            }
+            else{
+                if(msgIDresponseMap.get(msgID) != null){
+                    control.sendResponse(msgIDresponseMap.get(msgID));
+                    continue;
+                }
+            }
+
+            // first process
             int serviceID = control.getServiceID_receive();
             switch (serviceID){
                 case 1:

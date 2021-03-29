@@ -9,13 +9,13 @@ public class Constants {
     public static final int MAXTIMEOUTCOUNT = 3;
     public static final double REQFRATE = 0.5;
     public static final double ACKFRATE = 0;
-    public static final double RESFRATE = 0.5;
+    public static final double RESFRATE = 0;
     public static final int ACK  = 1;
     public static final int NACK = 0;
     public static final int ACKMSG = 0;
     public static final int DataMSG = 1;
     public static final int INTEGER_LENGTH = 4; //4 bytes
-    public static final int MAXRESENDS = 3;
+    public static final int MAXRESENDS = 100;
 
     //UDP CLIENTS
     public static final int PORT = 9876;

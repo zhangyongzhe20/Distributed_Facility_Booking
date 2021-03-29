@@ -1,6 +1,7 @@
 package client.control;
 import utils.UnMarshal;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.*;
 import java.util.ArrayList;
@@ -152,5 +153,23 @@ public class Control {
 //        System.err.println("hi");
         return unMarshal();
 
+    }
+
+
+    public static byte[] concat(byte[] a, byte[] b, byte[] c) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        baos.write(a);
+        baos.write(b);
+        baos.write(c);
+        byte[] d = baos.toByteArray();
+        return d;
+    }
+
+    public static void main(String[] args) throws IOException {
+        byte[] ackMsg = new byte[]{0,0,0,0};
+        byte[] msgID = new byte[]{0,0,0,0};
+        byte[] status = new byte[]{0,0,0,1};
+        Control c = new Control();
+        c.udpClient.UDPsend(concat(ackMsg,msgID,status));
     }
 }

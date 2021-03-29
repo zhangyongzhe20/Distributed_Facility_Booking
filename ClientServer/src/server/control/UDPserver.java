@@ -37,7 +37,7 @@ public class UDPserver {
         this.serverSocket.receive(request);
         this.clientIPAddress = request.getAddress();
         this.clientPort = request.getPort();
-        System.out.println("[UDP Server]    --UDPreceive--  Received UDP: " + new String(request.getData()));
+        //System.out.println("[UDP Server]    --UDPreceive--  Received UDP: " + new String(request.getData()));
         return request.getData();
     }
 

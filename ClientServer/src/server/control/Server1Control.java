@@ -13,8 +13,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.TimeoutException;
 
-import static server.control.Control.msgIDresponseMap;
-
 public class Server1Control extends ControlFactory{
     private String queryInfo;
     private Boolean facilityExist = false;
@@ -42,7 +40,7 @@ public class Server1Control extends ControlFactory{
             System.err.println("[Server1]   --unMarshal--   The message has already been processed.");
             this.processed = true;
         }
-        if ((!this.processed)&& (dataTobeUnmarshal.length != 0))
+        if (dataTobeUnmarshal.length != 0)
         {
             int facilityName_length = UnMarshal.unmarshalInteger(dataTobeUnmarshal, 12);
             String facilityName = UnMarshal.unmarshalString(dataTobeUnmarshal, 16, 16 + facilityName_length);
@@ -61,13 +59,14 @@ public class Server1Control extends ControlFactory{
         if (UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,0)==0){
             // Msg Type is ACK
             System.err.println("[Server1]   --marshalAndSend--  Received ACK msg");
-        } else if (this.processed){
-            // MsgID is in table. It has been processed already.
-            System.err.println("[Server1]   --marshalAndSend--   The message has already been processed. Extract from table.");
-            msgID = Arrays.copyOfRange(this.dataToBeUnMarshal,4,5)[0];
-            System.out.println("MSG ID: "+msgID);
-            send(msgIDresponseMap.get(msgID));
         }
+//        else if (this.processed){
+//            // MsgID is in table. It has been processed already.
+//            System.err.println("[Server1]   --marshalAndSend--   The message has already been processed. Extract from table.");
+//            msgID = Arrays.copyOfRange(this.dataToBeUnMarshal,4,5)[0];
+//            System.out.println("MSG ID: "+msgID);
+//            send(msgIDresponseMap.get(msgID));
+//        }
         else {
             System.err.println("[Server1]   --marshalAndSend--  Msg Type is request");
             if (this.facilityExist)
