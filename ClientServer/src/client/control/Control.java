@@ -4,7 +4,6 @@ import utils.UnMarshal;
 import java.io.IOException;
 import java.net.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.concurrent.TimeoutException;
 import static client.config.Constants.*;
 
@@ -13,9 +12,11 @@ import static client.config.Constants.*;
  */
 public class Control {
     ArrayList<Object> collectedData;
+    ArrayList<Object> header;
     byte[] marShalData;
     byte[] unMarShalData;
     UDPClient udpClient;
+    static int numOfResend = 0;
     //TODO: Diff client???
     public static int msgID = 0;
 
@@ -30,32 +31,41 @@ public class Control {
      * @throws TimeoutException
      * @throws IOException
      */
-    public void sendAndReceive(byte[] sendData) throws TimeoutException, IOException {
+    public void sendAndReceive(byte[] sendData) throws Exception {
+        System.err.println(numOfResend);
         int timeout = 0;
         do {
             try {
                 // simulate this sent message is lost during transmission
-                if (Math.random() < FRATE) {
-                    System.out.println("Simulate this sent message is lost during transmission");
+                if (Math.random() < REQFRATE) {
+                    System.out.println("Simulate Request is lost during transmission");
                 } else {
                     udpClient.UDPsend(sendData);
+                }
                     // get the unMarShalData
                     this.unMarShalData = udpClient.UDPreceive();
-                    if(this.unMarShalData != null){
+                    if(this.unMarShalData != null) {
+                        timeout=0;
+                        //TODO check whether is NACK
+                        if(!handleACK()){
+                            numOfResend++;
+                            if(numOfResend >= MAXRESENDS){
+                                throw new Exception("reach max resend");
+                            }
+                            continue;
+                        }
+                        sendAck(true);
                         //TODO REMOVE LATER
                         //System.out.println("received: " + Arrays.toString(unMarShalData));
-                        sendAck(true);
                         return;
                     }
-                }
-            } catch (SocketTimeoutException e) {
+            } catch (SocketTimeoutException e){
                 timeout++;
+                //TODO: STEP1. Send NACK to server, at every timeout
+                sendAck(false);
                 if (timeout >= MAXTIMEOUTCOUNT){
-                    sendAck(false);
                     throw new TimeoutException("Exceed max time out");
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }while (true);
     }
@@ -63,13 +73,22 @@ public class Control {
     protected void sendAck(boolean b) throws IOException {
         ArrayList<Object> ackData = new ArrayList<>();
         ackData.add(ACKMSG);
+        //TODO: add msg ID
+//        System.err.println("msg id in ack: " + this.collectedData.get(1));
+        ackData.add(this.collectedData.get(1));
         if(b){
             ackData.add(ACK);
         }
         else {
             ackData.add(NACK);
         }
-        this.udpClient.UDPsend(marshalMsg(ackData, true));
+        // simulate this sent message is lost during transmission
+        if (Math.random() < ACKFRATE) {
+            System.out.println("Simulate ACK message is lost during transmission");
+        } else {
+            this.udpClient.UDPsend(marshalMsg(ackData,true));
+        }
+
     }
 
     /**
@@ -102,24 +121,16 @@ public class Control {
         return null;
     }
 
-    public void handleACK() throws Exception {
+    public boolean handleACK(){
 //        for(byte data: unMarShalData) {
 //            System.err.println("marshal: " + unMarShalData);
 //        }
         int isAck = UnMarshal.unmarshalInteger(this.unMarShalData, 0);
-        int numOfResend = 0;
-        while(isAck == 0 && numOfResend < MAXRESENDS){
-            System.err.println("Server not receive ACK!");
-            sendAndReceive(marShalData);
-            isAck = UnMarshal.unmarshalInteger(this.unMarShalData, 0);
-            //Increase counter
-            numOfResend++;
-        }
-        //TODO REMOVE LATER
-        //isAck = 0;
+        System.err.println("Receive ack value from server: " + isAck);
         if(isAck == 0){
-            throw new Exception("Reach the max times of resend");
+            return false;
         }
+        return true;
     }
 
     /**
@@ -137,7 +148,7 @@ public class Control {
 
         sendAndReceive(this.marShalData);
 
-        handleACK();
+        //handleACK();
 //        System.err.println("hi");
         return unMarshal();
 
