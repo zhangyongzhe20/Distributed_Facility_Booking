@@ -2,6 +2,8 @@ package client.control;
 
 import java.io.IOException;
 import java.net.*;
+import java.util.Arrays;
+
 import static client.config.Constants.*;
 
 /**
@@ -45,6 +47,8 @@ public class UDPClient {
         // ---------------------- Send UDP request to server ----------------------
         try {
             DatagramPacket request = new DatagramPacket(message, message.length, this.IPAddress, PORT);
+            //TODO: REMOVE LATER
+            System.err.println("send to server: " + Arrays.toString(request.getData()));
             this.clientSocket.send(request);
         } catch (IOException e) {
             System.err.println("Failed to receive/send packet.");
