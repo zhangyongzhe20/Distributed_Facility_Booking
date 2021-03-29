@@ -30,7 +30,7 @@ public class Server5Control extends ControlFactory{
         this.dataToBeUnMarshal = dataTobeUnmarshal;
         if (this.dataToBeUnMarshal.length != 0)
         {
-            this.facilityType = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 28);
+            this.facilityType = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 16);
             System.out.println("[Server5] --unMarshal-- received facility type is: "+this.facilityType);
             wiseBooking(facilityType, facilityArrayList);
             if (hasVacancy)
@@ -47,7 +47,7 @@ public class Server5Control extends ControlFactory{
 
     @Override
     public void marshalAndSend() throws TimeoutException, IOException{
-        if (UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,4) == 0){
+        if (UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,0) == 0){
             // Msg Type is ACK
             System.out.println("[Server5]   --marshalAndSend--    Received ACK msg");
         }else{

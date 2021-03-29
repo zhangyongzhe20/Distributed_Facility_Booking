@@ -33,10 +33,10 @@ public class Server6Control extends ControlFactory implements ControlChangeFacto
     public String unMarshal(byte[] dataTobeUnmarshal, ArrayList<Facility> facilityArrayList, ArrayList<BookingID> BookingIDArrayList) throws IOException {
         this.dataToBeUnMarshal = dataTobeUnmarshal;
         if (this.dataToBeUnMarshal.length != 0) {
-            int bookingID_length = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 24);
+            int bookingID_length = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 12);
             System.out.println("BookingID Length: " + bookingID_length);
 
-            this.bookingID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 28);
+            this.bookingID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 16);
             System.out.println("BookingID: " + bookingID);
 
             cancelBooking(facilityArrayList, BookingIDArrayList);
@@ -46,7 +46,7 @@ public class Server6Control extends ControlFactory implements ControlChangeFacto
 
     @Override
     public void marshalAndSend() throws TimeoutException, IOException{
-        if (UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,4) == 0){
+        if (UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,0) == 0){
             // Msg Type is ACK
             System.out.println("[Server6]   --marshalAndSend--  Received ACK msg");
         }else {

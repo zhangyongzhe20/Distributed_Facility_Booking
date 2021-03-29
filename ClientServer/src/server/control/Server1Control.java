@@ -35,10 +35,10 @@ public class Server1Control extends ControlFactory{
         this.dataToBeUnMarshal = dataTobeUnmarshal;
         if (dataTobeUnmarshal.length != 0)
         {
-            int facilityName_length = UnMarshal.unmarshalInteger(dataTobeUnmarshal, 24);
-            String facilityName = UnMarshal.unmarshalString(dataTobeUnmarshal, 28, 28 + facilityName_length);
+            int facilityName_length = UnMarshal.unmarshalInteger(dataTobeUnmarshal, 12);
+            String facilityName = UnMarshal.unmarshalString(dataTobeUnmarshal, 16, 16 + facilityName_length);
 
-            int interval = UnMarshal.unmarshalInteger(dataTobeUnmarshal, 32+facilityName_length);
+            int interval = UnMarshal.unmarshalInteger(dataTobeUnmarshal, 20+facilityName_length);
             this.queryInfo = getQueryInfo(facilityArrayList, interval, facilityName);
             System.out.println("[Server1]   --unMarshal--   queryInfo: "+queryInfo);
             return facilityName;
@@ -49,7 +49,7 @@ public class Server1Control extends ControlFactory{
     public void marshalAndSend() throws TimeoutException, IOException
     {
 
-        if (UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,8)==0){
+        if (UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,0)==0){
             // Msg Type is ACK
             System.out.println("[Server1]   --marshalAndSend--  Received ACK msg");
         }

@@ -38,11 +38,11 @@ public class Server2Control extends ControlFactory{
         this.dataToBeUnMarshal = dataToBeUnMarshal;
         if (this.dataToBeUnMarshal.length != 0)
         {
-            int facilityName_length = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 24);
-            this.facilityName = UnMarshal.unmarshalString(this.dataToBeUnMarshal, 28, 28 + facilityName_length);
+            int facilityName_length = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 12);
+            this.facilityName = UnMarshal.unmarshalString(this.dataToBeUnMarshal, 16, 16 + facilityName_length);
 
-            int bookingRequirement_length = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 28+facilityName_length);
-            this.bookingRequirement = UnMarshal.unmarshalString(this.dataToBeUnMarshal, 32+facilityName_length, 32+facilityName_length+bookingRequirement_length);
+            int bookingRequirement_length = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 16+facilityName_length);
+            this.bookingRequirement = UnMarshal.unmarshalString(this.dataToBeUnMarshal, 20+facilityName_length, 20+facilityName_length+bookingRequirement_length);
 
             bookFacility(facilityArrayList);
             if (hasVacancy == 4){
@@ -57,7 +57,7 @@ public class Server2Control extends ControlFactory{
 
     @Override
     public void marshalAndSend() throws TimeoutException, IOException{
-        if (UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,4) == 0){
+        if (UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,0) == 0){
             // Msg Type is ACK
             System.out.println("[Server2]   --marshalAndSend--    Received ACK msg");
         }else{

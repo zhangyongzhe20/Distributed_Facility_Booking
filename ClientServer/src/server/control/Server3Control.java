@@ -47,10 +47,10 @@ public class Server3Control extends ControlFactory implements ControlChangeFacto
         this.dataToBeUnMarshal = dataTobeUnmarshal;
         if (this.dataToBeUnMarshal.length != 0)
         {
-            this.bookingID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 28);
+            this.bookingID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 16);
             System.out.println("[Server3 Control]   --unMarshal-- Received BookingID: "+bookingID);
 
-            this.offset = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 36);
+            this.offset = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 24);
             System.out.println("[Server3 Control]   --unMarshal-- Wanted change offset is: "+offset);
 
             // Check BookingID exist or not
@@ -101,7 +101,7 @@ public class Server3Control extends ControlFactory implements ControlChangeFacto
 
     @Override
     public void marshalAndSend() throws TimeoutException, IOException{
-        if (UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,4) == 0){
+        if (UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,0) == 0){
             // Msg Type is ACK
             System.out.println("[Server3]   --marshalAndSend--  Received ACK msg");
         } else if (!this.bookingIDExist){
