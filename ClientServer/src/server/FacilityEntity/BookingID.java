@@ -7,7 +7,6 @@ public class BookingID {
     private String bookingInfoString;
     private int ID;
     private boolean cancel;
-
     public boolean isCancel() {
         return cancel;
     }
@@ -26,6 +25,7 @@ public class BookingID {
     public String getBookingInfoString() {
         return bookingInfoString;
     }
+
 
     public int getID(){
         return ID;

@@ -26,7 +26,7 @@ public class Server5Control extends ControlFactory{
     }
 
     @Override
-    public String unMarshal(byte[] dataTobeUnmarshal, ArrayList<Facility> facilityArrayList, ArrayList<BookingID> BookingIDArrayList) throws IOException {
+    public String unMarshal(byte[] dataTobeUnmarshal, ArrayList<BookingID> BookingIDArrayList) throws IOException {
         this.dataToBeUnMarshal = dataTobeUnmarshal;
         if (this.dataToBeUnMarshal.length != 0)
         {
@@ -54,7 +54,8 @@ public class Server5Control extends ControlFactory{
             if (this.hasVacancy){
                 this.marshaledData = Marshal.marshalString(this.newBookingID.getBookingInfoString());
                 this.status = new byte[]{0,0,0,1};
-                send(this.marshaledData);
+               // send(this.marshaledData);
+                send(this.marshaledData, Marshal.marshalString(getLatestQueryInfo(7, this.chosenFacilityName)), this.chosenFacilityName);
             }else{
                 this.marshaledData = Marshal.marshalString("There is no vacancy in tomorrow. Pls try another time.");
                 this.status = new byte[]{0,0,0,0};

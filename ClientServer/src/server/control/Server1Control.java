@@ -13,10 +13,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.TimeoutException;
 
+import static server.control.Control.msgIDresponseMap;
+
 public class Server1Control extends ControlFactory{
-    private String queryInfo;
     private Boolean facilityExist = false;
     private MonthDateParser dateParser;
+    protected String queryInfo;
 
 
     public Server1Control() throws SocketException, UnknownHostException {
@@ -33,7 +35,7 @@ public class Server1Control extends ControlFactory{
         this.queryInfo = "";
     }
 
-    public String unMarshal(byte[] dataTobeUnmarshal, ArrayList<Facility> facilityArrayList) throws IOException {
+    public String unMarshal(byte[] dataTobeUnmarshal) throws IOException {
         this.dataToBeUnMarshal = dataTobeUnmarshal;
 
         if (Arrays.equals(Arrays.copyOfRange(this.dataToBeUnMarshal,0,4), new byte[]{9, 9, 9, 9})){

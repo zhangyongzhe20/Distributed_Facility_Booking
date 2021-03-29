@@ -34,7 +34,7 @@ public class Server2Control extends ControlFactory{
     public void clearTimeSlots(){this.timeSlots="";}
 
     @Override
-    public String unMarshal(byte[] dataToBeUnMarshal, ArrayList<Facility> facilityArrayList, ArrayList<BookingID> BookingIDArrayList) throws IOException {
+    public String unMarshal(byte[] dataToBeUnMarshal, ArrayList<BookingID> BookingIDArrayList) throws IOException {
         this.dataToBeUnMarshal = dataToBeUnMarshal;
         if (this.dataToBeUnMarshal.length != 0)
         {
@@ -84,7 +84,8 @@ public class Server2Control extends ControlFactory{
                 System.out.println("[Server2]   --marshalAndSend--  Marshal: "+this.newBookingID.getBookingInfoString());
                 this.marshaledData = Marshal.marshalString(this.newBookingID.getBookingInfoString());
                 this.status = new byte[]{0,0,0,1};
-                send(this.marshaledData);
+                // from control factory
+                send(this.marshaledData, Marshal.marshalString(getLatestQueryInfo(7, this.facilityName)), this.facilityName);
             }
             this.hasVacancy = -1;
         }
@@ -149,9 +150,18 @@ public class Server2Control extends ControlFactory{
 
     @Override
     public void send(byte[] sendData) throws IOException{
-            System.out.println("[Server2]   --send--    Has Vacancy: "+this.hasVacancy);
-            this.ackType = new byte[]{0,0,0,1};
-            byte[] addAck_msg = concat(ackType, this.status, sendData);
-            udpSever.UDPsend(addAck_msg);
+        System.out.println("[Server2]   --send--    Has Vacancy: "+this.hasVacancy);
+        this.ackType = new byte[]{0,0,0,1};
+        byte[] addAck_msg = concat(ackType, this.status, sendData);
+        udpSever.UDPsend(addAck_msg);
     }
+
+//    public void send(byte[] sendData, String facilityName) throws IOException{
+//            System.out.println("[Server2]   --send--    Has Vacancy: "+this.hasVacancy);
+//            this.ackType = new byte[]{0,0,0,1};
+//            byte[] addAck_msg = concat(ackType, this.status, sendData);
+//            udpSever.UDPsend(addAck_msg);
+//            //notify
+//            CallBack.notify(facilityName, addAck_msg);
+//    }
 }

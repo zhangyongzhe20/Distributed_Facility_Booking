@@ -30,7 +30,7 @@ public class Server6Control extends ControlFactory implements ControlChangeFacto
     }
 
     @Override
-    public String unMarshal(byte[] dataTobeUnmarshal, ArrayList<Facility> facilityArrayList, ArrayList<BookingID> BookingIDArrayList) throws IOException {
+    public String unMarshal(byte[] dataTobeUnmarshal, ArrayList<BookingID> BookingIDArrayList) throws IOException {
         this.dataToBeUnMarshal = dataTobeUnmarshal;
         if (this.dataToBeUnMarshal.length != 0) {
             int bookingID_length = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 12);
@@ -60,7 +60,8 @@ public class Server6Control extends ControlFactory implements ControlChangeFacto
                 this.status = new byte[]{0,0,0,1};
                 this.marshaledData = Marshal.marshalString("The cancel is success");
             }
-            send(this.marshaledData);
+            //send(this.marshaledData);
+            send(this.marshaledData, Marshal.marshalString(getLatestQueryInfo(7, this.facilityName)), this.facilityName);
         }
         this.bookingIDExist = false;
     }

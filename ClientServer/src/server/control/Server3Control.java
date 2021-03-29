@@ -43,7 +43,7 @@ public class Server3Control extends ControlFactory implements ControlChangeFacto
     }
 
     @Override
-    public String unMarshal(byte[] dataTobeUnmarshal, ArrayList<Facility> facilityArrayList, ArrayList<BookingID> BookingIDArrayList) throws IOException {
+    public String unMarshal(byte[] dataTobeUnmarshal, ArrayList<BookingID> BookingIDArrayList) throws IOException {
         this.dataToBeUnMarshal = dataTobeUnmarshal;
         if (this.dataToBeUnMarshal.length != 0)
         {
@@ -126,7 +126,9 @@ public class Server3Control extends ControlFactory implements ControlChangeFacto
                 System.out.println("[Server3]   --marshalAndSend--  Change is success. "+this.changedBookingID.getBookingInfoString());
                 this.marshaledData = Marshal.marshalString(this.changedBookingID.getBookingInfoString());
                 this.status = new byte[]{0,0,0,1};
-                send(this.marshaledData);
+               // send(this.marshaledData);
+                //TODO
+                send(this.marshaledData, Marshal.marshalString(getLatestQueryInfo(7, this.facilityName)), this.facilityName);
             }
         }
         this.collisionStatus = true;

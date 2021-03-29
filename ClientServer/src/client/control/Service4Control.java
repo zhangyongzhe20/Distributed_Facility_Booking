@@ -60,4 +60,8 @@ public class Service4Control extends Control implements marshal, unmarshal{
                 this.isNewUpdate = true;
             }
     }
+
+    public void sendOnce() throws IOException {
+        this.udpClient.UDPsend(this.marShalData);
+    }
 }
