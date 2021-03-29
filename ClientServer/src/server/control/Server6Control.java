@@ -12,10 +12,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
-import static client.config.Constants.ACKFRATE;
-import static client.config.Constants.RESFRATE;
-import static server.FacilityEntity.ServerApp.*;
-
 public class Server6Control extends ControlFactory implements ControlChangeFactory{
     private int bookingID;
     private boolean bookingIDExist;
@@ -64,15 +60,7 @@ public class Server6Control extends ControlFactory implements ControlChangeFacto
                 this.status = new byte[]{0,0,0,1};
                 this.marshaledData = Marshal.marshalString("The cancel is success");
             }
-            int msgID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 4);
-            ProcessedTable.put(msgID, this.marshaledData);
-            // simulate this sent message is lost during transmission
-            if (Math.random() < RESFRATE) {
-                System.out.println("Simulate response message is lost during transmission");
-            } else {
-                send(this.marshaledData);
-            }
-
+            send(this.marshaledData);
         }
         this.bookingIDExist = false;
     }

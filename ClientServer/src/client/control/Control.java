@@ -41,10 +41,7 @@ public class Control {
                 }
                     // get the unMarShalData
                     this.unMarShalData = udpClient.UDPreceive();
-
-
                     if(this.unMarShalData != null) {
-                        System.err.println("received");
                         //TODO check whether is NACK
                         handleACK();
                         //TODO REMOVE LATER
@@ -52,8 +49,7 @@ public class Control {
                         sendAck(true);
                         return;
                     }
-                System.err.println("not received");
-            } catch (SocketTimeoutException e){
+            } catch (SocketTimeoutException e) {
                 timeout++;
                 //TODO: STEP1. Send NACK to server, at every timeout
                 sendAck(false);
@@ -123,13 +119,7 @@ public class Control {
         int isAck = UnMarshal.unmarshalInteger(this.unMarShalData, 0);
         int numOfResend = 0;
         while(isAck == 0 && numOfResend < MAXRESENDS){
-            //todo: step1: if its nack
-            //todo: step2: unmarshal to get msgid
-            //todo step3: check in the hashtable
-            //todo step4.1: if found: return
-            //todo step4.1: if not found: return nack
-
-            System.err.println("Server sent NACK!");
+            System.err.println("Server not receive ACK!");
             sendAndReceive(marShalData);
             isAck = UnMarshal.unmarshalInteger(this.unMarShalData, 0);
             //Increase counter
