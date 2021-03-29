@@ -13,6 +13,9 @@ public class Control {
 
     int msgID;
     int serviceID_receive;
+    int msgType;
+
+//    static
 
 
     public int getServiceID_receive() {
@@ -33,9 +36,10 @@ public class Control {
     }
 
     public void parse(){
-        this.msgID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,12);
-        this.serviceID_receive = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 20);
-        System.out.println("[Control]   --parse--   serviceID:   " + this.serviceID_receive);
+        this.msgType = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 0);
+        this.msgID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,4);
+        this.serviceID_receive = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 8);
+        System.out.println("[Control]   --parse--    msgType:   " +this.msgType + " Message ID:  "+this.msgID+" ServiceID: " + this.serviceID_receive);
     }
 
     public void clearDataToBeUnMarshal() {
