@@ -16,6 +16,7 @@ public class ControlFactory {
     protected UDPserver udpSever;
     protected byte[] ackType;
     protected byte[] status;
+    protected boolean processed;
 
     public ControlFactory() throws SocketException, UnknownHostException {
         this.udpSever = UDPserver.getInstance();

@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 
 public class Control {
     byte[] dataToBeUnMarshal;
@@ -15,8 +16,7 @@ public class Control {
     int serviceID_receive;
     int msgType;
 
-//    static
-
+    public static HashMap<Integer, byte[]> msgIDresponseMap = new HashMap<Integer, byte[]>();
 
     public int getServiceID_receive() {
         return serviceID_receive;
@@ -32,6 +32,12 @@ public class Control {
         this.dataToBeUnMarshal = udpSever.UDPreceive();
         udpSever.clearRecieveMsg();
         parse();
+
+        // Check if the request has already been processed
+        if ((msgType == 1) && msgIDresponseMap.containsKey(msgID)){
+            System.err.println("[Control] --receive-- The msg Is processed already"+msgID);
+            return new byte[]{9,9,9,9,(byte) msgID};
+        }
         return this.dataToBeUnMarshal;
     }
 
