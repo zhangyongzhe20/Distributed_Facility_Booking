@@ -54,8 +54,9 @@ public class ServerApp {
             byte[] dataTobeUnmarshal = control.receive();
             //todo: handle ack
             int serviceID = control.getServiceID_receive();
-
+            System.err.println("in main:" + serviceID);
             switch (serviceID){
+                case 0: break;
                 case 1:
                     control.clearDataToBeUnMarshal();
                     server1_boundary.processRequest(dataTobeUnmarshal, facilityArrayList);

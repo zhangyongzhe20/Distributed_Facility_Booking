@@ -7,12 +7,9 @@ import utils.UnMarshal;
 import utils.MonthDateParser;
 
 import java.io.IOException;
-import java.lang.instrument.UnmodifiableClassException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.concurrent.TimeoutException;
 
 
@@ -108,11 +105,11 @@ public class Server3Control extends ControlFactory implements ControlChangeFacto
             // Booking ID doesnot exist
             this.marshaledData = Marshal.marshalString("The bookingID does not exist.");
             this.status = new byte[]{0,0,0,0};
-            send(this.marshaledData);
+            sendResponse(this.marshaledData);
         } else if (!this.offsetInBound){
             this.marshaledData = Marshal.marshalString("Shift slots out of time range 8am-6pm. Pls choose another slot");
             this.status = new byte[]{0,0,0,0};
-            send(this.marshaledData);
+            sendResponse(this.marshaledData);
         }
         else {
             // Booking ID exist
@@ -121,12 +118,12 @@ public class Server3Control extends ControlFactory implements ControlChangeFacto
                 System.out.println("[Server3]   --marshalAndSend--  The intended changed slot is fully not available.");  // TODO: Delete this print after client can parse
                 this.marshaledData = Marshal.marshalString("The intended changed slot is not available.");
                 this.status = new byte[]{0,0,0,0};
-                send(this.marshaledData);
+                sendResponse(this.marshaledData);
             } else {
                 System.out.println("[Server3]   --marshalAndSend--  Change is success. "+this.changedBookingID.getBookingInfoString());
                 this.marshaledData = Marshal.marshalString(this.changedBookingID.getBookingInfoString());
                 this.status = new byte[]{0,0,0,1};
-                send(this.marshaledData);
+                sendResponse(this.marshaledData);
             }
         }
         this.collisionStatus = true;
@@ -136,7 +133,7 @@ public class Server3Control extends ControlFactory implements ControlChangeFacto
     }
 
     @Override
-    public void send(byte[] sendData) throws IOException{
+    public void sendResponse(byte[] sendData) throws IOException{
         System.out.println("[Server2]   --send--    Collision Status: "+this.collisionStatus + "ID exist: "+this.bookingIDExist);
         this.ackType = new byte[]{0,0,0,1};
         byte[] addAck_msg = concat(ackType, this.status, sendData);

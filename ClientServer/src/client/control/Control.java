@@ -12,9 +12,11 @@ import static client.config.Constants.*;
  */
 public class Control {
     ArrayList<Object> collectedData;
+    ArrayList<Object> header;
     byte[] marShalData;
     byte[] unMarShalData;
     UDPClient udpClient;
+    static int numOfResend = 0;
     //TODO: Diff client???
     public static int msgID = 0;
 
@@ -29,7 +31,8 @@ public class Control {
      * @throws TimeoutException
      * @throws IOException
      */
-    public void sendAndReceive(byte[] sendData) throws TimeoutException, IOException {
+    public void sendAndReceive(byte[] sendData) throws Exception {
+        System.err.println(numOfResend);
         int timeout = 0;
         do {
             try {
@@ -41,18 +44,21 @@ public class Control {
                 }
                     // get the unMarShalData
                     this.unMarShalData = udpClient.UDPreceive();
-
-
                     if(this.unMarShalData != null) {
-                        System.err.println("received");
+                        timeout=0;
                         //TODO check whether is NACK
-                        handleACK();
+                        if(!handleACK()){
+                            numOfResend++;
+                            if(numOfResend >= MAXRESENDS){
+                                throw new Exception("reach max resend");
+                            }
+                            continue;
+                        }
+                        sendAck(true);
                         //TODO REMOVE LATER
                         //System.out.println("received: " + Arrays.toString(unMarShalData));
-                        sendAck(true);
                         return;
                     }
-                System.err.println("not received");
             } catch (SocketTimeoutException e){
                 timeout++;
                 //TODO: STEP1. Send NACK to server, at every timeout
@@ -60,8 +66,6 @@ public class Control {
                 if (timeout >= MAXTIMEOUTCOUNT){
                     throw new TimeoutException("Exceed max time out");
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
         }while (true);
     }
@@ -70,6 +74,7 @@ public class Control {
         ArrayList<Object> ackData = new ArrayList<>();
         ackData.add(ACKMSG);
         //TODO: add msg ID
+//        System.err.println("msg id in ack: " + this.collectedData.get(1));
         ackData.add(this.collectedData.get(1));
         if(b){
             ackData.add(ACK);
@@ -81,7 +86,7 @@ public class Control {
         if (Math.random() < ACKFRATE) {
             System.out.println("Simulate ACK message is lost during transmission");
         } else {
-            this.udpClient.UDPsend(marshalMsg(ackData, true));
+            this.udpClient.UDPsend(marshalMsg(ackData,true));
         }
 
     }
@@ -116,30 +121,16 @@ public class Control {
         return null;
     }
 
-    public void handleACK() throws Exception {
+    public boolean handleACK(){
 //        for(byte data: unMarShalData) {
 //            System.err.println("marshal: " + unMarShalData);
 //        }
         int isAck = UnMarshal.unmarshalInteger(this.unMarShalData, 0);
-        int numOfResend = 0;
-        while(isAck == 0 && numOfResend < MAXRESENDS){
-            //todo: step1: if its nack
-            //todo: step2: unmarshal to get msgid
-            //todo step3: check in the hashtable
-            //todo step4.1: if found: return
-            //todo step4.1: if not found: return nack
-
-            System.err.println("Server sent NACK!");
-            sendAndReceive(marShalData);
-            isAck = UnMarshal.unmarshalInteger(this.unMarShalData, 0);
-            //Increase counter
-            numOfResend++;
-        }
-        //TODO REMOVE LATER
-        //isAck = 0;
+        System.err.println("Receive ack value from server: " + isAck);
         if(isAck == 0){
-            throw new Exception("Reach the max times of resend");
+            return false;
         }
+        return true;
     }
 
     /**
@@ -157,7 +148,7 @@ public class Control {
 
         sendAndReceive(this.marShalData);
 
-        handleACK();
+        //handleACK();
 //        System.err.println("hi");
         return unMarshal();
 

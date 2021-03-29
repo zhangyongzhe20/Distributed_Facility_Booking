@@ -54,17 +54,17 @@ public class Server5Control extends ControlFactory{
             if (this.hasVacancy){
                 this.marshaledData = Marshal.marshalString(this.newBookingID.getBookingInfoString());
                 this.status = new byte[]{0,0,0,1};
-                send(this.marshaledData);
+                sendResponse(this.marshaledData);
             }else{
                 this.marshaledData = Marshal.marshalString("There is no vacancy in tomorrow. Pls try another time.");
                 this.status = new byte[]{0,0,0,0};
-                send(this.marshaledData);
+                sendResponse(this.marshaledData);
             }
         }
     }
 
     @Override
-    public void send(byte[] sendData) throws IOException{
+    public void sendResponse(byte[] sendData) throws IOException{
         System.out.println("[Server3]   --send--    Has Vacancy: "+this.hasVacancy);
         this.ackType = new byte[]{0,0,0,1};
         byte[] addAck_msg = concat(ackType, this.status, sendData);

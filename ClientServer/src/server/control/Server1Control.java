@@ -4,9 +4,8 @@ import server.FacilityEntity.Facility;
 import utils.Marshal;
 import utils.UnMarshal;
 import utils.MonthDateParser;
-import java.io.ByteArrayOutputStream;
+
 import java.io.IOException;
-import java.lang.instrument.UnmodifiableClassException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -35,10 +34,11 @@ public class Server1Control extends ControlFactory{
         this.dataToBeUnMarshal = dataTobeUnmarshal;
         if (dataTobeUnmarshal.length != 0)
         {
-            int facilityName_length = UnMarshal.unmarshalInteger(dataTobeUnmarshal, 24);
-            String facilityName = UnMarshal.unmarshalString(dataTobeUnmarshal, 28, 28 + facilityName_length);
+            int facilityName_length = UnMarshal.unmarshalInteger(dataTobeUnmarshal, 12);
+            String facilityName = UnMarshal.unmarshalString(dataTobeUnmarshal, 16, 16 + facilityName_length);
 
-            int interval = UnMarshal.unmarshalInteger(dataTobeUnmarshal, 32+facilityName_length);
+            //int interval_len = UnMarshal.unmarshalInteger(dataTobeUnmarshal, 16 + facilityName_length);
+            int interval = UnMarshal.unmarshalInteger(dataTobeUnmarshal, 20 + facilityName_length);
             this.queryInfo = getQueryInfo(facilityArrayList, interval, facilityName);
             System.out.println("[Server1]   --unMarshal--   queryInfo: "+queryInfo);
             return facilityName;
@@ -58,13 +58,13 @@ public class Server1Control extends ControlFactory{
             if (this.facilityExist)
             {
                 this.marshaledData = Marshal.marshalString(this.queryInfo);
-                send(this.marshaledData);
+                sendResponse(this.marshaledData);
                 this.facilityExist = false;
             }else
             {
                 System.out.println("[Server1]   --marshalAndSend--  There is no such Facility. Pls choose in LT1, LT2, MR1, MR2");
                 this.marshaledData = Marshal.marshalString("There is no such Facility. Pls choose in LT1, LT2, MR1, MR2");
-                send(this.marshaledData);
+                sendResponse(this.marshaledData);
             }
         }
         this.dataToBeUnMarshal = new byte[0];
@@ -89,7 +89,7 @@ public class Server1Control extends ControlFactory{
         return queryInfo;
     }
 
-    public void send(byte[] sendData) throws IOException{
+    public void sendResponse(byte[] sendData) throws IOException{
         System.out.println("[Server1]   --send--    Success query: "+this.facilityExist);
             this.ackType = new byte[]{0,0,0,1};
             this.status = new byte[]{0,0,0,1};

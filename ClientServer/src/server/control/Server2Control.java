@@ -5,7 +5,6 @@ import server.FacilityEntity.Facility;
 import utils.Marshal;
 import utils.UnMarshal;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -66,25 +65,25 @@ public class Server2Control extends ControlFactory{
                 System.out.println("[Server2]   --marshalAndSend--  The facility is fully not available in selected time period.");  // TODO: Delete this print after client can parse
                 this.marshaledData = Marshal.marshalString("The facility is fully not available in selected time period.");
                 this.status = new byte[]{0,0,0,0};
-                send(this.marshaledData);
+                sendResponse(this.marshaledData);
             }
             else if (hasVacancy == 2){ // partial vacancy 2nd half cannot
                 System.out.println("[Server2]   --marshalAndSend--  The facility is partially not available in selected time period.");  // TODO: Delete this print after client can parse
                 this.marshaledData = Marshal.marshalString("The facility is partially not available in selected time period. You can postpone one slot.");
                 this.status = new byte[]{0,0,0,0};
-                send(this.marshaledData);
+                sendResponse(this.marshaledData);
             }
             else if (hasVacancy == 3){ // partial vacancy 1st half cannot
                 System.out.println("[Server2]   --marshalAndSend--  The facility is partially not available in selected time period.");  // TODO: Delete this print after client can parse
                 this.marshaledData = Marshal.marshalString("The facility is partially not available in selected time period. You can shift one slot advance.");
                 this.status = new byte[]{0,0,0,0};
-                send(this.marshaledData);
+                sendResponse(this.marshaledData);
             }
             else if (hasVacancy == 4){
                 System.out.println("[Server2]   --marshalAndSend--  Marshal: "+this.newBookingID.getBookingInfoString());
                 this.marshaledData = Marshal.marshalString(this.newBookingID.getBookingInfoString());
                 this.status = new byte[]{0,0,0,1};
-                send(this.marshaledData);
+                sendResponse(this.marshaledData);
             }
             this.hasVacancy = -1;
         }
@@ -148,7 +147,7 @@ public class Server2Control extends ControlFactory{
     }
 
     @Override
-    public void send(byte[] sendData) throws IOException{
+    public void sendResponse(byte[] sendData) throws IOException{
             System.out.println("[Server2]   --send--    Has Vacancy: "+this.hasVacancy);
             this.ackType = new byte[]{0,0,0,1};
             byte[] addAck_msg = concat(ackType, this.status, sendData);

@@ -34,11 +34,12 @@ public class UDPserver {
 
     public byte[] UDPreceive() throws IOException{
         // Listen for UDP request from client
+        System.err.println("ping");
         DatagramPacket request = new DatagramPacket(recieve_msg, recieve_msg.length);
         this.serverSocket.receive(request);
         this.clientIPAddress = request.getAddress();
         this.clientPort = request.getPort();
-        System.out.println("[UDP Server]    --UDPreceive--  Received UDP: " + new String(request.getData()));
+        //System.err.println("[UDP Server]    --UDPreceive--  Received UDP: " + Arrays.toString(request.getData()));
         return request.getData();
     }
 

@@ -12,9 +12,10 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
-import static client.config.Constants.ACKFRATE;
 import static client.config.Constants.RESFRATE;
 import static server.FacilityEntity.ServerApp.*;
+import static server.control.Control.msgID;
+import static server.control.Control.setServiceID;
 
 public class Server6Control extends ControlFactory implements ControlChangeFactory{
     private int bookingID;
@@ -36,13 +37,14 @@ public class Server6Control extends ControlFactory implements ControlChangeFacto
     @Override
     public String unMarshal(byte[] dataTobeUnmarshal, ArrayList<Facility> facilityArrayList, ArrayList<BookingID> BookingIDArrayList) throws IOException {
         this.dataToBeUnMarshal = dataTobeUnmarshal;
-        if (this.dataToBeUnMarshal.length != 0) {
-            int bookingID_length = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 24);
+        if (this.dataToBeUnMarshal != null) {
+            int bookingID_length = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 12);
             System.out.println("BookingID Length: " + bookingID_length);
 
-            this.bookingID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 28);
+            this.bookingID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 12 + bookingID_length);
             System.out.println("BookingID: " + bookingID);
-
+            System.err.println("executeeeee");
+            setServiceID(0);
             cancelBooking(facilityArrayList, BookingIDArrayList);
         }
         return null;
@@ -50,8 +52,9 @@ public class Server6Control extends ControlFactory implements ControlChangeFacto
 
     @Override
     public void marshalAndSend() throws TimeoutException, IOException{
-        if (UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,4) == 0){
-            // Msg Type is ACK
+        System.err.println("check: " + UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,0));
+        if (UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,0) == 0){
+            // todo: Msg Type is ACK, delete entry in hashtable
             System.out.println("[Server6]   --marshalAndSend--  Received ACK msg");
         }else {
             System.out.println("[Server6]   --marshalAndSend--  Msg Type is request");
@@ -64,15 +67,17 @@ public class Server6Control extends ControlFactory implements ControlChangeFacto
                 this.status = new byte[]{0,0,0,1};
                 this.marshaledData = Marshal.marshalString("The cancel is success");
             }
-            int msgID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 4);
-            ProcessedTable.put(msgID, this.marshaledData);
+            //todo: update processedTable
+            System.err.println("update table" + msgID);
+            if(ProcessedTable.get(msgID) == null) {
+                ProcessedTable.put(msgID, this.marshaledData);
+            }
             // simulate this sent message is lost during transmission
             if (Math.random() < RESFRATE) {
                 System.out.println("Simulate response message is lost during transmission");
             } else {
-                send(this.marshaledData);
+                sendResponse(this.marshaledData);
             }
-
         }
         this.bookingIDExist = false;
     }
@@ -116,8 +121,7 @@ public class Server6Control extends ControlFactory implements ControlChangeFacto
 
 
     @Override
-    public void send(byte[] sendData) throws IOException{
-        System.out.println("[Server2]   --send--    Success Cancel: "+this.bookingIDExist);
+    public void sendResponse(byte[] sendData) throws IOException{
         this.ackType = new byte[]{0,0,0,1};
         byte[] addAck_msg = concat(ackType, this.status, sendData);
         udpSever.UDPsend(addAck_msg);

@@ -15,7 +15,7 @@ public class ControlFactory {
     protected byte[] marshaledData;
     protected UDPserver udpSever;
     protected byte[] ackType;
-    protected byte[] status;
+    public byte[] status;
 
     public ControlFactory() throws SocketException, UnknownHostException {
         this.udpSever = UDPserver.getInstance();
@@ -44,5 +44,5 @@ public class ControlFactory {
         return d;
     }
 
-    public void send(byte[] sendData) throws IOException{}
+    public void sendResponse(byte[] sendData) throws IOException{}
 }
