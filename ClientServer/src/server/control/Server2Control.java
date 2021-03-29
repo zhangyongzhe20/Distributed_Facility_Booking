@@ -10,7 +10,10 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.TimeoutException;
+
+import static server.control.Control.msgIDresponseMap;
 
 public class Server2Control extends ControlFactory{
     private String facilityName;
@@ -22,7 +25,6 @@ public class Server2Control extends ControlFactory{
     private int slotStartIndex;
     private int slots = 0;
     private int day;
-    private int bookedFacilityID;
     private BookingID newBookingID;
 
 
@@ -36,7 +38,13 @@ public class Server2Control extends ControlFactory{
     @Override
     public String unMarshal(byte[] dataToBeUnMarshal, ArrayList<Facility> facilityArrayList, ArrayList<BookingID> BookingIDArrayList) throws IOException {
         this.dataToBeUnMarshal = dataToBeUnMarshal;
-        if (this.dataToBeUnMarshal.length != 0)
+
+        if (Arrays.equals(Arrays.copyOfRange(this.dataToBeUnMarshal,0,4), new byte[]{9, 9, 9, 9})){
+            System.err.println("[Server1]   --unMarshal--   The message has already been processed.");
+            this.processed = true;
+        }
+
+        if ((!this.processed)&& (dataToBeUnMarshal.length != 0))
         {
             int facilityName_length = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 12);
             this.facilityName = UnMarshal.unmarshalString(this.dataToBeUnMarshal, 16, 16 + facilityName_length);
@@ -57,35 +65,46 @@ public class Server2Control extends ControlFactory{
 
     @Override
     public void marshalAndSend() throws TimeoutException, IOException{
+        int msgID;
         if (UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,0) == 0){
             // Msg Type is ACK
             System.out.println("[Server2]   --marshalAndSend--    Received ACK msg");
-        }else{
+        } else if (this.processed){
+            // MsgID is in table. It has been processed already.
+            System.err.println("[Server2]   --marshalAndSend--   The message has already been processed. Extract from table.");
+            msgID = Arrays.copyOfRange(this.dataToBeUnMarshal,4,5)[0];
+            System.out.println("MSG ID: "+msgID);
+            send(msgIDresponseMap.get(msgID));
+        }
+        else{
             System.out.println("[Server2]   --marshalAndSend--  Msg Type is request");
             if (hasVacancy==1){ // fully has no vacancy
                 System.out.println("[Server2]   --marshalAndSend--  The facility is fully not available in selected time period.");  // TODO: Delete this print after client can parse
-                this.marshaledData = Marshal.marshalString("The facility is fully not available in selected time period.");
                 this.status = new byte[]{0,0,0,0};
+                this.marshaledData = concat(this.status,Marshal.marshalString("The facility is fully not available in selected time period."));
                 send(this.marshaledData);
             }
             else if (hasVacancy == 2){ // partial vacancy 2nd half cannot
                 System.out.println("[Server2]   --marshalAndSend--  The facility is partially not available in selected time period.");  // TODO: Delete this print after client can parse
-                this.marshaledData = Marshal.marshalString("The facility is partially not available in selected time period. You can postpone one slot.");
                 this.status = new byte[]{0,0,0,0};
+                this.marshaledData = concat(this.status, Marshal.marshalString("The facility is partially not available in selected time period. You can postpone one slot."));
                 send(this.marshaledData);
             }
             else if (hasVacancy == 3){ // partial vacancy 1st half cannot
                 System.out.println("[Server2]   --marshalAndSend--  The facility is partially not available in selected time period.");  // TODO: Delete this print after client can parse
-                this.marshaledData = Marshal.marshalString("The facility is partially not available in selected time period. You can shift one slot advance.");
                 this.status = new byte[]{0,0,0,0};
+                this.marshaledData = concat(this.status,Marshal.marshalString("The facility is partially not available in selected time period. You can shift one slot advance."));
                 send(this.marshaledData);
             }
             else if (hasVacancy == 4){
                 System.out.println("[Server2]   --marshalAndSend--  Marshal: "+this.newBookingID.getBookingInfoString());
-                this.marshaledData = Marshal.marshalString(this.newBookingID.getBookingInfoString());
                 this.status = new byte[]{0,0,0,1};
+                this.marshaledData = concat(this.status,Marshal.marshalString(this.newBookingID.getBookingInfoString()));
                 send(this.marshaledData);
             }
+            msgID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,4);
+            System.err.println("[Server1]   --marshalAndSend-- Add msgID : "+msgID+" to the table.");
+            msgIDresponseMap.put(msgID, marshaledData);
             this.hasVacancy = -1;
         }
         this.dataToBeUnMarshal = new byte[0];
@@ -96,9 +115,7 @@ public class Server2Control extends ControlFactory{
         this.slots = 0;
         for (Facility f : facilityArrayList) {
             if (f.getFacilityName().equals(this.facilityName)) {
-                this.bookedFacilityID = f.getFacilityID();
                 this.day = Integer.parseInt(String.valueOf(this.bookingRequirement.charAt(0)));
-
                 for (int i = 0; i < this.bookingRequirement.length(); i++) {
                     if (this.bookingRequirement.charAt(i) == '0') {
                         this.slots += 1;
@@ -151,7 +168,7 @@ public class Server2Control extends ControlFactory{
     public void send(byte[] sendData) throws IOException{
             System.out.println("[Server2]   --send--    Has Vacancy: "+this.hasVacancy);
             this.ackType = new byte[]{0,0,0,1};
-            byte[] addAck_msg = concat(ackType, this.status, sendData);
+            byte[] addAck_msg = concat(ackType,sendData);
             udpSever.UDPsend(addAck_msg);
     }
 }

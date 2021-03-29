@@ -42,6 +42,7 @@ public class Server1Control extends ControlFactory{
             System.err.println("[Server1]   --unMarshal--   The message has already been processed.");
             this.processed = true;
         }
+
         if ((!this.processed)&& (dataTobeUnmarshal.length != 0))
         {
             int facilityName_length = UnMarshal.unmarshalInteger(dataTobeUnmarshal, 12);
@@ -72,18 +73,19 @@ public class Server1Control extends ControlFactory{
             System.err.println("[Server1]   --marshalAndSend--  Msg Type is request");
             if (this.facilityExist)
             {
-                this.marshaledData = Marshal.marshalString(this.queryInfo);
-                send(this.marshaledData);
+                this.status = new byte[]{0,0,0,1};
+                this.marshaledData = concat(this.status,Marshal.marshalString(this.queryInfo));
                 this.facilityExist = false;
             }else
             {
                 System.out.println("[Server1]   --marshalAndSend--  There is no such Facility. Pls choose in LT1, LT2, MR1, MR2");
-                this.marshaledData = Marshal.marshalString("There is no such Facility. Pls choose in LT1, LT2, MR1, MR2");
-                send(this.marshaledData);
+                this.status = new byte[]{0,0,0,0};
+                this.marshaledData = concat(this.status,Marshal.marshalString("There is no such Facility. Pls choose in LT1, LT2, MR1, MR2"));
             }
             msgID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,4);
             System.err.println("[Server1]   --marshalAndSend-- Add msgID : "+msgID+" to the table.");
             msgIDresponseMap.put(msgID, marshaledData);
+            send(this.marshaledData);
         }
         this.dataToBeUnMarshal = new byte[0];
     }
@@ -110,8 +112,7 @@ public class Server1Control extends ControlFactory{
     public void send(byte[] sendData) throws IOException{
         System.out.println("[Server1]   --send--    Success query: "+this.facilityExist);
             this.ackType = new byte[]{0,0,0,1};
-            this.status = new byte[]{0,0,0,1};
-            byte[] addAck_msg = concat(ackType, this.status, sendData);
+            byte[] addAck_msg = concat(ackType, sendData);
             udpSever.UDPsend(addAck_msg);
     }
 

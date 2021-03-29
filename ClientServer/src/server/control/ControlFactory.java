@@ -36,11 +36,10 @@ public class ControlFactory {
     public void marshalAndSend() throws TimeoutException, IOException {}
 
 
-    public static byte[] concat(byte[] a, byte[] b, byte[] c) throws IOException {
+    public static byte[] concat(byte[] a, byte[] b) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         baos.write(a);
         baos.write(b);
-        baos.write(c);
         byte[] d = baos.toByteArray();
         return d;
     }

@@ -12,8 +12,11 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.concurrent.TimeoutException;
+
+import static server.control.Control.msgIDresponseMap;
 
 
 public class Server3Control extends ControlFactory implements ControlChangeFactory{
@@ -45,7 +48,13 @@ public class Server3Control extends ControlFactory implements ControlChangeFacto
     @Override
     public String unMarshal(byte[] dataTobeUnmarshal, ArrayList<Facility> facilityArrayList, ArrayList<BookingID> BookingIDArrayList) throws IOException {
         this.dataToBeUnMarshal = dataTobeUnmarshal;
-        if (this.dataToBeUnMarshal.length != 0)
+
+        if (Arrays.equals(Arrays.copyOfRange(this.dataToBeUnMarshal,0,4), new byte[]{9, 9, 9, 9})){
+            System.err.println("[Server3   --unMarshal--   The message has already been processed.");
+            this.processed = true;
+        }
+
+        if ((!this.processed)&& (this.dataToBeUnMarshal.length != 0))
         {
             this.bookingID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 16);
             System.out.println("[Server3 Control]   --unMarshal-- Received BookingID: "+bookingID);
@@ -93,41 +102,53 @@ public class Server3Control extends ControlFactory implements ControlChangeFacto
                     BookingIDArrayList.add(changedBookingID);
                 }
             } // end if
-
         }
         return null;
     }
 
 
     @Override
-    public void marshalAndSend() throws TimeoutException, IOException{
+    public void marshalAndSend() throws TimeoutException, IOException
+    {
+        int msgID;
         if (UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,0) == 0){
             // Msg Type is ACK
             System.out.println("[Server3]   --marshalAndSend--  Received ACK msg");
-        } else if (!this.bookingIDExist){
-            // Booking ID doesnot exist
-            this.marshaledData = Marshal.marshalString("The bookingID does not exist.");
-            this.status = new byte[]{0,0,0,0};
-            send(this.marshaledData);
-        } else if (!this.offsetInBound){
-            this.marshaledData = Marshal.marshalString("Shift slots out of time range 8am-6pm. Pls choose another slot");
-            this.status = new byte[]{0,0,0,0};
-            send(this.marshaledData);
         }
-        else {
-            // Booking ID exist
-            System.out.println("[Server3]   --marshalAndSend--  Msg Type is request");
-            if (this.collisionStatus){
-                System.out.println("[Server3]   --marshalAndSend--  The intended changed slot is fully not available.");  // TODO: Delete this print after client can parse
-                this.marshaledData = Marshal.marshalString("The intended changed slot is not available.");
+        else if (this.processed){
+            // MsgID is in table. It has been processed already.
+            System.err.println("[Server1]   --marshalAndSend--   The message has already been processed. Extract from table.");
+            msgID = Arrays.copyOfRange(this.dataToBeUnMarshal,4,5)[0];
+            System.out.println("MSG ID: "+msgID);
+            send(msgIDresponseMap.get(msgID));
+        } else {
+            if (!this.bookingIDExist){
+                // Booking ID doesnot exist
                 this.status = new byte[]{0,0,0,0};
+                this.marshaledData = concat(this.status,Marshal.marshalString("The bookingID does not exist."));
                 send(this.marshaledData);
-            } else {
-                System.out.println("[Server3]   --marshalAndSend--  Change is success. "+this.changedBookingID.getBookingInfoString());
-                this.marshaledData = Marshal.marshalString(this.changedBookingID.getBookingInfoString());
-                this.status = new byte[]{0,0,0,1};
+            } else if (!this.offsetInBound){
+                this.status = new byte[]{0,0,0,0};
+                this.marshaledData = concat(this.status, Marshal.marshalString("Shift slots out of time range 8am-6pm. Pls choose another slot"));
                 send(this.marshaledData);
             }
+            else {
+                // Booking ID exist
+                System.out.println("[Server3]   --marshalAndSend--  Msg Type is request");
+                if (this.collisionStatus){
+                    System.out.println("[Server3]   --marshalAndSend--  The intended changed slot is fully not available.");  // TODO: Delete this print after client can parse
+                    this.status = new byte[]{0,0,0,0};
+                    this.marshaledData = concat(this.status,Marshal.marshalString("The intended changed slot is not available."));
+                } else {
+                    System.out.println("[Server3]   --marshalAndSend--  Change is success. "+this.changedBookingID.getBookingInfoString());
+                    this.status = new byte[]{0,0,0,1};
+                    this.marshaledData = concat(this.status, Marshal.marshalString(this.changedBookingID.getBookingInfoString()));
+                }
+                send(this.marshaledData);
+            }
+            msgID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,4);
+            System.err.println("[Server3]   --marshalAndSend-- Add msgID : "+msgID+" to the table.");
+            msgIDresponseMap.put(msgID, marshaledData);
         }
         this.collisionStatus = true;
         this.bookingIDExist = false;
@@ -139,7 +160,7 @@ public class Server3Control extends ControlFactory implements ControlChangeFacto
     public void send(byte[] sendData) throws IOException{
         System.out.println("[Server2]   --send--    Collision Status: "+this.collisionStatus + "ID exist: "+this.bookingIDExist);
         this.ackType = new byte[]{0,0,0,1};
-        byte[] addAck_msg = concat(ackType, this.status, sendData);
+        byte[] addAck_msg = concat(ackType, sendData);
         udpSever.UDPsend(addAck_msg);
     }
 

@@ -9,7 +9,10 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.TimeoutException;
+
+import static server.control.Control.msgIDresponseMap;
 
 public class Server5Control extends ControlFactory{
     private int facilityType;
@@ -28,7 +31,12 @@ public class Server5Control extends ControlFactory{
     @Override
     public String unMarshal(byte[] dataTobeUnmarshal, ArrayList<Facility> facilityArrayList, ArrayList<BookingID> BookingIDArrayList) throws IOException {
         this.dataToBeUnMarshal = dataTobeUnmarshal;
-        if (this.dataToBeUnMarshal.length != 0)
+
+        if (Arrays.equals(Arrays.copyOfRange(this.dataToBeUnMarshal,0,4), new byte[]{9, 9, 9, 9})){
+            System.err.println("[Server4]   --unMarshal--   The message has already been processed.");
+            this.processed = true;
+        }
+        if ((!this.processed) && (this.dataToBeUnMarshal.length != 0))
         {
             this.facilityType = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 16);
             System.out.println("[Server5] --unMarshal-- received facility type is: "+this.facilityType);
@@ -47,19 +55,29 @@ public class Server5Control extends ControlFactory{
 
     @Override
     public void marshalAndSend() throws TimeoutException, IOException{
+        int msgID;
         if (UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,0) == 0){
             // Msg Type is ACK
             System.out.println("[Server5]   --marshalAndSend--    Received ACK msg");
-        }else{
+        } else if (this.processed){
+            // MsgID is in table. It has been processed already.
+            System.err.println("[Server1]   --marshalAndSend--   The message has already been processed. Extract from table.");
+            msgID = Arrays.copyOfRange(this.dataToBeUnMarshal,4,5)[0];
+            System.out.println("MSG ID: "+msgID);
+            send(msgIDresponseMap.get(msgID));
+        }
+        else{
             if (this.hasVacancy){
-                this.marshaledData = Marshal.marshalString(this.newBookingID.getBookingInfoString());
                 this.status = new byte[]{0,0,0,1};
-                send(this.marshaledData);
+                this.marshaledData = concat(this.status, Marshal.marshalString(this.newBookingID.getBookingInfoString()));
             }else{
-                this.marshaledData = Marshal.marshalString("There is no vacancy in tomorrow. Pls try another time.");
                 this.status = new byte[]{0,0,0,0};
-                send(this.marshaledData);
+                this.marshaledData = concat(this.status, Marshal.marshalString("There is no vacancy in tomorrow. Pls try another time."));
             }
+            msgID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,4);
+            System.err.println("[Server5]   --marshalAndSend-- Add msgID : "+msgID+" to the table.");
+            msgIDresponseMap.put(msgID, marshaledData);
+            send(this.marshaledData);
         }
     }
 
@@ -67,7 +85,7 @@ public class Server5Control extends ControlFactory{
     public void send(byte[] sendData) throws IOException{
         System.out.println("[Server3]   --send--    Has Vacancy: "+this.hasVacancy);
         this.ackType = new byte[]{0,0,0,1};
-        byte[] addAck_msg = concat(ackType, this.status, sendData);
+        byte[] addAck_msg = concat(ackType, sendData);
         udpSever.UDPsend(addAck_msg);
     }
 

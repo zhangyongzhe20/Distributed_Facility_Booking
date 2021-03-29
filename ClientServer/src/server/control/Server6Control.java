@@ -10,7 +10,10 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.TimeoutException;
+
+import static server.control.Control.msgIDresponseMap;
 
 public class Server6Control extends ControlFactory implements ControlChangeFactory{
     private int bookingID;
@@ -32,7 +35,14 @@ public class Server6Control extends ControlFactory implements ControlChangeFacto
     @Override
     public String unMarshal(byte[] dataTobeUnmarshal, ArrayList<Facility> facilityArrayList, ArrayList<BookingID> BookingIDArrayList) throws IOException {
         this.dataToBeUnMarshal = dataTobeUnmarshal;
-        if (this.dataToBeUnMarshal.length != 0) {
+
+        if (Arrays.equals(Arrays.copyOfRange(this.dataToBeUnMarshal,0,4), new byte[]{9, 9, 9, 9})){
+            System.err.println("[Server6]   --unMarshal--   The message has already been processed.");
+            this.processed = true;
+        }
+
+        if ((!this.processed)&& (dataTobeUnmarshal.length != 0))
+        {
             int bookingID_length = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 12);
             System.out.println("BookingID Length: " + bookingID_length);
 
@@ -46,9 +56,16 @@ public class Server6Control extends ControlFactory implements ControlChangeFacto
 
     @Override
     public void marshalAndSend() throws TimeoutException, IOException{
+        int msgID;
         if (UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,0) == 0){
             // Msg Type is ACK
             System.out.println("[Server6]   --marshalAndSend--  Received ACK msg");
+        }else if (this.processed){
+            // MsgID is in table. It has been processed already.
+            System.err.println("[Server6]   --marshalAndSend--   The message has already been processed. Extract from table.");
+            msgID = Arrays.copyOfRange(this.dataToBeUnMarshal,4,5)[0];
+            System.out.println("MSG ID: "+msgID);
+            send(msgIDresponseMap.get(msgID));
         }else {
             System.out.println("[Server6]   --marshalAndSend--  Msg Type is request");
             if(!this.bookingIDExist){
@@ -60,6 +77,9 @@ public class Server6Control extends ControlFactory implements ControlChangeFacto
                 this.status = new byte[]{0,0,0,1};
                 this.marshaledData = Marshal.marshalString("The cancel is success");
             }
+            msgID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,4);
+            System.err.println("[Server6]   --marshalAndSend-- Add msgID : "+msgID+" to the table.");
+            msgIDresponseMap.put(msgID, marshaledData);
             send(this.marshaledData);
         }
         this.bookingIDExist = false;
@@ -107,7 +127,7 @@ public class Server6Control extends ControlFactory implements ControlChangeFacto
     public void send(byte[] sendData) throws IOException{
         System.out.println("[Server2]   --send--    Success Cancel: "+this.bookingIDExist);
         this.ackType = new byte[]{0,0,0,1};
-        byte[] addAck_msg = concat(ackType, this.status, sendData);
+        byte[] addAck_msg = concat(ackType, sendData);
         udpSever.UDPsend(addAck_msg);
     }
 
