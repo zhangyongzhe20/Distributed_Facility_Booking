@@ -32,7 +32,7 @@ public class Service3Control extends Control implements marshal, unmarshal{
             collectedData.add(SERVICEID);
             collectedData.add(bookingID);
             collectedData.add(offset);
-            //System.out.println("data collect of service3: " + collectedData);
+            System.out.println("data collect of service3: " + collectedData);
             marShalData = marshalMsg(collectedData, false);
     }
 
