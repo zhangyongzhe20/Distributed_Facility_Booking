@@ -11,6 +11,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
+import static server.control.Control.msgIDresponseMap;
+
 public class ControlFactory {
     protected byte[] dataToBeUnMarshal;
     protected byte[] marshaledData;
@@ -19,7 +21,7 @@ public class ControlFactory {
     protected byte[] status;
     protected boolean processed;
     private MonthDateParser dateParser;
-    ArrayList<Facility> facilityArrayList;
+    static ArrayList<Facility> facilityArrayList;
 
     public ControlFactory() throws SocketException, UnknownHostException {
         this.udpSever = UDPserver.getInstance();
@@ -35,7 +37,7 @@ public class ControlFactory {
         LT1.bookAvailability(1,3); // 2021-03-30 15-16
         LT2.bookAvailability(3, 2); // 2021-03-28 9-10
 
-        this.facilityArrayList = new ArrayList<>();
+        facilityArrayList = new ArrayList<>();
         facilityArrayList.add(LT1);
         facilityArrayList.add(LT2);
         facilityArrayList.add(MR1);
@@ -65,10 +67,11 @@ public class ControlFactory {
 
     public void send(byte[] sendData) throws IOException{}
 
-    public void send(byte[] sendData, byte[] sendMonitorData, String facilityName) throws IOException{
+    public void send(byte[] sendData, byte[] sendMonitorData, String facilityName, int msgID) throws IOException{
         this.ackType = new byte[]{0,0,0,1};
         byte[] addAck_msg = concat(ackType, this.status, sendData);
         byte[] addAck_msg_monitor = concat(ackType, this.status, sendMonitorData);
+        msgIDresponseMap.put(msgID, addAck_msg);
         udpSever.UDPsend(addAck_msg);
         //notify
         CallBack.notify(facilityName, addAck_msg_monitor);

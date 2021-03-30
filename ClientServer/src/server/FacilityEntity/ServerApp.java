@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.TimeoutException;
 
+import static client.config.Constants.*;
 import static server.control.Control.msgIDresponseMap;
 
 public class ServerApp {
@@ -32,32 +33,41 @@ public class ServerApp {
 
         while (true)
         {
-
-            System.err.println("echo table: " + msgIDresponseMap.keySet());
+            System.out.println("Listening...");
             byte[] dataTobeUnmarshal = control.receive();
-            //todo: interprete to get msg type and msgID
             int msgType = control.getMsgType();
             int msgID = control.getMsgID();
-            if(msgType == 0){
-                //System.err.println("receive ack msg");
-                int status = control.getStatus();
-                if(status == 1){
-                    //System.err.println("receive ack msg with status 1");
-                    msgIDresponseMap.remove(msgID);
-                }else {
-                    //if processed before
-                    if(msgIDresponseMap.get(msgID) != null) {
-                        //System.err.println("Send: " + Arrays.toString(msgIDresponseMap.get(msgID)));
+            int status = control.getStatus();
+            if(APPLIEDSEMANTICS == AT_MOST_ONCE) {
+                System.err.println("echo table: " + msgIDresponseMap.keySet());
+                //todo: interprete to get msg type and msgID
+                if (msgType == 0) {
+                    //System.err.println("receive ack msg");
+                    if (status == 1) {
+                        //System.err.println("receive ack msg with status 1");
+                        msgIDresponseMap.remove(msgID);
+                    } else {
+                        //if processed before
+                        if (msgIDresponseMap.get(msgID) != null) {
+                            //System.err.println("Send: " + Arrays.toString(msgIDresponseMap.get(msgID)));
+                            control.sendResponse(msgIDresponseMap.get(msgID));
+                        } else {
+                            control.sendNACK();
+                        }
+                    }
+                    continue;
+                } else {
+                    if (msgIDresponseMap.get(msgID) != null) {
+                        System.err.println("get from table: " + Arrays.toString(msgIDresponseMap.get(msgID)));
                         control.sendResponse(msgIDresponseMap.get(msgID));
-                    }else{
-                        control.sendNACK();
+                        continue;
                     }
                 }
-                continue;
-            }
-            else{
-                if(msgIDresponseMap.get(msgID) != null){
-                    control.sendResponse(msgIDresponseMap.get(msgID));
+            }else{
+                if (msgType == 0) {
+                    if (status == 0) {
+                        control.sendNACK();
+                    }
                     continue;
                 }
             }

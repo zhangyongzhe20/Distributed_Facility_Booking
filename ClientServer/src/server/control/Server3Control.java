@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.concurrent.TimeoutException;
 
+import static server.control.Control.msgIDresponseMap;
+
 
 public class Server3Control extends ControlFactory implements ControlChangeFactory{
     private int bookingID;
@@ -101,6 +103,7 @@ public class Server3Control extends ControlFactory implements ControlChangeFacto
 
     @Override
     public void marshalAndSend() throws TimeoutException, IOException{
+        int msgID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,4);
         if (UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,0) == 0){
             // Msg Type is ACK
             System.out.println("[Server3]   --marshalAndSend--  Received ACK msg");
@@ -108,12 +111,14 @@ public class Server3Control extends ControlFactory implements ControlChangeFacto
             // Booking ID doesnot exist
             this.marshaledData = Marshal.marshalString("The bookingID does not exist.");
             this.status = new byte[]{0,0,0,0};
-            send(this.marshaledData);
+            //send(this.marshaledData);
+            send(this.marshaledData, this.status, msgID);
         } else if (!this.offsetInBound){
             this.marshaledData = Marshal.marshalString("Shift slots out of time range 8am-6pm. Pls choose another slot");
             this.status = new byte[]{0,0,0,0};
-            send(this.marshaledData);
+            send(this.marshaledData, this.status, msgID);
         }
+
         else {
             // Booking ID exist
             System.out.println("[Server3]   --marshalAndSend--  Msg Type is request");
@@ -121,14 +126,14 @@ public class Server3Control extends ControlFactory implements ControlChangeFacto
                 System.out.println("[Server3]   --marshalAndSend--  The intended changed slot is fully not available.");  // TODO: Delete this print after client can parse
                 this.marshaledData = Marshal.marshalString("The intended changed slot is not available.");
                 this.status = new byte[]{0,0,0,0};
-                send(this.marshaledData);
+                send(this.marshaledData, this.status, msgID);
             } else {
                 System.out.println("[Server3]   --marshalAndSend--  Change is success. "+this.changedBookingID.getBookingInfoString());
                 this.marshaledData = Marshal.marshalString(this.changedBookingID.getBookingInfoString());
                 this.status = new byte[]{0,0,0,1};
                // send(this.marshaledData);
                 //TODO
-                send(this.marshaledData, Marshal.marshalString(getLatestQueryInfo(7, this.facilityName)), this.facilityName);
+                send(this.marshaledData, Marshal.marshalString(getLatestQueryInfo(7, this.facilityName)), this.facilityName, msgID);
             }
         }
         this.collisionStatus = true;
@@ -143,6 +148,15 @@ public class Server3Control extends ControlFactory implements ControlChangeFacto
         this.ackType = new byte[]{0,0,0,1};
         byte[] addAck_msg = concat(ackType, this.status, sendData);
         udpSever.UDPsend(addAck_msg);
+    }
+
+    public void send(byte[] sendData, byte[] status, int msgID) throws IOException{
+        System.out.println("[Server2]   --send--    Collision Status: "+this.collisionStatus + "ID exist: "+this.bookingIDExist);
+        this.ackType = new byte[]{0,0,0,1};
+        byte[] addAck_msg = concat(ackType, status, sendData);
+        udpSever.UDPsend(addAck_msg);
+        //update table
+        msgIDresponseMap.put(msgID, addAck_msg);
     }
 
     public void changeBookingTime(ArrayList<Facility> facilityArrayList){

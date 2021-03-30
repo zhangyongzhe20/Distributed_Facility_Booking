@@ -44,11 +44,11 @@ public class Control {
         udpSever.clearRecieveMsg();
         parse();
 
-        // Check if the request has already been processed
-        if ((msgType == 1) && msgIDresponseMap.containsKey(msgID)){
-            System.err.println("[Control] --receive-- The msg Is processed already"+msgID);
-            return new byte[]{9,9,9,9,(byte) msgID};
-        }
+//        // Check if the request has already been processed
+//        if ((msgType == 1) && msgIDresponseMap.containsKey(msgID)){
+//            System.err.println("[Control] --receive-- The msg Is processed already"+msgID);
+//            return new byte[]{9,9,9,9,(byte) msgID};
+//        }
         return this.dataToBeUnMarshal;
     }
 
@@ -64,7 +64,7 @@ public class Control {
     }
 
     public void clearDataToBeUnMarshal() {
-        System.out.println("[Control]   -- clearDataToBeUnMarshal-- Clear Data");
+        //System.out.println("[Control]   -- clearDataToBeUnMarshal-- Clear Data");
         this.dataToBeUnMarshal = new byte[0];
     }
 

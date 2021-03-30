@@ -11,6 +11,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
+import static server.control.Control.msgIDresponseMap;
+
 public class Server5Control extends ControlFactory{
     private int facilityType;
     private BookingID newBookingID;
@@ -31,6 +33,7 @@ public class Server5Control extends ControlFactory{
         if (this.dataToBeUnMarshal.length != 0)
         {
             this.facilityType = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 16);
+            System.err.println("facility type: " + this.facilityType);
             System.out.println("[Server5] --unMarshal-- received facility type is: "+this.facilityType);
             wiseBooking(facilityType, facilityArrayList);
             if (hasVacancy)
@@ -47,6 +50,7 @@ public class Server5Control extends ControlFactory{
 
     @Override
     public void marshalAndSend() throws TimeoutException, IOException{
+        int msgID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,4);
         if (UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,0) == 0){
             // Msg Type is ACK
             System.out.println("[Server5]   --marshalAndSend--    Received ACK msg");
@@ -55,11 +59,11 @@ public class Server5Control extends ControlFactory{
                 this.marshaledData = Marshal.marshalString(this.newBookingID.getBookingInfoString());
                 this.status = new byte[]{0,0,0,1};
                // send(this.marshaledData);
-                send(this.marshaledData, Marshal.marshalString(getLatestQueryInfo(7, this.chosenFacilityName)), this.chosenFacilityName);
+                send(this.marshaledData, Marshal.marshalString(getLatestQueryInfo(7, this.chosenFacilityName)), this.chosenFacilityName, msgID);
             }else{
                 this.marshaledData = Marshal.marshalString("There is no vacancy in tomorrow. Pls try another time.");
                 this.status = new byte[]{0,0,0,0};
-                send(this.marshaledData);
+                send(this.marshaledData, this.status ,msgID);
             }
         }
     }
@@ -70,6 +74,15 @@ public class Server5Control extends ControlFactory{
         this.ackType = new byte[]{0,0,0,1};
         byte[] addAck_msg = concat(ackType, this.status, sendData);
         udpSever.UDPsend(addAck_msg);
+    }
+
+    public void send(byte[] sendData, byte[] status, int msgID) throws IOException{
+        System.out.println("[Server3]   --send--    Has Vacancy: "+this.hasVacancy);
+        this.ackType = new byte[]{0,0,0,1};
+        byte[] addAck_msg = concat(ackType, status, sendData);
+        udpSever.UDPsend(addAck_msg);
+        //update table
+        msgIDresponseMap.put(msgID, addAck_msg);
     }
 
     public void wiseBooking(int facilityType, ArrayList<Facility> facilityArrayList){

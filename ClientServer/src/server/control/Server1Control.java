@@ -71,20 +71,21 @@ public class Server1Control extends ControlFactory{
 //        }
         else {
             System.err.println("[Server1]   --marshalAndSend--  Msg Type is request");
+            msgID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,4);
             if (this.facilityExist)
             {
                 this.marshaledData = Marshal.marshalString(this.queryInfo);
-                send(this.marshaledData);
+                this.status = new byte[]{0,0,0,1};
+                send(this.marshaledData, status, msgID);
                 this.facilityExist = false;
             }else
             {
                 System.out.println("[Server1]   --marshalAndSend--  There is no such Facility. Pls choose in LT1, LT2, MR1, MR2");
                 this.marshaledData = Marshal.marshalString("There is no such Facility. Pls choose in LT1, LT2, MR1, MR2");
-                send(this.marshaledData);
+                this.status = new byte[]{0,0,0,0};
+                send(this.marshaledData, status, msgID);
             }
-            msgID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,4);
-            System.err.println("[Server1]   --marshalAndSend-- Add msgID : "+msgID+" to the table.");
-            msgIDresponseMap.put(msgID, marshaledData);
+            //System.err.println("[Server1]   --marshalAndSend-- Add msgID : "+msgID+" to the table.");
         }
         this.dataToBeUnMarshal = new byte[0];
     }
@@ -108,12 +109,13 @@ public class Server1Control extends ControlFactory{
         return queryInfo;
     }
 
-    public void send(byte[] sendData) throws IOException{
+    public void send(byte[] sendData, byte[] status, int msgID) throws IOException{
         System.out.println("[Server1]   --send--    Success query: "+this.facilityExist);
             this.ackType = new byte[]{0,0,0,1};
-            this.status = new byte[]{0,0,0,1};
-            byte[] addAck_msg = concat(ackType, this.status, sendData);
+            byte[] addAck_msg = concat(ackType, status, sendData);
             udpSever.UDPsend(addAck_msg);
+            //update table
+            msgIDresponseMap.put(msgID, addAck_msg);
     }
 
 }

@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.TimeoutException;
 import static client.config.Constants.*;
 
@@ -42,6 +43,7 @@ public class Control {
                     System.out.println("Simulate Request is lost during transmission");
                 } else {
                     udpClient.UDPsend(sendData);
+                    //this.unMarShalData = null;
                 }
                     // get the unMarShalData
                     this.unMarShalData = udpClient.UDPreceive();
@@ -108,7 +110,7 @@ public class Control {
      * @return
      */
     public String unMarshal() throws Exception {
-        if(this.unMarShalData.length != 0) {
+        if(this.unMarShalData != null) {
             //check oepration status
             int status = UnMarshal.unmarshalInteger(this.unMarShalData, INTEGER_LENGTH);
             //todo: remove later
@@ -123,11 +125,9 @@ public class Control {
     }
 
     public boolean handleACK(){
-//        for(byte data: unMarShalData) {
-//            System.err.println("marshal: " + unMarShalData);
-//        }
+//        System.err.println(Arrays.toString(this.unMarShalData));
         int isAck = UnMarshal.unmarshalInteger(this.unMarShalData, 0);
-        System.err.println("Receive ack value from server: " + isAck);
+        System.err.println("Receive from server, ack status: " + isAck);
         if(isAck == 0){
             return false;
         }
@@ -148,9 +148,6 @@ public class Control {
     public String integratedProcess() throws Exception {
 
         sendAndReceive(this.marShalData);
-
-        //handleACK();
-//        System.err.println("hi");
         return unMarshal();
 
     }
@@ -171,5 +168,9 @@ public class Control {
         byte[] status = new byte[]{0,0,0,1};
         Control c = new Control();
         c.udpClient.UDPsend(concat(ackMsg,msgID,status));
+    }
+
+    public void resetUnmarshal() {
+        this.unMarShalData = null;
     }
 }

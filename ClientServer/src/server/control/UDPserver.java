@@ -53,6 +53,8 @@ public class UDPserver {
             } else {
                 System.err.println("send reply to book");
                 serverSocket.send(reply);
+                //reset buffer
+                reply.setLength(0);
             }
 
         } catch (IOException e) {
@@ -62,7 +64,7 @@ public class UDPserver {
     }
 
     public void clearRecieveMsg() {
-        System.out.println("[UDP Server]    --clearRecieveMsg--  clear");
+        //System.out.println("[UDP Server]    --clearRecieveMsg--  clear");
         this.recieve_msg = new byte[512];
     }
     public InetAddress getClientIPAddress() {

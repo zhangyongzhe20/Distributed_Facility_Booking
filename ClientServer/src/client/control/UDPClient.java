@@ -48,7 +48,7 @@ public class UDPClient {
         try {
             DatagramPacket request = new DatagramPacket(message, message.length, this.IPAddress, PORT);
             //TODO: REMOVE LATER
-            System.err.println("send to server: " + Arrays.toString(request.getData()));
+            System.err.println("Send to server: " + Arrays.toString(request.getData()));
             this.clientSocket.send(request);
         } catch (IOException e) {
             System.err.println("Failed to receive/send packet.");
