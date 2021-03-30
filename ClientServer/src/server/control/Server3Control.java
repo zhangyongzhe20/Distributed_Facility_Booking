@@ -168,7 +168,7 @@ public class Server3Control extends ControlFactory implements ControlChangeFacto
         for (Facility fc: facilityArrayList) {
             if (fc.getFacilityName().equals(facilityName)){
                 // only one booking slot
-                if ((startIndex-endIndex)==1){
+                if ((endIndex-startIndex)==1){
                     System.out.println("Only one booking slot condition");
                     if (!fc.checkAvailability(this.day, this.startIndex+offset))
                     {// has collision
@@ -178,6 +178,7 @@ public class Server3Control extends ControlFactory implements ControlChangeFacto
                         fc.bookAvailability(this.day, this.startIndex+offset);
                         this.collisionStatus =false;
                     }
+                    break;
                 }else {// two booking slots
                     System.out.println("Two booking slot condition");
                     System.out.println("offset "+offset);
@@ -210,7 +211,6 @@ public class Server3Control extends ControlFactory implements ControlChangeFacto
                     }
                     break;
                 }
-                break;
             }
         }
     }
