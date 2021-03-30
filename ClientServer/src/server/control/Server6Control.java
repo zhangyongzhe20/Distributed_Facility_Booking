@@ -12,6 +12,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
+import static server.control.Control.msgIDresponseMap;
+
 public class Server6Control extends ControlFactory implements ControlChangeFactory{
     private int bookingID;
     private boolean bookingIDExist;
@@ -30,13 +32,13 @@ public class Server6Control extends ControlFactory implements ControlChangeFacto
     }
 
     @Override
-    public String unMarshal(byte[] dataTobeUnmarshal, ArrayList<Facility> facilityArrayList, ArrayList<BookingID> BookingIDArrayList) throws IOException {
+    public String unMarshal(byte[] dataTobeUnmarshal, ArrayList<BookingID> BookingIDArrayList) throws IOException {
         this.dataToBeUnMarshal = dataTobeUnmarshal;
         if (this.dataToBeUnMarshal.length != 0) {
-            int bookingID_length = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 24);
+            int bookingID_length = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 12);
             System.out.println("BookingID Length: " + bookingID_length);
 
-            this.bookingID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 28);
+            this.bookingID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 16);
             System.out.println("BookingID: " + bookingID);
 
             cancelBooking(facilityArrayList, BookingIDArrayList);
@@ -46,7 +48,8 @@ public class Server6Control extends ControlFactory implements ControlChangeFacto
 
     @Override
     public void marshalAndSend() throws TimeoutException, IOException{
-        if (UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,4) == 0){
+        int msgID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,4);
+        if (UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,0) == 0){
             // Msg Type is ACK
             System.out.println("[Server6]   --marshalAndSend--  Received ACK msg");
         }else {
@@ -55,12 +58,14 @@ public class Server6Control extends ControlFactory implements ControlChangeFacto
                 System.out.println("[Server6]   --marshalAndSend-- The BookingID dose not exist.");
                 this.marshaledData = Marshal.marshalString("The BookingID does not exist");
                 this.status = new byte[]{0,0,0,0};
+                send(this.marshaledData, this.status, msgID);
             } else {
                 System.out.println("[Server6]   --marshalAndSend-- The change booking is success.");
                 this.status = new byte[]{0,0,0,1};
                 this.marshaledData = Marshal.marshalString("The cancel is success");
+                send(this.marshaledData, Marshal.marshalString(getLatestQueryInfo(7, this.facilityName)), this.facilityName, msgID);
             }
-            send(this.marshaledData);
+            //send(this.marshaledData);
         }
         this.bookingIDExist = false;
     }
@@ -109,6 +114,15 @@ public class Server6Control extends ControlFactory implements ControlChangeFacto
         this.ackType = new byte[]{0,0,0,1};
         byte[] addAck_msg = concat(ackType, this.status, sendData);
         udpSever.UDPsend(addAck_msg);
+    }
+
+    public void send(byte[] sendData, byte[] status, int msgID) throws IOException{
+        System.out.println("[Server2]   --send--    Success Cancel: "+this.bookingIDExist);
+        this.ackType = new byte[]{0,0,0,1};
+        byte[] addAck_msg = concat(ackType, status, sendData);
+        udpSever.UDPsend(addAck_msg);
+        //update table
+        msgIDresponseMap.put(msgID, addAck_msg);
     }
 
 }

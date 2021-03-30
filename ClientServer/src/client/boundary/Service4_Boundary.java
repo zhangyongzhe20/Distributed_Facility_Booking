@@ -27,6 +27,9 @@ public class  Service4_Boundary extends Boundary {
         s4C.marshal();
         // catch the socket timeout exception to exist the monitoring loop
         // this socket timeout >= interval
+
+        s4C.sendOnce();
+
         try {
             //todo: need testing
         while(true) {
@@ -47,7 +50,14 @@ public class  Service4_Boundary extends Boundary {
     @Override
     public void displayReply() {
         //todo
-       // System.out.println("Available intervals: " + s4C.unMarshal());
+        try {
+            String response = s4C.unMarshal();
+            if(response!=null) {
+                System.out.println(response);
+            }
+        }catch (Exception e){
+            System.err.println(e.getMessage());
+        }
     }
 
     private void enterFacilityName() {

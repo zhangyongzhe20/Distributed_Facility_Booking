@@ -16,9 +16,9 @@ public class Server1_Boundary implements ServerBoundary {
         this.server1 = new Server1Control();
     }
 
-    public void processRequest(byte[] dataTobeUnmarshal, ArrayList<Facility> facilityArrayList) throws TimeoutException, IOException{
+    public void processRequest(byte[] dataTobeUnmarshal) throws TimeoutException, IOException{
         System.out.println("Server1 process request");
-        server1.unMarshal(dataTobeUnmarshal, facilityArrayList);
+        server1.unMarshal(dataTobeUnmarshal);
         reply();
     }
 

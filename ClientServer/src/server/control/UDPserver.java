@@ -3,6 +3,9 @@ package server.control;
 import java.io.IOException;
 import java.net.*;
 
+import static client.config.Constants.REQFRATE;
+import static client.config.Constants.RESFRATE;
+
 public class UDPserver {
     private DatagramSocket serverSocket;
     private InetAddress clientIPAddress;
@@ -37,7 +40,7 @@ public class UDPserver {
         this.serverSocket.receive(request);
         this.clientIPAddress = request.getAddress();
         this.clientPort = request.getPort();
-        System.out.println("[UDP Server]    --UDPreceive--  Received UDP: " + new String(request.getData()));
+        //System.out.println("[UDP Server]    --UDPreceive--  Received UDP: " + new String(request.getData()));
         return request.getData();
     }
 
@@ -45,7 +48,15 @@ public class UDPserver {
         // Send UDP reply to client
         try {
             DatagramPacket reply = new DatagramPacket(message, message.length, this.clientIPAddress, clientPort);
-            serverSocket.send(reply);
+            if (Math.random() < RESFRATE) {
+                System.out.println("Simulate Request is lost during transmission");
+            } else {
+                System.err.println("send reply to book");
+                serverSocket.send(reply);
+                //reset buffer
+                reply.setLength(0);
+            }
+
         } catch (IOException e) {
             System.err.println("[UDP Server]    --UDPsend--     Failed to receive/send packet.");
             e.printStackTrace();
@@ -53,7 +64,7 @@ public class UDPserver {
     }
 
     public void clearRecieveMsg() {
-        System.out.println("[UDP Server]    --clearRecieveMsg--  clear");
+        //System.out.println("[UDP Server]    --clearRecieveMsg--  clear");
         this.recieve_msg = new byte[512];
     }
     public InetAddress getClientIPAddress() {
@@ -62,5 +73,18 @@ public class UDPserver {
 
     public int getClientPort() {
         return clientPort;
+    }
+
+    public void UDPMonitorsend(byte[] facilityInfo, InetAddress ipAddress, int port) {
+        // Send UDP reply to client
+        try {
+            DatagramPacket reply = new DatagramPacket(facilityInfo, facilityInfo.length, ipAddress, port);
+            System.err.println("send notify");
+            serverSocket.send(reply);
+
+        } catch (IOException e) {
+            System.err.println("[UDP Server]    --UDPsend--     Failed to receive/send packet.");
+            e.printStackTrace();
+        }
     }
 }

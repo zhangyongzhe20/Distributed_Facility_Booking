@@ -10,7 +10,7 @@ public class CallBack {
     /**
      * Key: facility name
      */
-    public static HashMap<String, ArrayList<Member>> MonitorTables;
+    public static HashMap<String, ArrayList<Member>> MonitorTables = new HashMap<>();
     /**
      *
      * @param FacilityName: the facility has its availabilities updated
@@ -18,17 +18,15 @@ public class CallBack {
      * @throws IOException
      */
     public static void notify(String FacilityName, byte[] facilityInfo) throws IOException {
-        UDPserver udpServer;
         ArrayList<Member> members = MonitorTables.get(FacilityName);
-        if(!members.isEmpty()){
+        if(members != null){
             for(Member member: members){
                 if(member != null || member.isWithIntervals()) {
-                    udpServer = new UDPserver(member.getIpAddress(), member.getPort());
-                    udpServer.UDPsend(facilityInfo);
+                    UDPserver.getInstance().UDPMonitorsend(facilityInfo, member.getIpAddress(), member.getPort());
                 }
             }
         }
-        // after notify, clear the lists
-        MonitorTables.remove(FacilityName);
+        // TODO: after notify, clear the lists
+        //MonitorTables.remove(FacilityName);
     }
 }

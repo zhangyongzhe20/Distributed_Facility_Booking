@@ -10,6 +10,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.TimeoutException;
 
 public class Server4Control extends ControlFactory{
@@ -22,23 +23,38 @@ public class Server4Control extends ControlFactory{
         //this.marshaledData = new byte[0];
     }
 
-    public String unMarshal() throws IOException {
-            // update Monitor Tables
-            updateMonitorTables();
 
-            return new String();
-    }
+//    private void updateMonitorTables(String facName) {
+//        ArrayList<Member> members = CallBack.MonitorTables.get(this.facilityName);
+//        if(members == null){
+//            members = new ArrayList<>();
+//        }
+//            Member newMember = new Member(this.udpSever.getClientIPAddress(), this.udpSever.getClientPort(),
+//                    this.intervals, LocalDate.now());
+//            members.add(newMember);
+//            // add this new member to the monitorTables
+//            CallBack.MonitorTables.put(this.facilityName, members);
+//    }
 
-    private void updateMonitorTables() {
-//        //TODO: Need to check the request is duplicated or not if uses at-most-semantics
-        ArrayList<Member> members = CallBack.MonitorTables.get(this.facilityName);
+    public void unMarshal(byte[] dataTobeUnmarshal) {
+            this.dataToBeUnMarshal = dataTobeUnmarshal;
+
+            int facilityName_length = UnMarshal.unmarshalInteger(dataTobeUnmarshal, 12);
+            String facilityName = UnMarshal.unmarshalString(dataTobeUnmarshal, 16, 16 + facilityName_length);
+
+            int interval = UnMarshal.unmarshalInteger(dataTobeUnmarshal, 20+facilityName_length);
+
+            //update table
+        ArrayList<Member> members = CallBack.MonitorTables.get(facilityName);
         if(members == null){
             members = new ArrayList<>();
         }
-            Member newMember = new Member(this.udpSever.getClientIPAddress(), this.udpSever.getClientPort(),
-                    this.intervals, LocalDate.now());
-            members.add(newMember);
-            // add this new member to the monitorTables
-            CallBack.MonitorTables.put(this.facilityName, members);
+        Member newMember = new Member(this.udpSever.getClientIPAddress(), this.udpSever.getClientPort(),
+                interval, LocalDate.now());
+        members.add(newMember);
+        // add this new member to the monitorTables
+        CallBack.MonitorTables.put(facilityName, members);
+        System.err.println("added new member" + newMember.getIpAddress());
+
     }
 }

@@ -32,6 +32,7 @@ public class Service1_Boundary extends Boundary {
             return;
         }
         displayReply();
+        s1C.resetUnmarshal();
     }
 
     @Override

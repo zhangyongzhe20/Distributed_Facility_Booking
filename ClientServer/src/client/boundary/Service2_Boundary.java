@@ -41,14 +41,15 @@ public class Service2_Boundary extends Boundary {
 
     @Override
     public void displayReply() {
-        if(response != null)
-        System.out.println("Your booking is successful!\n" +
-                "Your booking ID: " + response.substring(0,2));
-        //01-20210333-LT1-1416-0930
-        System.out.println("Date: "+response.substring(3,11));
-        System.out.println("Facility: "+response.substring(12,15));
-        System.out.println("Slot time is from "+response.substring(16,18)+" to "+response.substring(18,20));
-       // System.out.println("Your booking Info: " + s2C.unMarshal().substring(1));
+        if(response != null) {
+            System.out.println("Your booking is successful!\n" +
+                    "Your booking ID: " + response.substring(0, 2));
+            //01-20210333-LT1-1416-0930
+            System.out.println("Date: " + response.substring(3, 11));
+            System.out.println("Facility: " + response.substring(12, 15));
+            System.out.println("Slot time is from " + response.substring(16, 18) + " to " + response.substring(18, 20));
+            // System.out.println("Your booking Info: " + s2C.unMarshal().substring(1));
+        }
     }
 
     private void enterFacilityName() {

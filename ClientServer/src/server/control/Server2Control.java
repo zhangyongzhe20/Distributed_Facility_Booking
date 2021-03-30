@@ -12,6 +12,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
+import static server.control.Control.msgIDresponseMap;
+
 public class Server2Control extends ControlFactory{
     private String facilityName;
     private String bookingRequirement;
@@ -34,15 +36,15 @@ public class Server2Control extends ControlFactory{
     public void clearTimeSlots(){this.timeSlots="";}
 
     @Override
-    public String unMarshal(byte[] dataToBeUnMarshal, ArrayList<Facility> facilityArrayList, ArrayList<BookingID> BookingIDArrayList) throws IOException {
+    public String unMarshal(byte[] dataToBeUnMarshal, ArrayList<BookingID> BookingIDArrayList) throws IOException {
         this.dataToBeUnMarshal = dataToBeUnMarshal;
         if (this.dataToBeUnMarshal.length != 0)
         {
-            int facilityName_length = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 24);
-            this.facilityName = UnMarshal.unmarshalString(this.dataToBeUnMarshal, 28, 28 + facilityName_length);
+            int facilityName_length = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 12);
+            this.facilityName = UnMarshal.unmarshalString(this.dataToBeUnMarshal, 16, 16 + facilityName_length);
 
-            int bookingRequirement_length = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 28+facilityName_length);
-            this.bookingRequirement = UnMarshal.unmarshalString(this.dataToBeUnMarshal, 32+facilityName_length, 32+facilityName_length+bookingRequirement_length);
+            int bookingRequirement_length = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 16+facilityName_length);
+            this.bookingRequirement = UnMarshal.unmarshalString(this.dataToBeUnMarshal, 20+facilityName_length, 20+facilityName_length+bookingRequirement_length);
 
             bookFacility(facilityArrayList);
             if (hasVacancy == 4){
@@ -57,34 +59,39 @@ public class Server2Control extends ControlFactory{
 
     @Override
     public void marshalAndSend() throws TimeoutException, IOException{
-        if (UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,4) == 0){
+        if (UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,0) == 0){
             // Msg Type is ACK
             System.out.println("[Server2]   --marshalAndSend--    Received ACK msg");
         }else{
+            int msgID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,4);
             System.out.println("[Server2]   --marshalAndSend--  Msg Type is request");
             if (hasVacancy==1){ // fully has no vacancy
                 System.out.println("[Server2]   --marshalAndSend--  The facility is fully not available in selected time period.");  // TODO: Delete this print after client can parse
                 this.marshaledData = Marshal.marshalString("The facility is fully not available in selected time period.");
                 this.status = new byte[]{0,0,0,0};
-                send(this.marshaledData);
+                //send(this.marshaledData);
+                send(this.marshaledData, this.status, msgID);
             }
             else if (hasVacancy == 2){ // partial vacancy 2nd half cannot
                 System.out.println("[Server2]   --marshalAndSend--  The facility is partially not available in selected time period.");  // TODO: Delete this print after client can parse
                 this.marshaledData = Marshal.marshalString("The facility is partially not available in selected time period. You can postpone one slot.");
                 this.status = new byte[]{0,0,0,0};
-                send(this.marshaledData);
+                //send(this.marshaledData);
+                send(this.marshaledData, this.status, msgID);
             }
             else if (hasVacancy == 3){ // partial vacancy 1st half cannot
                 System.out.println("[Server2]   --marshalAndSend--  The facility is partially not available in selected time period.");  // TODO: Delete this print after client can parse
                 this.marshaledData = Marshal.marshalString("The facility is partially not available in selected time period. You can shift one slot advance.");
                 this.status = new byte[]{0,0,0,0};
-                send(this.marshaledData);
+                //send(this.marshaledData);
+                send(this.marshaledData, this.status, msgID);
             }
             else if (hasVacancy == 4){
                 System.out.println("[Server2]   --marshalAndSend--  Marshal: "+this.newBookingID.getBookingInfoString());
                 this.marshaledData = Marshal.marshalString(this.newBookingID.getBookingInfoString());
                 this.status = new byte[]{0,0,0,1};
-                send(this.marshaledData);
+                // from control factory
+                send(this.marshaledData, Marshal.marshalString(getLatestQueryInfo(7, this.facilityName)), this.facilityName ,msgID);
             }
             this.hasVacancy = -1;
         }
@@ -114,6 +121,7 @@ public class Server2Control extends ControlFactory{
                                 this.hasVacancy = 1;
                             } // fully no vancancy when booking only one slot\
                             else{
+                                System.err.println("new book here");
                                 f.bookAvailability(day, i);
                                 this.hasVacancy = 4;
                                 this.slotStartIndex = (i + 7);
@@ -149,9 +157,27 @@ public class Server2Control extends ControlFactory{
 
     @Override
     public void send(byte[] sendData) throws IOException{
-            System.out.println("[Server2]   --send--    Has Vacancy: "+this.hasVacancy);
-            this.ackType = new byte[]{0,0,0,1};
-            byte[] addAck_msg = concat(ackType, this.status, sendData);
-            udpSever.UDPsend(addAck_msg);
+        System.out.println("[Server2]   --send--    Has Vacancy: "+this.hasVacancy);
+        this.ackType = new byte[]{0,0,0,1};
+        byte[] addAck_msg = concat(ackType, this.status, sendData);
+        udpSever.UDPsend(addAck_msg);
     }
+
+    public void send(byte[] sendData, byte[] status, int msgID) throws IOException{
+        System.out.println("[Server1]   --send--    Success query: "+this.hasVacancy);
+        this.ackType = new byte[]{0,0,0,1};
+        byte[] addAck_msg = concat(ackType, status, sendData);
+        udpSever.UDPsend(addAck_msg);
+        //update table
+        msgIDresponseMap.put(msgID, addAck_msg);
+    }
+
+//    public void send(byte[] sendData, String facilityName) throws IOException{
+//            System.out.println("[Server2]   --send--    Has Vacancy: "+this.hasVacancy);
+//            this.ackType = new byte[]{0,0,0,1};
+//            byte[] addAck_msg = concat(ackType, this.status, sendData);
+//            udpSever.UDPsend(addAck_msg);
+//            //notify
+//            CallBack.notify(facilityName, addAck_msg);
+//    }
 }

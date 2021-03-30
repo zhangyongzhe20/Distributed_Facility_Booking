@@ -7,7 +7,6 @@ public class BookingID {
     private String bookingInfoString;
     private int ID;
     private boolean cancel;
-
     public boolean isCancel() {
         return cancel;
     }
@@ -27,13 +26,14 @@ public class BookingID {
         return bookingInfoString;
     }
 
+
     public int getID(){
         return ID;
     }
 
     public String getIDString() {
         String IDString = "0";
-        System.out.println("Get ID String");
+        //System.out.println("Get ID String");
         if (this.ID<10){
             IDString += Integer.toString(this.ID);
             return IDString;
@@ -48,10 +48,10 @@ public class BookingID {
 
     public static String convertIntToString(int time){
         if (time<10){
-            System.out.println("[BookingID] --convertIntToString-- original time"+(time));
+            //System.out.println("[BookingID] --convertIntToString-- original time"+(time));
             return ("0" + Integer.toString(time));
         }else
-            System.out.println("[BookingID] --convertIntToString-- original time"+(time));
+            //System.out.println("[BookingID] --convertIntToString-- original time"+(time));
             return Integer.toString(time);
     }
 }

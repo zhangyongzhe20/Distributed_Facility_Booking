@@ -16,9 +16,9 @@ public class Server2_Boundary implements ServerBoundary{
     }
 
     @Override
-    public void processRequest(byte[] dataTobeUnmarshal, ArrayList<Facility> facilityArrayList, ArrayList<BookingID> BookingIDArrayList) throws TimeoutException, IOException{
+    public void processRequest(byte[] dataTobeUnmarshal, ArrayList<BookingID> BookingIDArrayList) throws TimeoutException, IOException{
         System.out.println("[Server2_Boundary] --processRequest--  Server2 process request");
-        server2.unMarshal(dataTobeUnmarshal, facilityArrayList, BookingIDArrayList);
+        server2.unMarshal(dataTobeUnmarshal, BookingIDArrayList);
         reply();
     }
 
