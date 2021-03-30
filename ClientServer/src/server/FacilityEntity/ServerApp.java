@@ -30,7 +30,7 @@ public class ServerApp {
         LT1.bookAvailability(1,3); // 2021-03-30 15-16
         LT2.bookAvailability(3, 2); // 2021-03-28 9-10
 
-        BookingID testBookID1 = new BookingID(1,1,"LT1",10, 12);
+        BookingID testBookID1 = new BookingID(1,1,"LT1",9, 11);
         BookingID testBookID2 = new BookingID(2,3,"LT2",9,10);
         BookingIDArrayList.add(testBookID1);
         BookingIDArrayList.add(testBookID2);

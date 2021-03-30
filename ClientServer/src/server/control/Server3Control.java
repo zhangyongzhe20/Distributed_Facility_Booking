@@ -169,6 +169,7 @@ public class Server3Control extends ControlFactory implements ControlChangeFacto
             if (fc.getFacilityName().equals(facilityName)){
                 // only one booking slot
                 if ((startIndex-endIndex)==1){
+                    System.out.println("Only one booking slot condition");
                     if (!fc.checkAvailability(this.day, this.startIndex+offset))
                     {// has collision
                         System.out.println("check slot: "+fc.checkAvailability(day, this.startIndex+offset));
@@ -178,9 +179,11 @@ public class Server3Control extends ControlFactory implements ControlChangeFacto
                         this.collisionStatus =false;
                     }
                 }else {// two booking slots
+                    System.out.println("Two booking slot condition");
                     System.out.println("offset "+offset);
                     if (this.offset == 1){
                         // postpone one slot
+                        System.out.println("Postpone one slot");
                         if (fc.checkAvailability(this.day, this.endIndex)){
                             this.collisionStatus = false;
                             fc.cancelBooking(this.day, this.startIndex);
@@ -188,6 +191,7 @@ public class Server3Control extends ControlFactory implements ControlChangeFacto
                         }
                     } else if (this.offset == -1){
                         // advance one slot
+                        System.out.println("advance one slot");
                         if (fc.checkAvailability(this.day, this.startIndex-1)){
                             this.collisionStatus = false;
                             fc.cancelBooking(this.day, this.endIndex-1);
@@ -213,6 +217,7 @@ public class Server3Control extends ControlFactory implements ControlChangeFacto
 
     @Override
     public void parseBookingInfo(String bookingInfo){
+        System.out.println("Booking Info: "+bookingInfo);
         this.day = mdParser.StringDayToInt(bookingInfo.substring(9,11)) - mdParser.getDate();
         this.facilityName = bookingInfo.substring(12,15);
         this.startIndex = Integer.parseInt(bookingInfo.substring(16,18))-7;
