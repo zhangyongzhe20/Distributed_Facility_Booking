@@ -33,9 +33,9 @@ public class ControlFactory {
         Facility MR1 = new Facility("MR1", 3, 2);
         Facility MR2 = new Facility("MR2", 4,2);
         // Add some user predefined data here
-        LT1.bookAvailability(1,2); // 2021-03-30 14-15
-        LT1.bookAvailability(1,3); // 2021-03-30 15-16
-        LT2.bookAvailability(3, 2); // 2021-03-28 9-10
+//        LT1.bookAvailability(1,2); // 2021-03-30 14-15
+//        LT1.bookAvailability(1,3); // 2021-03-30 15-16
+//        LT2.bookAvailability(3, 2); // 2021-03-28 9-10
 
         facilityArrayList = new ArrayList<>();
         facilityArrayList.add(LT1);

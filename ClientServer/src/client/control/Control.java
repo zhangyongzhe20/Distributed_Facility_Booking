@@ -148,7 +148,8 @@ public class Control {
      * integratedProcess: sendAndReceive + handleACK + unmarsall
      */
     public String integratedProcess() throws Exception {
-
+        //TODO: Test
+        this.unMarShalData = null;
         sendAndReceive(this.marShalData);
         return unMarshal();
 
