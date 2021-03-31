@@ -7,7 +7,7 @@ The default settings of Retransmitting message to Server:
  * Request Failure Rate: 0
  * Acknowledgement Failure Rate: 0
  * UDP timeout (in second): 5
- * Max counts of UDP timeout: 3
+ * Max counts of UDP timeout: 10
  * Max counts of resend requests: 100
 
 If you want to change the default settings, you can change by:

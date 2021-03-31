@@ -128,7 +128,7 @@ public class Control {
      */
     public boolean handleACK(){
         int isAck = UnMarshal.unmarshalInteger(this.unMarShalData, 0);
-        if(REQFRATE != 0)
+        if(REQFRATE != 0 || ACKFRATE != 0)
         System.err.println("Receive from server, ack status: " + isAck);
         if(isAck == 0){
             return false;

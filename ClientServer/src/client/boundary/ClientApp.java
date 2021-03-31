@@ -13,15 +13,15 @@ public class ClientApp{
                 "Request Failure Rate: 0\n" +
                 "Acknowledgement Failure Rate: 0\n" +
                 "UDP timeout (in second): 5\n" +
-                "Max counts of UDP timeout: 3\n" +
+                "Max counts of UDP timeout: 10\n" +
                 "Max counts of resend requests: 100");
         System.out.println("You can change by: java ClientApp <Request Failure Rate> <Acknowledgement Failure Rate> <UDP timeout (in second)> <Max counts of UDP timeout> <Max counts of resend requests>");
         if (args.length >= 1) {
-            REQFRATE = Integer.parseInt(args[0]);
+            REQFRATE = Double.parseDouble(args[0]);
             System.out.println("The simulated request failure rate: " + REQFRATE);
         }
         if (args.length >= 2) {
-            ACKFRATE = Integer.parseInt(args[1]);
+            ACKFRATE = Double.parseDouble(args[1]);
             System.out.println("The simulated Ack failure rate: " + ACKFRATE);
         }
         if (args.length >= 3) {

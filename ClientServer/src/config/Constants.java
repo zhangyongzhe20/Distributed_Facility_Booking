@@ -9,9 +9,9 @@ public class Constants {
 
     //CLINET Params
     public static double REQFRATE = 0;
-    public static double ACKFRATE = 0;
+    public static double ACKFRATE = 0.8;
     public static int TIMEOUT = 5; // 3s timeout
-    public static int MAXTIMEOUTCOUNT = 3;
+    public static int MAXTIMEOUTCOUNT = 10;
     public static int MAXRESENDS = 100;
 
     //Application params

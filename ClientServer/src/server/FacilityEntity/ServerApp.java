@@ -26,7 +26,7 @@ public class ServerApp {
             }
         }
         if (args.length >= 2) {
-            RESFRATE = Integer.parseInt(args[1]);
+            RESFRATE = Double.parseDouble(args[1]);
             System.out.println("The simulated response failure rate: " + RESFRATE);
         }
 

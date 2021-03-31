@@ -48,7 +48,7 @@ public class UDPClient {
         try {
             DatagramPacket request = new DatagramPacket(message, message.length, this.IPAddress, PORT);
             //TODO: used for demo
-            if(REQFRATE != 0)
+            if(REQFRATE != 0 || ACKFRATE != 0)
             System.err.println("Send to server: " + Arrays.toString(request.getData()));
             this.clientSocket.send(request);
         } catch (IOException e) {
