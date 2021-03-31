@@ -14,7 +14,22 @@ import static server.control.Control.msgIDresponseMap;
 public class ServerApp {
 
     public static void main(String[] args) throws IOException, TimeoutException {
-
+        System.out.println("The default settings:\n" +
+                        "Invocation Semantics : AT_MOST_ONCE\n" +
+                        "Response Failure Rate: 0");
+        System.out.println("You can change by: java ServerApp <Invocation Semantics(0: AT_MOST_ONCE; 1: AT_LEAST_ONCE)> <Response Failure Rate (<=1)>");
+        if (args.length >= 1) {
+            APPLIEDSEMANTICS = Integer.parseInt(args[0]);
+            if(APPLIEDSEMANTICS == 0){
+                System.out.println("AT_MOST_ONCE is enabled");
+            } else{
+                System.out.println("AT_LEAST_ONCE is enabled");
+            }
+        }
+        if (args.length >= 2) {
+            RESFRATE = Integer.parseInt(args[1]);
+            System.out.println("The simulated response failure rate: " + RESFRATE);
+        }
 
         ArrayList<BookingID> BookingIDArrayList = new ArrayList<>();
 

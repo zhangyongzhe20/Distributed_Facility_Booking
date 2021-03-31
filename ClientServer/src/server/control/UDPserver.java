@@ -51,7 +51,7 @@ public class UDPserver {
             if (Math.random() < RESFRATE) {
                 System.out.println("Simulate Request is lost during transmission");
             } else {
-                System.err.println("send reply to book");
+                //System.err.println("send reply to book");
                 serverSocket.send(reply);
                 //reset buffer
                 reply.setLength(0);
