@@ -1,4 +1,4 @@
-package client.config;
+package config;
 
 public class Constants {
     //SERVER Params

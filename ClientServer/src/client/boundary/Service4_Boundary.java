@@ -7,8 +7,7 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
-import static client.config.Constants.MAXTIMEOUTCOUNT;
-import static client.config.Constants.UDPTIMEOUT;
+import static config.Constants.UDPTIMEOUT;
 
 
 public class  Service4_Boundary extends Boundary {

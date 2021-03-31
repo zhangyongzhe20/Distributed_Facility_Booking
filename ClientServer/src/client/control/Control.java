@@ -5,9 +5,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.concurrent.TimeoutException;
-import static client.config.Constants.*;
+import static config.Constants.*;
 
 /**
  * @author Z. YZ

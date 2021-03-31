@@ -4,7 +4,7 @@ import client.control.Service2Control;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
-import static client.config.Constants.MAX_BOOKING_HOURS;
+import static config.Constants.MAX_BOOKING_HOURS;
 
 public class Service2_Boundary extends Boundary {
     private Service2Control s2C;

@@ -1,11 +1,10 @@
 package client.control;
 
-import utils.UnMarshal;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import static utils.CalculateDate.calIndexFromToday;
-import static client.config.Constants.*;
+
+import static config.Constants.*;
 
 public class Service2Control extends Control implements marshal, unmarshal{
     private static final int SERVICEID = 2;

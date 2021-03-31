@@ -5,7 +5,7 @@ import java.util.Scanner;
 import java.util.concurrent.TimeoutException;
 
 import static client.boundary.Boundary.readInputInteger;
-import static client.config.Constants.*;
+import static config.Constants.*;
 
 public class ClientApp{
     public static void main(String[] args) throws IOException  {

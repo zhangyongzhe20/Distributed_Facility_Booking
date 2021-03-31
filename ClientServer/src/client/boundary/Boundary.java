@@ -5,7 +5,7 @@ import java.time.Period;
 import java.util.Arrays;
 import java.util.Scanner;
 
-import static client.config.Constants.AVAILABLE_FACs;
+import static config.Constants.AVAILABLE_FACs;
 
 public abstract class Boundary {
     static Scanner sc = new Scanner(System.in);

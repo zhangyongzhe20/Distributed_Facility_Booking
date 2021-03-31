@@ -3,8 +3,7 @@ package server.control;
 import java.io.IOException;
 import java.net.*;
 
-import static client.config.Constants.REQFRATE;
-import static client.config.Constants.RESFRATE;
+import static config.Constants.RESFRATE;
 
 public class UDPserver {
     private DatagramSocket serverSocket;

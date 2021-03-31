@@ -1,145 +1,38 @@
 # Distributed_Facility_Booking
 
-## Features
+## Experiments
 
-### 1. Todo
-Adds a task of type 'todo' into the task list.
+### 1. Client
+The default settings of Retransmitting message to Server:
+ * Request Failure Rate: 0
+ * Acknowledgement Failure Rate: 0
+ * UDP timeout (in second): 5
+ * Max counts of UDP timeout: 3
+ * Max counts of resend requests: 100
 
-Format: `todo <description>`
+If you want to change the default settings, you can change by:
+1. Indicate in command line: `java ClientApp <Request Failure Rate> <Acknowledgement Failure Rate> 
+   <UDP timeout (in second)> <Max counts of UDP timeout> <Max counts of resend requests>`
+   
+2. Change in `Distributed_Facility_Booking/ClientServer/src/config/Constants.java`
 
-Example:
-* Input: `todo read book`
-* Output:
-  ````
-  ____________________________________________________________
-   Alright, I've added this task:
-   [T][ ] read book
-   Now you have 1 tasks in your list.
-  ____________________________________________________________
-  ````
+### 2. Server
+The default settings:
+* Invocation Semantics : AT_MOST_ONCE
+* Response Failure Rate: 0
 
-### 2. Deadline
-Adds a task of type 'deadline' into the task list.
+If you want to change the default settings, you can change by:
+1. Indicate in command line: `java ServerApp <Invocation Semantics(0: AT_MOST_ONCE; 1: AT_LEAST_ONCE)> <Response Failure Rate (<=1)>`
+2. Change in `Distributed_Facility_Booking/ClientServer/src/config/Constants.java`
 
-Format: `deadline <description> /by <date> <timing>`
-* Format for date: `yyyy-mm-dd`
-* Format for time: `hh:mm`
+## Summary of Params
 
-Example:
-* Input: `deadline submit assignment /by 2021-02-24 23:00`
-* Output:
-  ````
-  ____________________________________________________________
-   Alright, I've added this task:
-   [D][ ] submit assignment (by: Feb 24 2021, 11:00 PM)
-   Now you have 2 tasks in your list.
-  ____________________________________________________________
-  ````
-
-### 3. Event
-Adds a task of type 'event' into the task list.
-
-Format: `event <description> /at <date> <timing>`
-* Format for date: `yyyy-mm-dd`
-* Format for time: `hh:mm`
-
-Example:
-* Input: `event project meeting /at 2019-05-23 13:00`
-* Output:
-  ````
-  ____________________________________________________________
-   Alright, I've added this task:
-   [E][ ] project meeting (at: May 23 2019, 01:00 PM)
-   Now you have 3 tasks in your list.
-  ____________________________________________________________
-  ````
-
-### 4. Done
-Marks a task as done.
-
-Format: `done <task number>`
-
-Example:
-* Input: `done 1`
-* Output:
-  ````
-  ____________________________________________________________
-   Nice! I've marked this task as done:
-   [T][X] read book
-  ____________________________________________________________
-  ````
-
-### 5. List
-Lists out all the task in your current task list.
-
-Format: `list`
-
-Example:
-* Input: `list`
-* Output:
-  ````
-  ____________________________________________________________
-   Here are the tasks in your list:
-   1.[T][X] borrow book
-   2.[D][ ] submit assignment (by: Feb 24 2021, 11:00 PM)
-   3.[E][ ] project meeting (at: May 23 2019, 01:00 PM)
-  ____________________________________________________________
-  ````
-
-### 6. Delete
-Deletes a task from the task list.
-
-Format: `delete <task number>`
-
-Example:
-* Input: `delete 3`
-* Output:
-  ````
-  ____________________________________________________________
-   Alright, I've deleted this task:
-   [E][ ] project meeting (at: May 23 2019, 01:00 PM)
-   Now you have 2 tasks in your list.
-  ____________________________________________________________
-  ````
-
-### 5. Find
-Finds and lists out tasks with descriptions containing the keyword.
-
-Format: `find <keyword>`
-
-Example:
-* Input: `find book`
-* Output:
-  ````
-  ____________________________________________________________
-   Here are the matching tasks in your list:
-   1.[T][X] borrow book
-  ____________________________________________________________
-  ````
-
-### 5. Bye
-Exits the application.
-
-Format: `delete <task number>`
-
-Example:
-* Input: `bye`
-* Output:
-  ````
-  ____________________________________________________________
-   Bye. Hope to see you again soon!
-  ____________________________________________________________
-  ````
-
-## Summary of Commands
-
-Command | Purpose | Format
--------|---------|-------------
-todo | Adds a task of type 'todo' | `todo <description>`
-deadline | Adds a task of type 'deadline' | `deadline <description> /by <date> <time>`
-event | Adds a task of type 'event' | `event <description> /at <date> <time>`
-done | Marks a task as done | `done <task number>`
-list | Prints the task lisk | `list`
-delete | Deletes a task | `delete <task number>`
-find | Finds tasks containing a keyword | `find <keyword>`
-bye | Exits application | `bye`
+Params | Purpose
+-------|---------
+REQFRATE | Simulate the failure rate when client send requests to server 
+ACKFRATE | Simulate the failure rate when client send ACK to server 
+TIMEOUT | The tiemout of UDP DatagramSocket, set by `setSoTimeout`  
+MAXTIMEOUTCOUNT | # of times for DatagramSocket timeouts 
+MAXRESENDS | # of resending requests after client detects message lost 
+APPLIEDSEMANTICS | Either AT_MOST_ONCE or AT_LEAST_ONCE enabled by server
+RESFRATE | Simulate the failure rate when servers send reponses to client 
