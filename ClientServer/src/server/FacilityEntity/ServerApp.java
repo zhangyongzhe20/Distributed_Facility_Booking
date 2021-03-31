@@ -1,20 +1,34 @@
 package server.FacilityEntity;
 
 import server.control.Control;
-import utils.UnMarshal;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.TimeoutException;
 
-import static client.config.Constants.*;
+import static config.Constants.*;
 import static server.control.Control.msgIDresponseMap;
 
 public class ServerApp {
 
     public static void main(String[] args) throws IOException, TimeoutException {
-
+        System.out.println("The default settings:\n" +
+                        "Invocation Semantics : AT_MOST_ONCE\n" +
+                        "Response Failure Rate: 0");
+        System.out.println("You can change by: java ServerApp <Invocation Semantics(0: AT_MOST_ONCE; 1: AT_LEAST_ONCE)> <Response Failure Rate (<=1)>");
+        if (args.length >= 1) {
+            APPLIEDSEMANTICS = Integer.parseInt(args[0]);
+            if(APPLIEDSEMANTICS == 0){
+                System.out.println("AT_MOST_ONCE is enabled");
+            } else{
+                System.out.println("AT_LEAST_ONCE is enabled");
+            }
+        }
+        if (args.length >= 2) {
+            RESFRATE = Double.parseDouble(args[1]);
+            System.out.println("The simulated response failure rate: " + RESFRATE);
+        }
 
         ArrayList<BookingID> BookingIDArrayList = new ArrayList<>();
 
@@ -42,14 +56,11 @@ public class ServerApp {
                 System.err.println("echo table: " + msgIDresponseMap.keySet());
                 //todo: interprete to get msg type and msgID
                 if (msgType == 0) {
-                    //System.err.println("receive ack msg");
                     if (status == 1) {
-                        //System.err.println("receive ack msg with status 1");
                         msgIDresponseMap.remove(msgID);
                     } else {
                         //if processed before
                         if (msgIDresponseMap.get(msgID) != null) {
-                            //System.err.println("Send: " + Arrays.toString(msgIDresponseMap.get(msgID)));
                             control.sendResponse(msgIDresponseMap.get(msgID));
                         } else {
                             control.sendNACK();
@@ -58,7 +69,7 @@ public class ServerApp {
                     continue;
                 } else {
                     if (msgIDresponseMap.get(msgID) != null) {
-                        System.err.println("get from table: " + Arrays.toString(msgIDresponseMap.get(msgID)));
+//                        System.err.println("get from table: " + Arrays.toString(msgIDresponseMap.get(msgID)));
                         control.sendResponse(msgIDresponseMap.get(msgID));
                         continue;
                     }

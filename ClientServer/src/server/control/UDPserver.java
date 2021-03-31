@@ -3,8 +3,7 @@ package server.control;
 import java.io.IOException;
 import java.net.*;
 
-import static client.config.Constants.REQFRATE;
-import static client.config.Constants.RESFRATE;
+import static config.Constants.RESFRATE;
 
 public class UDPserver {
     private DatagramSocket serverSocket;
@@ -51,7 +50,7 @@ public class UDPserver {
             if (Math.random() < RESFRATE) {
                 System.out.println("Simulate Request is lost during transmission");
             } else {
-                System.err.println("send reply to book");
+                //System.err.println("send reply to book");
                 serverSocket.send(reply);
                 //reset buffer
                 reply.setLength(0);

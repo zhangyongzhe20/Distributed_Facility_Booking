@@ -1,13 +1,13 @@
 package client.control;
 
-import utils.UnMarshal;
-
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import static client.config.Constants.*;
-
+import static config.Constants.*;
+/**
+ * @author Z. YZ
+ */
 public class Service4Control extends Control implements marshal, unmarshal{
     private static final int SERVICEID = 4;
     public boolean isNewUpdate;
@@ -34,7 +34,6 @@ public class Service4Control extends Control implements marshal, unmarshal{
             collectedData.add(SERVICEID);
             collectedData.add(name);
             collectedData.add(interval);
-            System.out.println("data collect of service4: " + collectedData);
             marShalData = marshalMsg(collectedData, false);
     }
 

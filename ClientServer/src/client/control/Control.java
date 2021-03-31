@@ -5,9 +5,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.concurrent.TimeoutException;
-import static client.config.Constants.*;
+import static config.Constants.*;
 
 /**
  * @author Z. YZ
@@ -19,7 +18,7 @@ public class Control {
     byte[] unMarShalData;
     UDPClient udpClient;
     static int numOfResend = 0;
-    //TODO: Diff client???
+    //TODO: used for demo
     public static int msgID = 0;
 
     public Control() throws SocketException, UnknownHostException {
@@ -34,7 +33,6 @@ public class Control {
      * @throws IOException
      */
     public void sendAndReceive(byte[] sendData) throws Exception {
-        System.err.println(numOfResend);
         int timeout = 0;
         do {
             try {
@@ -49,7 +47,7 @@ public class Control {
                     this.unMarShalData = udpClient.UDPreceive();
                     if(this.unMarShalData != null) {
                         timeout=0;
-                        //TODO check whether is NACK
+                        //check whether is NACK
                         if(!handleACK()){
                             numOfResend++;
                             if(numOfResend >= MAXRESENDS){
@@ -58,13 +56,11 @@ public class Control {
                             continue;
                         }
                         sendAck(true);
-                        //TODO REMOVE LATER
-                        //System.out.println("received: " + Arrays.toString(unMarShalData));
                         return;
                     }
             } catch (SocketTimeoutException e){
                 timeout++;
-                //TODO: STEP1. Send NACK to server, at every timeout
+                // STEP1. Send NACK to server, at every timeout
                 sendAck(false);
                 if (timeout >= MAXTIMEOUTCOUNT){
                     throw new TimeoutException("Exceed max time out");
@@ -73,11 +69,15 @@ public class Control {
         }while (true);
     }
 
+    /**
+     * Marshaling Ack message and send to server
+     * @param b
+     * @throws IOException
+     */
     protected void sendAck(boolean b) throws IOException {
         ArrayList<Object> ackData = new ArrayList<>();
         ackData.add(ACKMSG);
-        //TODO: add msg ID
-//        System.err.println("msg id in ack: " + this.collectedData.get(1));
+        // add msg ID
         ackData.add(this.collectedData.get(1));
         if(b){
             ackData.add(ACK);
@@ -113,8 +113,6 @@ public class Control {
         if(this.unMarShalData != null) {
             //check oepration status
             int status = UnMarshal.unmarshalInteger(this.unMarShalData, INTEGER_LENGTH);
-            //todo: remove later
-            //status  = 0;
             if(status == 0){
                 throw new Exception(UnMarshal.unmarshalString(this.unMarShalData, 2*INTEGER_LENGTH, this.unMarShalData.length));
             }
@@ -124,9 +122,13 @@ public class Control {
         return null;
     }
 
+    /**
+     * Handle Piggybacked ACK from server
+     * @return
+     */
     public boolean handleACK(){
-//        System.err.println(Arrays.toString(this.unMarShalData));
         int isAck = UnMarshal.unmarshalInteger(this.unMarShalData, 0);
+        if(REQFRATE != 0 || ACKFRATE != 0)
         System.err.println("Receive from server, ack status: " + isAck);
         if(isAck == 0){
             return false;
@@ -152,24 +154,9 @@ public class Control {
 
     }
 
-
-    public static byte[] concat(byte[] a, byte[] b, byte[] c) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        baos.write(a);
-        baos.write(b);
-        baos.write(c);
-        byte[] d = baos.toByteArray();
-        return d;
-    }
-
-    public static void main(String[] args) throws IOException {
-        byte[] ackMsg = new byte[]{0,0,0,0};
-        byte[] msgID = new byte[]{0,0,0,0};
-        byte[] status = new byte[]{0,0,0,1};
-        Control c = new Control();
-        c.udpClient.UDPsend(concat(ackMsg,msgID,status));
-    }
-
+    /**
+     * RESET unMarShalData varaible
+     */
     public void resetUnmarshal() {
         this.unMarShalData = null;
     }

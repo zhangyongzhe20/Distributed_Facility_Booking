@@ -7,8 +7,7 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
-import static client.config.Constants.MAXTIMEOUTCOUNT;
-import static client.config.Constants.UDPTIMEOUT;
+import static config.Constants.UDPTIMEOUT;
 
 
 public class  Service4_Boundary extends Boundary {
@@ -27,11 +26,9 @@ public class  Service4_Boundary extends Boundary {
         s4C.marshal();
         // catch the socket timeout exception to exist the monitoring loop
         // this socket timeout >= interval
-
         s4C.sendOnce();
 
         try {
-            //todo: need testing
         while(true) {
                 s4C.monitoring();
                 if (s4C.isNewUpdate){
@@ -49,7 +46,6 @@ public class  Service4_Boundary extends Boundary {
 
     @Override
     public void displayReply() {
-        //todo
         try {
             String response = s4C.unMarshal();
             if(response!=null) {

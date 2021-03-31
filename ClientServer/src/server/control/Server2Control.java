@@ -139,7 +139,6 @@ public class Server2Control extends ControlFactory{
                                 this.hasVacancy = 1;
                             } // fully no vancancy when booking only one slot\
                             else{
-                                System.err.println("new book here");
                                 f.bookAvailability(day, i);
                                 this.hasVacancy = 4;
                                 this.slotStartIndex = (i + 7);

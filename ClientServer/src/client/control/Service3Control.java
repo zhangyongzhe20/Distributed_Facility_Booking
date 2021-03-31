@@ -1,12 +1,13 @@
 package client.control;
 
-import utils.UnMarshal;
-
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import static client.config.Constants.*;
+import static config.Constants.*;
 
+/**
+ * @author Z. YZ
+ */
 public class Service3Control extends Control implements marshal, unmarshal{
     private static final int SERVICEID = 3;
     private int bookingID;
@@ -32,7 +33,6 @@ public class Service3Control extends Control implements marshal, unmarshal{
             collectedData.add(SERVICEID);
             collectedData.add(bookingID);
             collectedData.add(offset);
-            //System.out.println("data collect of service3: " + collectedData);
             marShalData = marshalMsg(collectedData, false);
     }
 

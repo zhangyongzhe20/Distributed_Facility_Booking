@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * @author Z. YZ
+ */
 public class Marshal {
     /**
      * marshal.Marshal int into bytes, using Big-Endian format
@@ -39,29 +42,7 @@ public class Marshal {
     }
 
     /**
-     *
-     * @param collectedMsg
-     * @return the bytes contains length information, first send of UDP
-     */
-    public static byte[] marshalMsgHeader(ArrayList<Object> collectedMsg){
-        // create a list<Byte>
-        List<Byte> constructedMsg = new ArrayList<>();
-        // loop the collectedMsg and marshall
-        for(Object obj : collectedMsg){
-            if(obj.getClass() == Integer.class){
-                // all int value occupy 4 bytes
-                constructedMsg.addAll(Arrays.asList(ArrayUtils.toObject(marshalInt(4))));
-            }else if(obj.getClass() == String.class){
-                constructedMsg.addAll(Arrays.asList(ArrayUtils.toObject(marshalInt(((String) obj).length()))));
-            }
-        }
-        System.out.println(constructedMsg);
-        // convert Byte[] to byte[] for UDP
-        return ArrayUtils.toPrimitive(constructedMsg.toArray(new Byte[0]));
-    }
-
-    /**
-     *
+     * Used to marshal an arraylist obeject and convert to bytes for transmission
      * @param collectedMsg {@code ArrayList<Object>} collect data in each service
      * @return {@code byte[]} the bytes contains data information, send followed by marshalMsgHeader
      */
@@ -92,7 +73,6 @@ public class Marshal {
                 }
             }
         }
-//        System.out.println(constructedMsg);
         // convert Byte[] to byte[] for UDP
         return ArrayUtils.toPrimitive(constructedMsg.toArray(new Byte[0]));
     }
