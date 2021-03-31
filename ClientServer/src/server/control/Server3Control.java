@@ -163,7 +163,7 @@ public class Server3Control extends ControlFactory implements ControlChangeFacto
         for (Facility fc: facilityArrayList) {
             if (fc.getFacilityName().equals(facilityName)){
                 // only one booking slot
-                if ((startIndex-endIndex)==1){
+                if ((endIndex-startIndex)==1){
                     if (!fc.checkAvailability(this.day, this.startIndex+offset))
                     {// has collision
                         System.out.println("check slot: "+fc.checkAvailability(day, this.startIndex+offset));
