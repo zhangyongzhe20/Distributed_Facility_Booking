@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.TimeoutException;
 
+/**
+ * @author Z. YZ
+ */
 public class Server4Control extends ControlFactory{
     private String facilityName;
     private int intervals;
@@ -20,22 +23,13 @@ public class Server4Control extends ControlFactory{
     public Server4Control() throws SocketException, UnknownHostException {
         super();
         this.dataToBeUnMarshal = new byte[0];
-        //this.marshaledData = new byte[0];
     }
 
 
-//    private void updateMonitorTables(String facName) {
-//        ArrayList<Member> members = CallBack.MonitorTables.get(this.facilityName);
-//        if(members == null){
-//            members = new ArrayList<>();
-//        }
-//            Member newMember = new Member(this.udpSever.getClientIPAddress(), this.udpSever.getClientPort(),
-//                    this.intervals, LocalDate.now());
-//            members.add(newMember);
-//            // add this new member to the monitorTables
-//            CallBack.MonitorTables.put(this.facilityName, members);
-//    }
-
+    /**
+     * Unmarshal service 4 data and update the monitor table
+     * @param dataTobeUnmarshal
+     */
     public void unMarshal(byte[] dataTobeUnmarshal) {
             this.dataToBeUnMarshal = dataTobeUnmarshal;
 
@@ -54,7 +48,5 @@ public class Server4Control extends ControlFactory{
         members.add(newMember);
         // add this new member to the monitorTables
         CallBack.MonitorTables.put(facilityName, members);
-        System.err.println("added new member" + newMember.getIpAddress());
-
     }
 }

@@ -9,7 +9,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
-
 public class Server4_Boundary implements ServerBoundary {
     private Server4Control server4;
 
@@ -19,14 +18,5 @@ public class Server4_Boundary implements ServerBoundary {
 
     public void processRequest(byte[] dataTobeUnmarshal) throws TimeoutException, IOException{
         server4.unMarshal(dataTobeUnmarshal);
-        //reply();
     }
-
-//    public void reply() throws IOException, TimeoutException {
-//        server4.marshalAndSend();
-//    }
-
-//    public void clearQueryInfo(){
-//        server4.clearQueryInfo();
-//    }
 }

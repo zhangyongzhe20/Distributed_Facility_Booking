@@ -34,9 +34,6 @@ public class Service5_Boundary extends Boundary {
     public void displayReply() {
         if(response!=null) {
             System.out.println("Your booking ID: " + response);
-            //todo
-            //System.out.println("Your booking facility name: " + s5C.unMarshal());
-            //System.out.println("Your booking time: " + s5C.unMarshal());
         }
     }
 

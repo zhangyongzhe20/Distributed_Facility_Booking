@@ -6,6 +6,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeoutException;
 
+
 public class Service1_Boundary extends Boundary {
     private Service1Control s1C;
     private String response;

@@ -8,6 +8,11 @@ import java.util.List;
 public class Boundary_Factory {
     List<Boundary> allBoundaries;
 
+    /**
+     * Create boundaries of each service
+     * @throws SocketException
+     * @throws UnknownHostException
+     */
     public Boundary_Factory() throws SocketException, UnknownHostException {
         allBoundaries = new ArrayList<>();
         allBoundaries.add(new Service1_Boundary());

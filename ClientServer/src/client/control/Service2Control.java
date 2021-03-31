@@ -6,6 +6,10 @@ import java.util.ArrayList;
 
 import static config.Constants.*;
 
+/**
+ * @author Z. YZ
+ */
+
 public class Service2Control extends Control implements marshal, unmarshal{
     private static final int SERVICEID = 2;
     private String facilityName;

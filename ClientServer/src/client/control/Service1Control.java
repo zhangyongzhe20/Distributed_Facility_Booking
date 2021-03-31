@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 import static config.Constants.*;
 
-
+/**
+ * @author Z. YZ
+ */
 public class Service1Control extends Control implements marshal, unmarshal{
     private static final int SERVICEID = 1;
     private String facilityName;

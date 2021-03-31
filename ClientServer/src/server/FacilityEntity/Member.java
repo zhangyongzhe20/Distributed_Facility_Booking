@@ -4,6 +4,9 @@ import java.net.InetAddress;
 import java.time.Duration;
 import java.time.LocalDate;
 
+/**
+ * @author Z. YZ
+ */
 public class Member {
     private InetAddress ipAddress;
     private int port;
@@ -29,18 +32,6 @@ public class Member {
         return intervals > getDuration();
     }
 
-    public int getRemainIntervals(){
-        return intervals - getDuration();
-    }
-
-    public void setIntervals(int intervals) {
-        this.intervals = intervals;
-    }
-
-    public void setStart(LocalDate start) {
-        this.start = start;
-    }
-
     public InetAddress getIpAddress() {
         return ipAddress;
     }
@@ -48,5 +39,4 @@ public class Member {
     public int getPort() {
         return port;
     }
-
 }

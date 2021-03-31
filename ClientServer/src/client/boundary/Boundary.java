@@ -11,7 +11,6 @@ public abstract class Boundary {
     static Scanner sc = new Scanner(System.in);
     public abstract void displayMain() throws Exception;
     public abstract void displayReply();
-    //todo parsers defined in the blow
 
     /**
      * Used in Service1
@@ -34,6 +33,11 @@ public abstract class Boundary {
         return input;
     }
 
+    /**
+     * Used by Service 2
+     * @param message
+     * @return
+     */
     public static String readInputDate(String message){
         String output = null;
         while(output == null) {
@@ -54,7 +58,12 @@ public abstract class Boundary {
         return output;
         }
 
-        public static int readInputTime(String message){
+    /**
+     * Used by service 2
+     * @param message
+     * @return
+     */
+    public static int readInputTime(String message){
             int input = -1;
             while (input < 0) {
                 try {
@@ -85,7 +94,11 @@ public abstract class Boundary {
         return input;
     }
 
-
+    /**
+     * Used by Service 5
+     * @param message
+     * @return
+     */
     public static int readFacType(String message) {
         int input = readInputInteger(message);
         while (input != 1 && input != 2) {
@@ -112,7 +125,6 @@ public abstract class Boundary {
             }
         return input;
     }
-
 
     public static String readInputString(String message) {
         System.out.println(message);

@@ -56,14 +56,11 @@ public class ServerApp {
                 System.err.println("echo table: " + msgIDresponseMap.keySet());
                 //todo: interprete to get msg type and msgID
                 if (msgType == 0) {
-                    //System.err.println("receive ack msg");
                     if (status == 1) {
-                        //System.err.println("receive ack msg with status 1");
                         msgIDresponseMap.remove(msgID);
                     } else {
                         //if processed before
                         if (msgIDresponseMap.get(msgID) != null) {
-                            //System.err.println("Send: " + Arrays.toString(msgIDresponseMap.get(msgID)));
                             control.sendResponse(msgIDresponseMap.get(msgID));
                         } else {
                             control.sendNACK();
@@ -72,7 +69,7 @@ public class ServerApp {
                     continue;
                 } else {
                     if (msgIDresponseMap.get(msgID) != null) {
-                        System.err.println("get from table: " + Arrays.toString(msgIDresponseMap.get(msgID)));
+//                        System.err.println("get from table: " + Arrays.toString(msgIDresponseMap.get(msgID)));
                         control.sendResponse(msgIDresponseMap.get(msgID));
                         continue;
                     }
