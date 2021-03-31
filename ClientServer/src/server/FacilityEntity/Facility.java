@@ -12,13 +12,9 @@ public class Facility {
     private int facilityID;
 
     // ------------------------------------------ Constructor ------------------------------------------
-    public Facility(String facilityName, int facilityID) {
+    public Facility(String facilityName, int facilityID, int FacilityType) {
         this.FacilityName = facilityName;
-        if (facilityName.substring(0, 2).equals("LT"))
-            setFacilityType(0);
-        else
-            setFacilityType(1);
-
+        this.FacilityType = FacilityType;
         this.availability = new boolean[10][7];
         for (int i = 0; i < 10; i++) {
             java.util.Arrays.fill(this.availability[i], true);

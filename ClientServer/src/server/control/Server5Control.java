@@ -114,25 +114,28 @@ public class Server5Control extends ControlFactory{
      * @param facilityArrayList
      */
     public void wiseBooking(int facilityType, ArrayList<Facility> facilityArrayList){
-        int fcIndex = facilityType-1;
+        System.out.println("Facility Type is: "+facilityType);
         // check LT1 and LT2
         int day =1;
+        int a, b;
         for (int i = 1; i < 10; i++) {
-            if(facilityArrayList.get(0+fcIndex).checkAvailability(day,i))
+            if (facilityType == 1){a =0; b=1;}else{a=2;b=3;}
+            if(facilityArrayList.get(a).checkAvailability(day,i))
             { // LT1
+                System.out.println("Facility Name: "+facilityArrayList.get(a).getFacilityName());
                 this.hasVacancy = true;
                 this.startIndex = i;
-                facilityArrayList.get(0+fcIndex).bookAvailability(day,i);
+                facilityArrayList.get(a).bookAvailability(day,i);
                 this.chosenDay = day;
-                this.chosenFacilityName = facilityArrayList.get(0+fcIndex).getFacilityName();
+                this.chosenFacilityName = facilityArrayList.get(a).getFacilityName();
                 break;
-            } else if (facilityArrayList.get(1+fcIndex).checkAvailability(day,i))
+            } else if (facilityArrayList.get(b).checkAvailability(day,i))
             { // LT2
                 this.hasVacancy = true;
                 this.startIndex = i;
-                facilityArrayList.get(1+fcIndex).bookAvailability(day,i);
+                facilityArrayList.get(b).bookAvailability(day,i);
                 this.chosenDay = day;
-                this.chosenFacilityName = facilityArrayList.get(1+fcIndex).getFacilityName();
+                this.chosenFacilityName = facilityArrayList.get(b).getFacilityName();
                 break;
             }else{
                 hasVacancy=false;
