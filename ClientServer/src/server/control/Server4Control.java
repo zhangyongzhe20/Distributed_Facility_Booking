@@ -36,6 +36,10 @@ public class Server4Control extends ControlFactory{
 //            CallBack.MonitorTables.put(this.facilityName, members);
 //    }
 
+    /**
+     * Unmarshal Msg received from server
+     * @param dataTobeUnmarshal
+     */
     public void unMarshal(byte[] dataTobeUnmarshal) {
             this.dataToBeUnMarshal = dataTobeUnmarshal;
 

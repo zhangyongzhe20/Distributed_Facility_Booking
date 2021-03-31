@@ -44,18 +44,33 @@ public class ControlFactory {
         facilityArrayList.add(MR2);
     }
 
-//    //Server1
-//    public String unMarshal(byte[] dataTobeUnmarshal) throws IOException {
-//        return null;
-//    }
-    // Server2
+
+    /**
+     *
+     * @param dataToBeUnMarshal
+     * @param BookingIDArrayList
+     * @return
+     * @throws IOException
+     */
     public String unMarshal(byte[] dataToBeUnMarshal, ArrayList<BookingID> BookingIDArrayList) throws IOException{
         return null;
     }
 
+    /**
+     *
+     * @throws TimeoutException
+     * @throws IOException
+     */
     public void marshalAndSend() throws TimeoutException, IOException {}
 
-
+    /**
+     *
+     * @param a
+     * @param b
+     * @param c
+     * @return
+     * @throws IOException
+     */
     public static byte[] concat(byte[] a, byte[] b, byte[] c) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         baos.write(a);
@@ -65,8 +80,21 @@ public class ControlFactory {
         return d;
     }
 
+    /**
+     *
+     * @param sendData
+     * @throws IOException
+     */
     public void send(byte[] sendData) throws IOException{}
 
+    /**
+     *
+     * @param sendData
+     * @param sendMonitorData
+     * @param facilityName
+     * @param msgID
+     * @throws IOException
+     */
     public void send(byte[] sendData, byte[] sendMonitorData, String facilityName, int msgID) throws IOException{
         this.ackType = new byte[]{0,0,0,1};
         byte[] addAck_msg = concat(ackType, this.status, sendData);
@@ -77,6 +105,12 @@ public class ControlFactory {
         CallBack.notify(facilityName, addAck_msg_monitor);
     }
 
+    /**
+     *
+     * @param interval
+     * @param facilityName
+     * @return
+     */
     String getLatestQueryInfo(int interval, String facilityName)
     {
         String queryInfo = "";

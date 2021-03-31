@@ -38,12 +38,16 @@ public class Control {
         this.dataToBeUnMarshal = new byte[0];
     }
 
+    /**
+     * Receive marshaled data from Client
+     * @return
+     * @throws IOException
+     */
     public byte[] receive() throws IOException {
         // get the marshal data
         this.dataToBeUnMarshal = udpSever.UDPreceive();
         udpSever.clearRecieveMsg();
         parse();
-
 //        // Check if the request has already been processed
 //        if ((msgType == 1) && msgIDresponseMap.containsKey(msgID)){
 //            System.err.println("[Control] --receive-- The msg Is processed already"+msgID);
@@ -52,6 +56,9 @@ public class Control {
         return this.dataToBeUnMarshal;
     }
 
+    /**
+     * Parse the marshaled data to check serviceID
+     */
     public void parse(){
         this.msgType = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal, 0);
         if(this.msgType == 0){
@@ -63,15 +70,27 @@ public class Control {
         //System.out.println("[Control]   --parse--    msgType:   " +this.msgType + " Message ID:  "+this.msgID+" ServiceID: " + this.serviceID_receive);
     }
 
+    /**
+     * Clear data
+     */
     public void clearDataToBeUnMarshal() {
         //System.out.println("[Control]   -- clearDataToBeUnMarshal-- Clear Data");
         this.dataToBeUnMarshal = new byte[0];
     }
 
+    /**
+     * Send Response back to client
+     * @param bytes
+     * @throws IOException
+     */
     public void sendResponse(byte[] bytes) throws IOException {
         udpSever.UDPsend(bytes);
     }
 
+    /**
+     * Send NACK back to client
+     * @throws IOException
+     */
     public void sendNACK() throws IOException {
         udpSever.UDPsend(new byte[] {0,0,0,0});
     }

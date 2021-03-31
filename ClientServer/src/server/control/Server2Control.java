@@ -35,6 +35,13 @@ public class Server2Control extends ControlFactory{
 
     public void clearTimeSlots(){this.timeSlots="";}
 
+    /**
+     * Unmarshal Msg received from server
+     * @param dataToBeUnMarshal
+     * @param BookingIDArrayList
+     * @return
+     * @throws IOException
+     */
     @Override
     public String unMarshal(byte[] dataToBeUnMarshal, ArrayList<BookingID> BookingIDArrayList) throws IOException {
         this.dataToBeUnMarshal = dataToBeUnMarshal;
@@ -57,6 +64,11 @@ public class Server2Control extends ControlFactory{
         return null;
     }
 
+    /**
+     * Send Marshaled Data corresponding to each 4 cases to Client
+     * @throws TimeoutException
+     * @throws IOException
+     */
     @Override
     public void marshalAndSend() throws TimeoutException, IOException{
         if (UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,0) == 0){
@@ -98,6 +110,10 @@ public class Server2Control extends ControlFactory{
         this.dataToBeUnMarshal = new byte[0];
     }
 
+    /**
+     * Book the client requested facility
+     * @param facilityArrayList
+     */
     public void bookFacility(ArrayList<Facility> facilityArrayList) {
         boolean vacancy;
         this.slots = 0;
@@ -112,7 +128,9 @@ public class Server2Control extends ControlFactory{
                     }
                 }
                 System.out.println("Number of slots " + this.slots);
-
+                /**
+                 * If user only required book 1 hour slot
+                 */
                 if (this.slots == 1) {
                     for (int i = 1; i < this.bookingRequirement.length(); i++) {
                         if (this.bookingRequirement.charAt(i) == '0') {
@@ -129,6 +147,9 @@ public class Server2Control extends ControlFactory{
                             break;
                         }
                     }
+                    /**
+                     * If user required book 2 hour slots; There are 4 cases in total.
+                     */
                 } else {
                     for (int i = 1; i < this.bookingRequirement.length(); i++) {
                         if (this.bookingRequirement.charAt(i) == '0') {
@@ -136,7 +157,7 @@ public class Server2Control extends ControlFactory{
                                 f.bookAvailability(day,i);
                                 f.bookAvailability(day,i+1);
                                 this.hasVacancy = 4;
-                            }
+                            } // fully available
                             else if (f.checkAvailability(this.day, i) && !f.checkAvailability(this.day, i+1)){
                                 this.hasVacancy = 3; // partial vacancy 2nd half cannot
                             }else if (!f.checkAvailability(this.day, i) && f.checkAvailability(this.day, i+1)){
@@ -155,6 +176,11 @@ public class Server2Control extends ControlFactory{
         }
     }
 
+    /**
+     * Send Data
+     * @param sendData
+     * @throws IOException
+     */
     @Override
     public void send(byte[] sendData) throws IOException{
         System.out.println("[Server2]   --send--    Has Vacancy: "+this.hasVacancy);
@@ -163,6 +189,13 @@ public class Server2Control extends ControlFactory{
         udpSever.UDPsend(addAck_msg);
     }
 
+    /**
+     * Send Data
+     * @param sendData
+     * @param status
+     * @param msgID
+     * @throws IOException
+     */
     public void send(byte[] sendData, byte[] status, int msgID) throws IOException{
         System.out.println("[Server1]   --send--    Success query: "+this.hasVacancy);
         this.ackType = new byte[]{0,0,0,1};

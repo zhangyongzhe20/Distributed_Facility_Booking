@@ -31,6 +31,13 @@ public class Server6Control extends ControlFactory implements ControlChangeFacto
         mp = new MonthDateParser();
     }
 
+    /**
+     * Unmarshal Msg received from server
+     * @param dataTobeUnmarshal
+     * @param BookingIDArrayList
+     * @return
+     * @throws IOException
+     */
     @Override
     public String unMarshal(byte[] dataTobeUnmarshal, ArrayList<BookingID> BookingIDArrayList) throws IOException {
         this.dataToBeUnMarshal = dataTobeUnmarshal;
@@ -46,6 +53,11 @@ public class Server6Control extends ControlFactory implements ControlChangeFacto
         return null;
     }
 
+    /**
+     * Send Marshaled Data corresponding to each 2 cases to Client
+     * @throws TimeoutException
+     * @throws IOException
+     */
     @Override
     public void marshalAndSend() throws TimeoutException, IOException{
         int msgID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,4);
@@ -70,6 +82,11 @@ public class Server6Control extends ControlFactory implements ControlChangeFacto
         this.bookingIDExist = false;
     }
 
+    /**
+     * Cancel a previous booking
+     * @param facilityArrayList
+     * @param BookingIDArrayList
+     */
     public void cancelBooking(ArrayList<Facility> facilityArrayList, ArrayList<BookingID> BookingIDArrayList){
         for (BookingID bid: BookingIDArrayList){
             if (bid.getID() == this.bookingID){
@@ -97,6 +114,10 @@ public class Server6Control extends ControlFactory implements ControlChangeFacto
         }
     }
 
+    /**
+     * Parse the received booking information
+     * @param bookingInfo
+     */
     public void parseBookingInfo(String bookingInfo){
         this.day = mp.StringDayToInt(bookingInfo.substring(9,11)) - mp.getDate();
         this.facilityName = bookingInfo.substring(12,15);
@@ -107,7 +128,11 @@ public class Server6Control extends ControlFactory implements ControlChangeFacto
                 +"  Start Index: "+startIndex+"  End index: "+endIndex);
     }
 
-
+    /**
+     * Send Data
+     * @param sendData
+     * @throws IOException
+     */
     @Override
     public void send(byte[] sendData) throws IOException{
         System.out.println("[Server2]   --send--    Success Cancel: "+this.bookingIDExist);
@@ -116,6 +141,13 @@ public class Server6Control extends ControlFactory implements ControlChangeFacto
         udpSever.UDPsend(addAck_msg);
     }
 
+    /**
+     * Send Data
+     * @param sendData
+     * @param status
+     * @param msgID
+     * @throws IOException
+     */
     public void send(byte[] sendData, byte[] status, int msgID) throws IOException{
         System.out.println("[Server2]   --send--    Success Cancel: "+this.bookingIDExist);
         this.ackType = new byte[]{0,0,0,1};

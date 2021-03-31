@@ -27,6 +27,13 @@ public class Server5Control extends ControlFactory{
         this.startIndex = 0;
     }
 
+    /**
+     * Unmarshal Msg received from server
+     * @param dataTobeUnmarshal
+     * @param BookingIDArrayList
+     * @return
+     * @throws IOException
+     */
     @Override
     public String unMarshal(byte[] dataTobeUnmarshal, ArrayList<BookingID> BookingIDArrayList) throws IOException {
         this.dataToBeUnMarshal = dataTobeUnmarshal;
@@ -47,7 +54,11 @@ public class Server5Control extends ControlFactory{
         return null;
     }
 
-
+    /**
+     * Send Marshaled Data corresponding to each 2 cases to Client
+     * @throws TimeoutException
+     * @throws IOException
+     */
     @Override
     public void marshalAndSend() throws TimeoutException, IOException{
         int msgID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,4);
@@ -68,6 +79,11 @@ public class Server5Control extends ControlFactory{
         }
     }
 
+    /**
+     * Send Data
+     * @param sendData
+     * @throws IOException
+     */
     @Override
     public void send(byte[] sendData) throws IOException{
         System.out.println("[Server3]   --send--    Has Vacancy: "+this.hasVacancy);
@@ -76,6 +92,13 @@ public class Server5Control extends ControlFactory{
         udpSever.UDPsend(addAck_msg);
     }
 
+    /**
+     * Send Data
+     * @param sendData
+     * @param status
+     * @param msgID
+     * @throws IOException
+     */
     public void send(byte[] sendData, byte[] status, int msgID) throws IOException{
         System.out.println("[Server3]   --send--    Has Vacancy: "+this.hasVacancy);
         this.ackType = new byte[]{0,0,0,1};
@@ -85,6 +108,11 @@ public class Server5Control extends ControlFactory{
         msgIDresponseMap.put(msgID, addAck_msg);
     }
 
+    /**
+     * Wise Booking
+     * @param facilityType
+     * @param facilityArrayList
+     */
     public void wiseBooking(int facilityType, ArrayList<Facility> facilityArrayList){
         int fcIndex = facilityType-1;
         // check LT1 and LT2

@@ -44,6 +44,13 @@ public class Server3Control extends ControlFactory implements ControlChangeFacto
         this.idAssociatedBookingInfo="";
     }
 
+    /**
+     * Unmarshal Msg received from server
+     * @param dataTobeUnmarshal
+     * @param BookingIDArrayList
+     * @return
+     * @throws IOException
+     */
     @Override
     public String unMarshal(byte[] dataTobeUnmarshal, ArrayList<BookingID> BookingIDArrayList) throws IOException {
         this.dataToBeUnMarshal = dataTobeUnmarshal;
@@ -100,7 +107,11 @@ public class Server3Control extends ControlFactory implements ControlChangeFacto
         return null;
     }
 
-
+    /**
+     * Send Marshaled Data corresponding to each 3 cases to Client
+     * @throws TimeoutException
+     * @throws IOException
+     */
     @Override
     public void marshalAndSend() throws TimeoutException, IOException{
         int msgID = UnMarshal.unmarshalInteger(this.dataToBeUnMarshal,4);
@@ -142,6 +153,11 @@ public class Server3Control extends ControlFactory implements ControlChangeFacto
         this.dataToBeUnMarshal = new byte[0];
     }
 
+    /**
+     * Send Data
+     * @param sendData
+     * @throws IOException
+     */
     @Override
     public void send(byte[] sendData) throws IOException{
         System.out.println("[Server2]   --send--    Collision Status: "+this.collisionStatus + "ID exist: "+this.bookingIDExist);
@@ -150,6 +166,13 @@ public class Server3Control extends ControlFactory implements ControlChangeFacto
         udpSever.UDPsend(addAck_msg);
     }
 
+    /**
+     * Send Data
+     * @param sendData
+     * @param status
+     * @param msgID
+     * @throws IOException
+     */
     public void send(byte[] sendData, byte[] status, int msgID) throws IOException{
         System.out.println("[Server2]   --send--    Collision Status: "+this.collisionStatus + "ID exist: "+this.bookingIDExist);
         this.ackType = new byte[]{0,0,0,1};
@@ -159,6 +182,10 @@ public class Server3Control extends ControlFactory implements ControlChangeFacto
         msgIDresponseMap.put(msgID, addAck_msg);
     }
 
+    /**
+     * Change booking time of the required facility
+     * @param facilityArrayList
+     */
     public void changeBookingTime(ArrayList<Facility> facilityArrayList){
         for (Facility fc: facilityArrayList) {
             if (fc.getFacilityName().equals(facilityName)){
@@ -206,6 +233,10 @@ public class Server3Control extends ControlFactory implements ControlChangeFacto
         }
     }
 
+    /**
+     * Parse the received booking info
+     * @param bookingInfo
+     */
     @Override
     public void parseBookingInfo(String bookingInfo){
         this.day = mdParser.StringDayToInt(bookingInfo.substring(9,11)) - mdParser.getDate();

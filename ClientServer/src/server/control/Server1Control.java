@@ -1,6 +1,7 @@
 package server.control;
 
 import server.FacilityEntity.Facility;
+import utils.CalendarObj;
 import utils.Marshal;
 import utils.UnMarshal;
 import utils.MonthDateParser;
@@ -16,6 +17,7 @@ import java.util.concurrent.TimeoutException;
 import static server.control.Control.msgIDresponseMap;
 
 public class Server1Control extends ControlFactory{
+
     private Boolean facilityExist = false;
     private MonthDateParser dateParser;
     protected String queryInfo;
@@ -34,6 +36,13 @@ public class Server1Control extends ControlFactory{
     public void clearQueryInfo() {
         this.queryInfo = "";
     }
+
+    /**
+     * Unmarshal Msg received from server
+     * @param dataTobeUnmarshal
+     * @return null
+     * @throws IOException
+     */
 
     public String unMarshal(byte[] dataTobeUnmarshal) throws IOException {
         this.dataToBeUnMarshal = dataTobeUnmarshal;
@@ -55,6 +64,11 @@ public class Server1Control extends ControlFactory{
         return null;
     }
 
+    /**
+     * Send Marshaled Data to Client
+     * @throws TimeoutException
+     * @throws IOException
+     */
     public void marshalAndSend() throws TimeoutException, IOException
     {
         int msgID;
@@ -90,17 +104,20 @@ public class Server1Control extends ControlFactory{
         this.dataToBeUnMarshal = new byte[0];
     }
 
+    /**
+     *
+     * @param facilityArrayList
+     * @param interval
+     * @param facilityName
+     * @return query Information in timeslots
+     */
     String getQueryInfo(ArrayList<Facility> facilityArrayList, int interval, String facilityName)
     {
         for (Facility f: facilityArrayList)
         {
             if (f.getFacilityName().equals(facilityName)){
                 this.facilityExist = true;
-                String days = "   ";
-                for (int d = 0;d < interval; d++) {
-                    days += "            ";
-                    days += this.dateParser.getMonth() + (d+1+dateParser.getDate());
-                }
+                String days = "             "+ CalendarObj.returnDate(interval);
                 queryInfo += days;
                 f.setPrintSlot(interval);
                 queryInfo += f.getPrintResult();
@@ -109,6 +126,13 @@ public class Server1Control extends ControlFactory{
         return queryInfo;
     }
 
+    /**
+     *
+     * @param sendData
+     * @param status
+     * @param msgID
+     * @throws IOException
+     */
     public void send(byte[] sendData, byte[] status, int msgID) throws IOException{
         System.out.println("[Server1]   --send--    Success query: "+this.facilityExist);
             this.ackType = new byte[]{0,0,0,1};
