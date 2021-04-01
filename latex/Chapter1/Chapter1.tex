@@ -1,0 +1,69 @@
+%=== CHAPTER TWO (2) ===
+%=== Literature Review ===
+
+\chapter{Introduction}
+\begin{spacing}{1}
+\setlength{\parskip}{0in}
+
+This project consolidates the basic knowledge about interprocess communication and remote invocation by constructing client and server programs that use UDP as the transport protocol. A distributed facility booking system based on client-server architecture is implemented. The server program stores the information of facilities and booking information, and provides different services,  including query, book, change booking,cancel booking and monitoring, which can be remote access by clients. The client program provides an interface for users to invoke these services.
+
+\section{Environment}
+
+The following are the necessary environment to run the system.
+Operating System: The facility booking system is developed and tested in a GNU/Linux environment.
+Programming Language: Java.
+
+
+\section{Assumption}
+Several assumptions have been made in developing the system as follows:
+\begin{enumerate}
+   \item General Assumptions:
+   \begin{itemize}
+      \item Client-Server Communication: All clients are assumed to know IP address and port number.
+      \item Request Concurrency: Server and client handle the user input in sequential order. 
+   \end{itemize}
+   \item Client Assumptions:
+      \begin{itemize}
+      \item User Interface: The user interaction to the system is solely done in the command-line interface.
+      \item User Input: There are minimum error checking (e.g. Variable Type checking). 
+   \end{itemize}
+    \item Facility Assumptions:
+        \begin{itemize}
+      \item Four different facilities of 2 types are provided: LT1, LT2, MR1, MR2.
+      \item Facility Timetable: (8:00am - 6:00pm, interval: 1h, total: 10 intervals)
+   \end{itemize}
+    \item Server Assumptions:
+        \begin{itemize}
+      \item Server1 Query
+        \begin{itemize}
+            \item A user can only query availability of a service within 7 days.
+        \end{itemize}
+      \item Server2 Booking
+      \begin{itemize}
+          \item  A user can only book a facility one day advance. (e.g. Today is Apr 1st. Can only book from Apr 2nd.)
+          \item A user can book a facility either 1 hour or 2 hours each time.
+      \end{itemize}
+        \item Server3 Change Booking Time
+        \begin{itemize}
+            \item A user can only change booking time to other slots of the same day.
+        \end{itemize}
+        \item Server5 Auto-Booking
+        \begin{itemize}
+            \item A user can only choose the type of facility. 
+            \item Server will return the nearest available slots in 2 facilities of the required type.
+            \item If there are no available slots for the next day in both 2 facilities, the booking is unsuccessful.
+        \end{itemize}
+        \item Server6 Cancel Booking
+        \begin{itemize}
+            \item Once the booking is canceled, it cannot be restored.
+        \end{itemize}
+   \end{itemize}
+   
+\end{enumerate}
+
+
+
+
+%=== END OF CHAPTER TWO ===
+\end{spacing}
+\newpage

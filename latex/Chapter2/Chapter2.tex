@@ -1,0 +1,91 @@
+%=== CHAPTER THREE (3) ===
+%=== (Actual work done and contribution, including literature survey) ===
+
+\chapter{Design}
+\begin{spacing}{1}
+\setlength{\parskip}{0in}
+%  (Actual work done and contribution, including literature survey)
+
+
+\section{Architecture Design}
+
+We applied ECB design pattern on the structure of our program. Specifically, the client and server are classified in to 3 layers, which are entity, control and boundary.
+
+\section{Communication Design}
+\subsection{Message Format}
+On the client side, we designed two types of messages, which are Request and Acknowledgement. And the request message is divided into 4 sections: message type, Message ID, Service ID, data shown in Table 2.1. And the usage of different sections are described in the below:
+\begin{enumerate}
+  \item Message Type: An integer (0 or 1), which is used by the server to differentiate a message is a Request or Acknowledgement. If the value is 1, it indicates as a request message.
+  \item Message ID: An integer, which is used by the server to filter duplicated request messages by checking a hash table storing previous processed requests, when the At-Most-Once invocation is enabled.
+  \item Service ID: An integer, which is used by the server to dispatch the request to a corresponding service handler.
+  \item Data: See the Common Data Representation.
+\end{enumerate}
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+Msg Type & Msg ID & Service ID & Data \\ \hline
+\end{tabular}
+\caption{Request Message}
+\end{table}
+
+The Acknowledgement is divided into 2 sections: message type and status as shown in Table 2.2. And the usage of different sections are described in the below:
+\begin{enumerate}
+    \item Message type: An integer (0 or 1), which is used by the server to differentiate a message is a Request or Acknowledgement. If the value of the message type is 0, it indicates as an acknowledgement message. 
+    \item Status: An integer (0 or 1), which is used by the client to acknowledge whether it receives the response from server successfully (1) or not (0) within a timeout period (controlled by Param MAXTIMEOUTCOUNT and UDPTIMEOUT).
+\end{enumerate}
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+Msg Type & Msg ID & Status \\ \hline
+\end{tabular}
+\caption{Acknowledgement Message}
+\end{table}
+
+
+On the server side, to improve the efficiency and better use of available channel bandwidth, we piggybacked the acknowledgement on the response message. And the response message is divided into 3 sections: ACK Status, Processed Status, Data as shown in Table 2.3. And the usage of different sections are described in the below:
+\begin{enumerate}
+    \item ACK status: An integer (0 or 1), the piggybacked acknowledgement is used to indicate whether the server receives the request from client successfully (1) or not (0).
+    \item Processed status: An integer (0 or 1), which is used by client to tell whether the request is processed by server successfully(1) or not(0). Client will invoke different functions to display correct or error messages.
+    \item Data: See the Common Data Representation.
+\end{enumerate}
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+ACK Status(Piggyback) & Processed Status & Data \\ \hline
+\end{tabular}
+\caption{Response Message}
+\end{table}
+
+
+\subsection{Marshal / Unmarshal}
+\begin{enumerate}
+    \item Primitive Type: int.
+Marshalling an integer into a byte array of size 4. To obtain the $i$th byte in the array, we can right shift the int by 8 * (4 - i) number of times.
+		Unmarshalling the byte array back to an int can be left shifted the $i$th byte in the array  by 8 * (4 - i) number of times, and then perform OR  operation.
+    \item Non-primitive Type: String.
+Marshalling/unmarshalling a String depends on the number of characters. Each byte represents one character of a String.
+\end{enumerate}
+
+\subsection{The Common Data Representation}
+\begin{enumerate}
+    \item The Big-Endian ordering is used when we marshal/unmarshal data.
+    \item We assumed that the client and server have common knowledge of the order and types of the variables in the data section.
+    \item A data session contains different variables depends on the service ID.  We inserted the length of a variable followed by that variable shown in Table 2.4.
+\end{enumerate}
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+len1 & var1 & len2 & var2 & ... \\ \hline
+\end{tabular}
+\caption{Data Section}
+\end{table}
+
+%=== END OF CHAPTER THREE ===
+\end{spacing}
+

@@ -1,0 +1,114 @@
+%=== CHAPTER FOUR (4) ===
+%=== Test and Experiments ===
+
+\chapter{Services}
+\begin{spacing}{1}
+
+\section{Service1: Query Facility Availability}
+The request and response message has the following format shown in Table 3.1.\\
+This service allows users to query the availability of a facility in the next 7 days. Client needs to provide facility name(e.g. LT1) and number of days he wants to query. Service1 will return a response with available intervals of the required facility within required days.
+Requests will always be processed correctly, so there is no fail case for this service and response status = 1.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+\multicolumn{5}{|c|}{Service1: Query Facility Availability} \\ \hline
+\multicolumn{2}{|l|}{\textbf{Request}} & ReadIn Syntax Check & \multicolumn{2}{l|}{\textbf{Response}} \\ \hline
+\textbf{Facility Name} & String & Facility name exists. & \textbf{Available intervals} & String \\ \hline
+\textbf{\# of Days} & Int {[}1,7{]} & Number of days in range {[}1-7{]}. &  &  \\ \hline
+\end{tabular}
+\caption{Service1}
+\end{table}
+
+\section{Service2: Book a facility}
+The request and response message has the following format shown in Table 3.2.\\
+This service allows users to book a facility. Client needs to provide facility name, date to book, slot starting time and ending time. Service2 will return booking information if there is no collision, or return error information if there is collision. Specifically, in success case(1), server response status =1. In the unsuccessful case(2,3,4), server response status = 0.
+A BookingInfo String contains the following information. (e.g.”01-20210322-LT1-1113-1511”)
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|l|l|l|l|l|}
+\hline
+\multicolumn{6}{|c|}{Service2: Book a facility} \\ \hline
+\multicolumn{2}{|l|}{\textbf{Request}} & ReadIn Syntax Check & \multicolumn{2}{l|}{\textbf{Response}} & Case Comment \\ \hline
+\textbf{Facility Name} & String & Facility name exists. & \textbf{BookingInfo} & String & (1) Success \\ \hline
+\textbf{Date} & String & \begin{tabular}[c]{@{}l@{}}Date in correct \\ String format.\\ Date in range \\ {[}next day \\ to one week{]}.\end{tabular} & \textbf{Complete collision} & String & (2) Unsuccess \\ \hline
+\textbf{Start time} & int & In range {[}8-18{]} & \textbf{Partial Collision(1)} & String & (3) Unsuccess \\ \hline
+\textbf{End time} & int & In range {[}8-18{]} & \textbf{Partial Collision(2)} & String & (4) Unsuccess \\ \hline
+\end{tabular}
+\caption{Service2}
+\end{table}
+
+\section{Service3: Change booking time}
+The request and response message has the following format shown in Table 3.3.\\
+This service allows users to change the previously booked facility to another time slot within the same day. Client needs to provide BookingID and the offset he wants to change. Service3 will check if the BookingID exists, the offset makes timeslot out of 8am-6pm bound, or the intended change slot has collision with other booked slots.  If all requirements are met, Service3 will return a new BookingInfo. Else, corresponding error messages are returned.
+Specifically, in success case(1), server response status =1. In the unsuccessful case(2,3,4), server response status = 0.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|l|l|l|l|l|}
+\hline
+\multicolumn{6}{|c|}{Service3: Change booking time} \\ \hline
+\textbf{Request} &  & ReadIn Syntax Check & \multicolumn{2}{l|}{\textbf{Response}} & Case Commen \\ \hline
+\textbf{Booking ID} & int & Positive Int & \textbf{BookingInfo} & String & (1) Success \\ \hline
+\textbf{Offset of change} & int & Positive/ Negative Int & \textbf{BookingID not found} & String & (2) Unsuccess \\ \hline
+ &  &  & \textbf{Offset outof bound} & String & (3) Unsuccess \\ \hline
+ &  &  & \textbf{Change has collision} & String & (4) Unsuccess \\ \hline
+\end{tabular}
+\caption{Service3}
+\end{table}
+
+\section{Service4: Monitor}
+The request and response message has the following format shown in Table 3.4.\\
+This service allows users to monitor the availability of a facility over the week. Users can indicate the facility and duration that they want to monitor on the client side. The server will register each client when receive the monitoring requests. And then, when a facility has a new booking, change or cancel, the server will notify the clients which are registering under this facility by using callback mechanism.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+\multicolumn{5}{|c|}{Service4: Monitor} \\ \hline
+\multicolumn{2}{|l|}{\textbf{Request}} & ReadIn Syntax Check & \multicolumn{2}{l|}{\textbf{Response}} \\ \hline
+\textbf{Facility Name} & String & Facility name exists. & \textbf{Available intervals in 7 days} & String \\ \hline
+\textbf{Duration(in second)} & Int & Positive Int  &  & \\ \hline
+\end{tabular}
+\caption{Service4}
+\end{table}
+
+\section{Service5: Auto booking facility}
+The request and response message has the following format shown in Table 3.5.\\
+This service will auto select a facility with one hour which is the most recent available for the user. Client needs to provide facility type. Service5 will check if there are any left available slots of the required facility type on the next day. If there is, return the most recent available slot of 2 facilities.  Else, return an error message.
+Specifically, in success case(1), server response status =1. In the unsuccessful case(2), server response status = 0.
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|l|l|l|l|}
+\hline
+\multicolumn{6}{|c|}{Service5(Non-idempotent): Auto booking facility} \\ \hline
+\multicolumn{2}{|l|}{\textbf{Request}} & Comment & \multicolumn{2}{l|}{\textbf{Response}} & Case Comment \\ \hline
+\textbf{Facility Type} & int & \begin{tabular}[c]{@{}l@{}}1: Lecture theater\\ 2: Meeting room\end{tabular} & \textbf{BookingInfo} & String & (1)Success \\ \hline
+ &  &  & \textbf{No Available Slot} & String & (2)Unsuccess \\ \hline
+\end{tabular}
+\caption{Service5}
+\end{table}
+
+\section{Service6: Cancel Booking}
+The request and response message has the following format shown in Table 3.6.\\
+This service allows users to cancel a previous booking. Client needs to provide the Booking ID which is received in Service2 or Service3. Service6 will check if this Booking ID exists. If it exists, return a successful cancellation message to the client. Else, return an error message.
+Specifically, in success case(1), server response status =1. In the unsuccessful case(2), server response status = 0.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+\multicolumn{5}{|c|}{Service6(Idempotent): Cancel Booking} \\ \hline
+\multicolumn{2}{|l|}{\textbf{Request}} & \multicolumn{2}{l|}{\textbf{Response}} & Case Comment \\ \hline
+\textbf{Booking ID} & int & \textbf{ChangeInfo} & String & (1)Success \\ \hline
+ &  & \textbf{BookingID not found} & String & (2)Unsuccess \\ \hline
+\end{tabular}
+\caption{Service6}
+\end{table}
+%=== END OF CHAPTER FOUR ===
+\end{spacing}
+\newpage

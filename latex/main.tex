@@ -1,0 +1,107 @@
+% Re-defined by Z.C.TIAN (https://github.com/doem97)
+% This version comply with the Official EEE Dissertation Guidline in [EEE dissertation] (http://www.eee.ntu.edu.sg/programmes/CurrentStudents/Graduate_Coursework/mscProg/disHome/Pages/home.aspx)
+% More information about dissertation can be found in [NTU thesis](http://research.ntu.edu.sg/rieo/RI/Pages/Theses--Dissertations.aspx)
+% Based on W.M.ZHAO version, original link in overleaf:
+% (https://www.overleaf.com/latex/templates/ntu-master-dissertation/ngnhrrwryccv)
+
+\documentclass[12pt]{report}
+\usepackage{titlesec}
+\titleformat{\chapter}
+  {\normalfont\LARGE\bfseries}{\thechapter}{1em}{}
+\titlespacing*{\chapter}{0pt}{2.5ex plus 0ex minus .2ex}{2.3ex plus .2ex}
+\makeatletter
+\renewcommand{\@makechapterhead}[1]{%
+  {\noindent\raggedright\normalfont% Alignment and font reset
+   \huge\bfseries \@chapapp\space\thechapter~~#1\par\nobreak}% Formatting
+  \vspace{\baselineskip}% ...just a little space
+}
+\makeatother
+%% Useful packages
+\usepackage[a4paper,top=2cm,bottom=3cm,left=2cm,right=2cm,marginparwidth=1cm,headheight=10pt]{geometry}
+\usepackage{amsmath}
+\usepackage{cite}
+\usepackage{courier}
+\usepackage{minted} % For highlighted source code
+\usepackage[titletoc]{appendix}
+\usepackage[export]{adjustbox}
+\usepackage[nottoc,notlot,notlof]{tocbibind}
+\usepackage[labelfont=bf, textfont=bf]{caption}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{setspace}
+\usepackage{subfigure}
+\usepackage{setspace}
+\usepackage{lipsum}
+\usepackage{fancyhdr} % Fancy header
+\usepackage{url}
+\usepackage{tabularx}
+\usepackage[utf8]{inputenc}
+\usepackage{mathptmx} %Times Font
+\usepackage{longtable}
+%==== Header and Footer configure ====
+% Define the plain pagestyle used by most chapters
+\fancypagestyle{plain}{
+\fancyhf{} % Clear header footer
+\fancyhead[R]{\bf \textsl{\leftmark} \vspace{0.1in}}
+\fancyfoot[R]{\thepage}
+% Set the right side of the footer to be the page number
+\renewcommand{\headrulewidth}{2pt}
+}
+% For those Chapter* (Can't use \leftmark to call their chapter name directly)
+\fancypagestyle{addin}{
+\fancyhf{} % Clear header footer
+\fancyhead[R]{\bf \textsl{\leftmark} \vspace{0.1in}}
+% Set the right side of the footer to be the page number
+\fancyfoot[R]{\thepage}
+\renewcommand{\headrulewidth}{2pt}
+}
+
+%==== Overall Config ====
+\setlength{\parindent}{0in} % Set paragraph indent as 0
+% \setlength{\fboxsep}{-0.3in}%
+\setlength{\fboxrule}{0.5pt} % Set the bounding box around the image as 0.5pt
+\pagestyle{plain}
+
+
+
+\begin{document}
+\fontdimen2\font=0.5em% inter word space
+%==== FRONT PART====
+\include{Title/coverpage} % Coverpage
+\include{Title/titlepage} % Titlepage
+
+%\begingroup
+%\let\cleardoublepage\clearpage
+
+\pagenumbering{roman}
+
+\renewcommand*\contentsname{\centering Table of Contents}
+\tableofcontents
+\newpage
+
+
+
+%\endgroup
+
+%==== MAIN PART ====
+
+\pagenumbering{arabic}
+\include{Chapter1/Chapter1}
+\include{Chapter2/Chapter2}
+\include{Chapter3/Chapter3}
+\include{Chapter4/Chapter4}
+\include{Chapter5/Chapter5}
+\include{Chapter6/Chapter6}
+%==== ENDING PART ===
+
+\renewcommand\bibname{References}
+\bibliographystyle{unsrt}
+\begin{spacing}{0.5}
+\bibliography{Ref/References}
+\end{spacing}
+\newpage
+
+\include{Appendix/appendix}
+%==== END OF ALL ===
+\end{document}
