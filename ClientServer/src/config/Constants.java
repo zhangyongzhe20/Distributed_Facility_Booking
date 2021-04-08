@@ -29,5 +29,5 @@ public class Constants {
     public static final int PORT = 9876;
     public static int UDPTIMEOUT = 1000*TIMEOUT; // 3s timeout
     public static final int UDPBUFFERSIZE = 2*1024;
-    public static final String CLIENTNAME = "localhost";
+    public static final String CLIENTNAME = "localhost";  //ip address
 }
