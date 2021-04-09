@@ -4,13 +4,15 @@ public class Constants {
     //SERVER Params
     public static final int AT_MOST_ONCE = 0;
     public static final int AT_LEAST_ONCE = 1;
-    public static int APPLIEDSEMANTICS = AT_MOST_ONCE;
-    public static double RESFRATE = 0;
 
+    public static int APPLIEDSEMANTICS = AT_MOST_ONCE; //invo-semantics
+    public static double REQFRATE = 0; // request failure rate
+    public static double RESFRATE = 0; // response failure rate
+    public static double ACKFRATE = 0;  //acknowledgement failure rate
+
+    public static Boolean DEMO = Boolean.TRUE;
     //CLINET Params
-    public static double REQFRATE = 0;
-    public static double ACKFRATE = 0;
-    public static int TIMEOUT = 5; // 3s timeout
+    public static int TIMEOUT = 5; // 5s timeout
     public static int MAXTIMEOUTCOUNT = 10;
     public static int MAXRESENDS = 100;
 
